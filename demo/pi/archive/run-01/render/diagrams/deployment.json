@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Idea Board in Docker",
+    "output": "diagrams/deployment.html",
+    "quality_profile": "showcase",
+    "engineering_profile": "deployment-ownership"
+  },
+  "components": [
+    { "id": "operator", "type": "external", "label": "Operator", "sublabel": "laptop", "pos": [40, 170], "size": [130, 60] },
+    { "id": "browser", "type": "external", "label": "Visitor", "sublabel": "browser", "pos": [40, 390], "size": [130, 60] },
+    { "id": "compose", "type": "cloud", "label": "Docker Compose", "sublabel": "app/compose.yaml", "pos": [250, 170], "size": [150, 62], "tag": "one command" },
+    { "id": "server", "type": "backend", "label": "Deno server", "sublabel": "Fresh + Hono :8000", "pos": [520, 170], "size": [160, 62], "tag": "app/server.ts" },
+    { "id": "health", "type": "security", "label": "Health check", "sublabel": "deno eval", "pos": [540, 82], "size": [130, 58], "tag": "no curl" },
+    { "id": "kvfile", "type": "database", "label": "ideas.sqlite3", "sublabel": "KV_PATH /data", "pos": [520, 390], "size": [160, 62], "tag": "owner: docker volume" }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "host: Docker engine", "wraps": ["compose"], "pad": 18 },
+    { "kind": "region", "label": "web container (deno user, uid 1993)", "wraps": ["server", "health"], "pad": 22 },
+    { "kind": "region", "label": "named volume ideas", "wraps": ["kvfile"], "pad": 22 },
+    { "kind": "security-group", "label": "private: only :8000 is published", "wraps": ["server", "health"], "pad": 12 },
+    { "kind": "security-group", "label": "private state: reached only by the server", "wraps": ["kvfile"], "pad": 12 }
+  ],
+  "connections": [
+    { "from": "operator", "to": "compose", "label": "up -d --build", "variant": "emphasis" },
+    { "from": "compose", "to": "server", "label": "build + run", "variant": "emphasis" },
+    { "from": "browser", "to": "server", "label": ":8000", "variant": "emphasis" },
+    { "from": "health", "to": "server", "label": "GET /api/health", "variant": "dashed", "labelAt": [605, 155] },
+    { "from": "server", "to": "kvfile", "label": "read / write", "variant": "emphasis" },
+    { "from": "kvfile", "to": "server", "label": "kept across down/up", "variant": "dashed", "fromSide": "right", "toSide": "right" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "One command", "items": ["Compose builds the image and starts one web service", "The host publishes port 8000 and nothing else"] },
+    { "dot": "emerald", "title": "Pinned build", "items": ["denoland/deno:2.9.8, npm and JSR dependencies from the lock file", "The build runs once; the container serves the build"] },
+    { "dot": "rose", "title": "Evidence", "items": ["The health check is the app's own runtime answering /api/health", "The named volume holds the KV file; down keeps it, down -v removes it"] }
+  ]
+}

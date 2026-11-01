@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Filters: tag index first, text within a window",
+    "output": "diagrams/seq-filter.html",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "browser", "type": "external", "label": "Visitor", "sublabel": "browser" },
+    { "id": "page", "type": "backend", "label": "Page handler", "sublabel": "routes/index.tsx" },
+    { "id": "filters", "type": "backend", "label": "parseFilters", "sublabel": "domain/filters.ts" },
+    { "id": "store", "type": "backend", "label": "Idea store", "sublabel": "list with filters" },
+    { "id": "kv", "type": "database", "label": "Deno KV", "sublabel": "index or scan" }
+  ],
+  "segments": [
+    { "from": 150, "to": 282, "label": "Read filters" },
+    { "from": 290, "to": 520, "label": "Apply" }
+  ],
+  "messages": [
+    { "from": "browser", "to": "page", "y": 180, "label": "GET /?tag=ui&q=dark", "variant": "emphasis", "note": "query string only: no filter state on the server" },
+    { "from": "page", "to": "filters", "y": 236, "label": "parseFilters(url)" },
+    { "from": "filters", "to": "page", "y": 278, "label": "tag, q, sort, or a refusal", "variant": "return" },
+    { "from": "page", "to": "store", "y": 320, "label": "list(50, sort, filters)" },
+    { "from": "store", "to": "kv", "y": 362, "label": "tag index, or 500 newest", "variant": "emphasis", "note": "a malformed tag is refused before any read" },
+    { "from": "kv", "to": "store", "y": 417, "label": "ids, then ideas", "variant": "return" },
+    { "from": "store", "to": "page", "y": 458, "label": "filtered Idea[]", "variant": "return", "note": "q matches title or description, case-insensitive" },
+    { "from": "page", "to": "browser", "y": 500, "label": "HTML with active filters", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "page", "from": 174, "to": 510, "type": "backend" },
+    { "participant": "filters", "from": 230, "to": 286, "type": "backend" },
+    { "participant": "store", "from": 314, "to": 464, "type": "backend" },
+    { "participant": "kv", "from": 356, "to": 424, "type": "database" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "A tag is an index read", "items": ["Every tag is a key that points at its ideas", "The page pays for one index range, not a scan"] },
+    { "dot": "emerald", "title": "Text is bounded", "items": ["Search reads the newest 500 ideas and stops", "The window is named in the page, so the limit is not a surprise"] },
+    { "dot": "rose", "title": "Filters combine", "items": ["tag and q narrow together, in the chosen order", "Clear filters is a plain link back to the page"] }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Health check",
+    "subtitle": "Compose probes /api/health with deno eval, no curl in the image",
+    "output": "diagrams/health.html"
+  },
+  "participants": [
+    { "id": "engine", "type": "cloud", "label": "Docker engine" },
+    { "id": "deno", "type": "backend", "label": "deno eval" },
+    { "id": "server", "type": "frontend", "label": "deno serve" },
+    { "id": "hono", "type": "security", "label": "Hono /api/health" }
+  ],
+  "messages": [
+    { "from": "engine", "to": "deno", "y": 170, "label": "healthcheck every 5 s" },
+    { "from": "deno", "to": "server", "y": 220, "label": "fetch 127.0.0.1:8000/api/health" },
+    { "from": "server", "to": "hono", "y": 270, "label": "route /api/health" },
+    { "from": "hono", "to": "deno", "y": 320, "label": "{ status: ok }", "variant": "return" },
+    { "from": "deno", "to": "engine", "y": 370, "label": "exit 0 → healthy", "variant": "return" }
+  ]
+}

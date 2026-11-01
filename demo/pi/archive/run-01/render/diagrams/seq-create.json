@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Create an idea: island to KV",
+    "output": "diagrams/seq-create.html",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "island", "type": "frontend", "label": "NewIdeaForm", "sublabel": "island" },
+    { "id": "api", "type": "backend", "label": "Hono route", "sublabel": "POST /api/ideas" },
+    { "id": "validator", "type": "backend", "label": "validateIdea", "sublabel": "domain/idea.ts" },
+    { "id": "store", "type": "backend", "label": "Idea store", "sublabel": "create" },
+    { "id": "kv", "type": "database", "label": "Deno KV", "sublabel": "atomic write" }
+  ],
+  "segments": [
+    { "from": 150, "to": 290, "label": "Accept" },
+    { "from": 300, "to": 470, "label": "Persist" },
+    { "from": 478, "to": 520, "label": "Answer" }
+  ],
+  "messages": [
+    { "from": "island", "to": "api", "y": 180, "label": "POST /api/ideas", "variant": "emphasis", "note": "JSON: title, description, tags" },
+    { "from": "api", "to": "validator", "y": 236, "label": "validateIdea(body)" },
+    { "from": "validator", "to": "api", "y": 278, "label": "NewIdea", "variant": "return" },
+    { "from": "api", "to": "store", "y": 320, "label": "create(NewIdea)", "variant": "emphasis" },
+    { "from": "store", "to": "kv", "y": 362, "label": "atomic set", "variant": "emphasis", "note": "idea, vote key, one tag key each" },
+    { "from": "kv", "to": "store", "y": 418, "label": "commit ok", "variant": "return" },
+    { "from": "store", "to": "api", "y": 460, "label": "Idea, votes 0", "variant": "return" },
+    { "from": "api", "to": "island", "y": 500, "label": "201 {idea}", "variant": "return", "note": "the island reloads the list" }
+  ],
+  "activations": [
+    { "participant": "api", "from": 174, "to": 510, "type": "backend" },
+    { "participant": "validator", "from": 230, "to": 286, "type": "backend" },
+    { "participant": "store", "from": 314, "to": 466, "type": "backend" },
+    { "participant": "kv", "from": 356, "to": 426, "type": "database" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Refusal before storage", "items": ["A refused body returns field plus reason and writes nothing", "The same validator runs when the form posts without JavaScript"] },
+    { "dot": "emerald", "title": "One atomic write", "items": ["The idea, its vote key and its tag keys commit together", "A reader never sees an idea without its indices"] },
+    { "dot": "rose", "title": "The answer is the idea", "items": ["201 returns the stored idea with its ULID and zero votes", "The island then reloads, so the list is read from the store"] }
+  ]
+}

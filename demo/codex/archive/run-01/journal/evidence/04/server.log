@@ -1,0 +1,2 @@
+Task start deno run -A --unstable-kv start.ts
+Listening on http://0.0.0.0:18101/ (http://localhost:18101/)

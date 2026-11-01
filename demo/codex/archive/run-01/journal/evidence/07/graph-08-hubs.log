@@ -1,0 +1,13 @@
+$ ../tools/architecture/ask --root codex/workspace hubs --top 10
+app/store/ideas.ts  used by 12 files, uses 2
+.claude/hooks/project_files.py  used by 9 files, uses 0
+.claude/hooks/secret_names.py  used by 7 files, uses 0
+app/domain/idea.ts  used by 7 files, uses 0
+app/api/app.ts  used by 5 files, uses 4
+tools/knowledge/doc-links  used by 4 files, uses 2
+app/domain/query.ts  used by 4 files, uses 1
+tools/architecture/process.py  used by 4 files, uses 0
+app/store/kv.ts  used by 3 files, uses 2
+tools/context/budget.py  used by 3 files, uses 2
+
+exit=0

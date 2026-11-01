@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "From untrusted fields to visible ideas",
+    "subtitle": "Where does the data become trusted?",
+    "output": "dataflow.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "viewBox": [
+      1080,
+      460
+    ]
+  },
+  "stages": [
+    {
+      "label": "Input"
+    },
+    {
+      "label": "Boundary"
+    },
+    {
+      "label": "Domain"
+    },
+    {
+      "label": "Persistence"
+    },
+    {
+      "label": "Output"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "input",
+      "type": "external",
+      "label": "User fields",
+      "sublabel": "Form or JSON",
+      "stage": 0,
+      "row": 0,
+      "width": 145
+    },
+    {
+      "id": "boundary",
+      "type": "backend",
+      "label": "Fresh / Hono",
+      "sublabel": "Parse; size / type checks",
+      "stage": 1,
+      "row": 0,
+      "width": 145
+    },
+    {
+      "id": "domain",
+      "type": "security",
+      "label": "Validated input",
+      "sublabel": "Pure field rules",
+      "stage": 2,
+      "row": 0,
+      "width": 145
+    },
+    {
+      "id": "kv",
+      "type": "database",
+      "label": "Stored idea",
+      "sublabel": "ID + time + indexes",
+      "stage": 3,
+      "row": 0,
+      "width": 145
+    },
+    {
+      "id": "output",
+      "type": "frontend",
+      "label": "Visible idea",
+      "sublabel": "JSON / escaped HTML",
+      "stage": 4,
+      "row": 0,
+      "width": 145
+    }
+  ],
+  "flows": [
+    {
+      "from": "input",
+      "to": "boundary",
+      "label": "Untrusted",
+      "labelDy": 54
+    },
+    {
+      "from": "boundary",
+      "to": "domain",
+      "label": "Parsed fields",
+      "labelDy": 54
+    },
+    {
+      "from": "domain",
+      "to": "kv",
+      "label": "Valid only",
+      "labelDy": 54
+    },
+    {
+      "from": "kv",
+      "to": "output",
+      "label": "Idea value",
+      "labelDy": 54
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Data flow, not a call graph",
+      "items": [
+        "The store is the sole KV writer; the domain never opens storage.",
+        "SSR escapes content, and search uses literal strings rather than a regular expression."
+      ]
+    }
+  ]
+}

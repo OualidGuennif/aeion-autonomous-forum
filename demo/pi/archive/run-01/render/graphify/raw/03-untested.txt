@@ -1,0 +1,13 @@
+49 source files: 14 imported by a test, 18 named by a test, 5 reached through others, 12 reached by none
+untested: app/main.ts
+untested: app/routes/api/[...path].ts
+untested: app/server.ts
+untested: app/store/database.ts
+untested: loops/decisions-api/client.sh
+untested: tools/claude-plugins/deno-lsp/scripts/deno-lsp
+untested: tools/claude-plugins/native-lsp/scripts/jdtls-launch
+untested: tools/claude-plugins/native-lsp/scripts/tsc-lsp
+untested: tools/factory-tests
+untested: tools/git-hooks/pre-commit
+untested: tools/git-hooks/pre-push
+untested: tools/release/release

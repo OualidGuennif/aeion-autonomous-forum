@@ -1,0 +1,88 @@
+[0m[32mCheck[0m store/search_test.ts
+[0m[32mCheck[0m api/search_test.ts
+[0m[1mTS2339 [0m[ERROR]: Property 'search' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | undefined>; list(limit: number, sort?: SortOrder): Promise<...>; vote(id: string): Promise<...>; listVoteKeys(): AsyncIterableIterator<...>; }'.
+  const found = await store.search({ limit: 20, sort: 'recent', tag: 'ui' });
+[0m[31m                            ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m19[0m:[0m[33m29[0m
+
+[0m[1mTS7006 [0m[ERROR]: Parameter 'idea' implicitly has an 'any' type.
+  assertEquals(found.map((idea) => idea.title), [
+[0m[31m                          ~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m20[0m:[0m[33m27[0m
+
+[0m[1mTS7006 [0m[ERROR]: Parameter 'idea' implicitly has an 'any' type.
+  assertEquals(found.every((idea) => idea.tags.includes('ui')), true);
+[0m[31m                            ~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m25[0m:[0m[33m29[0m
+
+[0m[1mTS2339 [0m[ERROR]: Property 'search' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | undefined>; list(limit: number, sort?: SortOrder): Promise<...>; vote(id: string): Promise<...>; listVoteKeys(): AsyncIterableIterator<...>; }'.
+  assertEquals(await store.search({ limit: 20, sort: 'recent', tag: 'nope' }), []);
+[0m[31m                           ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m27[0m:[0m[33m28[0m
+
+[0m[1mTS2339 [0m[ERROR]: Property 'search' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | undefined>; list(limit: number, sort?: SortOrder): Promise<...>; vote(id: string): Promise<...>; listVoteKeys(): AsyncIterableIterator<...>; }'.
+  const found = await store.search({ limit: 20, sort: 'recent', q: 'DARK' });
+[0m[31m                            ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m32[0m:[0m[33m29[0m
+
+[0m[1mTS7006 [0m[ERROR]: Parameter 'idea' implicitly has an 'any' type.
+  assertEquals(found.map((idea) => idea.title), [
+[0m[31m                          ~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m35[0m:[0m[33m27[0m
+
+[0m[1mTS2339 [0m[ERROR]: Property 'search' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | undefined>; list(limit: number, sort?: SortOrder): Promise<...>; vote(id: string): Promise<...>; listVoteKeys(): AsyncIterableIterator<...>; }'.
+  const found = await store.search({ limit: 20, sort: 'recent', q: '.*' });
+[0m[31m                            ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m49[0m:[0m[33m29[0m
+
+[0m[1mTS7006 [0m[ERROR]: Parameter 'idea' implicitly has an 'any' type.
+  assertEquals(found.map((idea) => idea.title), ['a.*b']);
+[0m[31m                          ~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m50[0m:[0m[33m27[0m
+
+[0m[1mTS2339 [0m[ERROR]: Property 'search' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | undefined>; list(limit: number, sort?: SortOrder): Promise<...>; vote(id: string): Promise<...>; listVoteKeys(): AsyncIterableIterator<...>; }'.
+  const ideas = await store.search({ limit: 20, sort: 'recent', tag: 'ui' });
+[0m[31m                            ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m56[0m:[0m[33m29[0m
+
+[0m[1mTS7006 [0m[ERROR]: Parameter 'idea' implicitly has an 'any' type.
+  const darkMode = ideas.find((idea) => idea.title === 'Dark mode')!;
+[0m[31m                               ~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m57[0m:[0m[33m32[0m
+
+[0m[1mTS2339 [0m[ERROR]: Property 'search' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | undefined>; list(limit: number, sort?: SortOrder): Promise<...>; vote(id: string): Promise<...>; listVoteKeys(): AsyncIterableIterator<...>; }'.
+  const both = await store.search({ limit: 20, sort: 'recent', tag: 'ui', q: 'dark' });
+[0m[31m                           ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m59[0m:[0m[33m28[0m
+
+[0m[1mTS7006 [0m[ERROR]: Parameter 'idea' implicitly has an 'any' type.
+  assertEquals(both.map((idea) => idea.title), [
+[0m[31m                         ~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m60[0m:[0m[33m26[0m
+
+[0m[1mTS2339 [0m[ERROR]: Property 'search' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | undefined>; list(limit: number, sort?: SortOrder): Promise<...>; vote(id: string): Promise<...>; listVoteKeys(): AsyncIterableIterator<...>; }'.
+  const byVotes = await store.search({ limit: 20, sort: 'votes', tag: 'ui', q: 'dark' });
+[0m[31m                              ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m65[0m:[0m[33m31[0m
+
+[0m[1mTS7006 [0m[ERROR]: Parameter 'idea' implicitly has an 'any' type.
+  assertEquals(byVotes.map((idea) => idea.title), [
+[0m[31m                            ~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m66[0m:[0m[33m29[0m
+
+[0m[1mTS2339 [0m[ERROR]: Property 'search' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | undefined>; list(limit: number, sort?: SortOrder): Promise<...>; vote(id: string): Promise<...>; listVoteKeys(): AsyncIterableIterator<...>; }'.
+  const found = await store.search({ limit: 600, sort: 'recent', q: 'needle' });
+[0m[31m                            ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m79[0m:[0m[33m29[0m
+
+[0m[1mTS2339 [0m[ERROR]: Property 'search' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | undefined>; list(limit: number, sort?: SortOrder): Promise<...>; vote(id: string): Promise<...>; listVoteKeys(): AsyncIterableIterator<...>; }'.
+  const haystack = await store.search({ limit: 600, sort: 'recent', q: 'Hay' });
+[0m[31m                               ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/search_test.ts[0m:[0m[33m81[0m:[0m[33m32[0m
+
+Found 16 errors.
+
+[0m[1m[31merror[0m: Type checking failed.
+
+  [33minfo:[39m The program failed type-checking, but it still might work correctly.
+  [36mhint:[39m Re-run with [4m--no-check[24m to skip type-checking.

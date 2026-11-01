@@ -1,0 +1,92 @@
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Name}} {{.Health}}
+aeion-codex-demo-web-1 healthy
+exit=0
+
+/api/health 200 {"status": "ok", "version": "0.1.0"}
+
+/api/ideas 201 {"idea": {"title": "Survives container restart", "description": "", "tags": ["ops"], "id": "01M628DEJ4S9B3NN03TRJDZKDW", "votes": 0, "createdAt": "2026-10-28T21:59:44.452Z"}}
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml down
+ Container aeion-codex-demo-web-1 Stopping 
+ Container aeion-codex-demo-web-1 Stopped 
+ Container aeion-codex-demo-web-1 Removing 
+ Container aeion-codex-demo-web-1 Removed 
+ Network aeion-codex-demo_default Removing 
+ Network aeion-codex-demo_default Removed 
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml up -d
+ Network aeion-codex-demo_default Creating 
+ Network aeion-codex-demo_default Creating 
+ Network aeion-codex-demo_default Created 
+ Network aeion-codex-demo_default Created 
+ Container aeion-codex-demo-web-1 Creating 
+ Container aeion-codex-demo-web-1 Created 
+ Container aeion-codex-demo-web-1 Starting 
+ Container aeion-codex-demo-web-1 Started 
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+healthy
+exit=0
+
+Healthy after restart: 5.47 seconds
+
+/api/ideas/01M628DEJ4S9B3NN03TRJDZKDW 200 {"idea": {"title": "Survives container restart", "description": "", "tags": ["ops"], "id": "01M628DEJ4S9B3NN03TRJDZKDW", "votes": 0, "createdAt": "2026-10-28T21:59:44.452Z"}}
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml exec -T web id -u
+1993
+exit=0
+
+$ docker image inspect aeion-codex-demo-web --format {{.Id}} {{.Config.User}}
+sha256:79c820bf80bdd87605ae4be17abd0f6f7796fb07195907f91f6161b6a4dfc80d deno
+exit=0
+
+CONTAINER CHECKS PASS
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml down -v
+ Container aeion-codex-demo-web-1 Stopping 
+ Container aeion-codex-demo-web-1 Stopped 
+ Container aeion-codex-demo-web-1 Removing 
+ Container aeion-codex-demo-web-1 Removed 
+ Network aeion-codex-demo_default Removing 
+ Volume aeion-codex-demo_ideas Removing 
+ Volume aeion-codex-demo_ideas Removed 
+ Network aeion-codex-demo_default Removed 
+exit=0

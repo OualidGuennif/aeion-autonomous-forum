@@ -1,0 +1,37 @@
+[
+  {
+    "width": 375,
+    "theme": "light",
+    "scroll": 375,
+    "headings": 1,
+    "labels": true,
+    "background": "rgb(250, 248, 243)"
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "scroll": 375,
+    "headings": 1,
+    "labels": true,
+    "background": "rgb(16, 27, 22)"
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "scroll": 1440,
+    "headings": 1,
+    "labels": true,
+    "background": "rgb(250, 248, 243)"
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "scroll": 1440,
+    "headings": 1,
+    "labels": true,
+    "background": "rgb(16, 27, 22)"
+  },
+  {
+    "islandCreation": "PASS"
+  }
+]

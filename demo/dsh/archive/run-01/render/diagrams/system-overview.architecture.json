@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Idea Board system overview",
+    "output": "diagrams/system-overview.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1120,
+      640
+    ]
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "HTML, one island",
+      "pos": [
+        40,
+        100
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "fresh",
+      "type": "frontend",
+      "label": "Fresh server",
+      "sublabel": "routes, SSR",
+      "pos": [
+        250,
+        100
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "hono",
+      "type": "backend",
+      "label": "Hono API",
+      "sublabel": "/api/*",
+      "pos": [
+        460,
+        100
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "store",
+      "type": "backend",
+      "label": "Idea store",
+      "sublabel": "list, create, vote",
+      "pos": [
+        670,
+        100
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "kv",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "ideas.sqlite3",
+      "pos": [
+        880,
+        100
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "islands",
+      "type": "frontend",
+      "label": "Islands",
+      "sublabel": "form, vote button",
+      "pos": [
+        250,
+        330
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "domain",
+      "type": "backend",
+      "label": "Domain",
+      "sublabel": "validate, filters",
+      "pos": [
+        460,
+        330
+      ],
+      "size": [
+        150,
+        70
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Idea Board process (Deno)",
+      "wraps": [
+        "fresh",
+        "hono",
+        "store",
+        "kv",
+        "islands",
+        "domain"
+      ],
+      "pad": 26
+    }
+  ],
+  "connections": [
+    {
+      "id": "browser-fresh",
+      "from": "browser",
+      "to": "fresh",
+      "label": "GET / · POST /"
+    },
+    {
+      "id": "fresh-hono",
+      "from": "fresh",
+      "to": "hono",
+      "label": "api.fetch(req)"
+    },
+    {
+      "id": "hono-store",
+      "from": "hono",
+      "to": "store",
+      "label": "list · create · vote"
+    },
+    {
+      "id": "store-kv",
+      "from": "store",
+      "to": "kv",
+      "label": "atomic get/set"
+    },
+    {
+      "id": "hono-domain",
+      "from": "hono",
+      "to": "domain",
+      "label": "validate · parseFilters",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "fresh-islands",
+      "from": "fresh",
+      "to": "islands",
+      "label": "render",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "islands-hono",
+      "from": "islands",
+      "to": "hono",
+      "label": "fetch JSON",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "One process",
+      "items": [
+        "Fresh serves the page and forwards /api to Hono",
+        "No second server, no extra port"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "One rule set",
+      "items": [
+        "The form and POST /api/ideas call the same validator",
+        "The page and the API parse filters with one module"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "One store",
+      "items": [
+        "The store owns every KV key, index and transaction",
+        "The page never touches KV directly"
+      ]
+    }
+  ]
+}

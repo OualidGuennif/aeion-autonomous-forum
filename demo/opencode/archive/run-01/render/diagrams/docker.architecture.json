@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Docker deployment",
+    "subtitle": "denoland/deno:2.9.8 \u00b7 non-root deno \u00b7 named volume \u00b7 Deno health check",
+    "output": "diagrams/docker.html"
+  },
+  "components": [
+    {
+      "id": "operator",
+      "type": "external",
+      "label": "Operator",
+      "sublabel": "docker compose up",
+      "pos": [
+        40,
+        280
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "engine",
+      "type": "cloud",
+      "label": "Docker engine",
+      "sublabel": "compose.yaml",
+      "pos": [
+        230,
+        280
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "container",
+      "type": "backend",
+      "label": "web container",
+      "sublabel": "deno serve \u00b7 uid 1993",
+      "pos": [
+        440,
+        280
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "health",
+      "type": "security",
+      "label": "Health check",
+      "sublabel": "deno eval /api/health",
+      "pos": [
+        440,
+        130
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "volume",
+      "type": "database",
+      "label": "ideas-data",
+      "sublabel": "/data/ideas.sqlite3",
+      "pos": [
+        700,
+        280
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "host",
+      "type": "external",
+      "label": "localhost:8000",
+      "sublabel": "visitor browser",
+      "pos": [
+        700,
+        130
+      ],
+      "size": [
+        150,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Compose project",
+      "wraps": [
+        "container",
+        "volume"
+      ],
+      "pad": 30
+    }
+  ],
+  "connections": [
+    {
+      "from": "operator",
+      "to": "engine",
+      "label": "up --build",
+      "labelDy": -28
+    },
+    {
+      "from": "engine",
+      "to": "container",
+      "label": "runs",
+      "labelDy": 24
+    },
+    {
+      "from": "container",
+      "to": "volume",
+      "label": "KV_PATH"
+    },
+    {
+      "from": "health",
+      "to": "container",
+      "label": "probe 5 s",
+      "labelDy": -58
+    },
+    {
+      "from": "container",
+      "to": "host",
+      "label": "8000:8000"
+    }
+  ]
+}

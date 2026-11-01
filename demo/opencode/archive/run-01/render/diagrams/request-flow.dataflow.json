@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Request data flow",
+    "subtitle": "a request crosses five stages; JSON in, JSON or HTML out",
+    "output": "diagrams/request-flow.html"
+  },
+  "stages": [
+    {
+      "label": "Client"
+    },
+    {
+      "label": "Fresh"
+    },
+    {
+      "label": "Hono"
+    },
+    {
+      "label": "Domain"
+    },
+    {
+      "label": "Store"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "form",
+      "type": "external",
+      "label": "form / fetch",
+      "sublabel": "HTML or JSON",
+      "stage": 0,
+      "row": 0
+    },
+    {
+      "id": "catchall",
+      "type": "frontend",
+      "label": "catch-all route",
+      "sublabel": "/api/* \u2192 api.fetch",
+      "stage": 1,
+      "row": 0
+    },
+    {
+      "id": "routes",
+      "type": "backend",
+      "label": "idea routes",
+      "sublabel": "body \u00b7 limit \u00b7 sort",
+      "stage": 2,
+      "row": 0
+    },
+    {
+      "id": "rules",
+      "type": "security",
+      "label": "validate*",
+      "sublabel": "field + reason",
+      "stage": 3,
+      "row": 0
+    },
+    {
+      "id": "ideas",
+      "type": "backend",
+      "label": "idea store",
+      "sublabel": "atomic / list / vote",
+      "stage": 4,
+      "row": 0
+    },
+    {
+      "id": "kv",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "ideas + indexes",
+      "stage": 4,
+      "row": 1
+    }
+  ],
+  "flows": [
+    {
+      "from": "form",
+      "to": "catchall",
+      "label": "Request"
+    },
+    {
+      "from": "catchall",
+      "to": "routes",
+      "label": "path, method"
+    },
+    {
+      "from": "routes",
+      "to": "rules",
+      "label": "parsed input"
+    },
+    {
+      "from": "rules",
+      "to": "routes",
+      "label": "ok | 400",
+      "variant": "dashed"
+    },
+    {
+      "from": "routes",
+      "to": "ideas",
+      "label": "IdeaInput / filters"
+    },
+    {
+      "from": "ideas",
+      "to": "kv",
+      "label": "keys"
+    }
+  ]
+}

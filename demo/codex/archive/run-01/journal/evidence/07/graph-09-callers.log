@@ -1,0 +1,23 @@
+$ ../tools/architecture/ask --root codex/workspace callers app/store/ideas.ts:create
+app/api/app.ts:36  createApi  [lsp call]
+app/api/search_test.ts:24  (module)  [lsp call]
+app/api/votes_test.ts:9  (module)  [lsp call]
+app/routes/index.tsx:27  createHomeHandler  [lsp call]
+app/routes/index_test.tsx:27  (module)  [lsp call]
+app/routes/index_test.tsx:77  (module)  [lsp call]
+app/routes/vote_test.ts:9  (module)  [lsp call]
+app/routes/vote_test.ts:33  (module)  [lsp call]
+app/store/ideas_test.ts:8  (module)  [lsp call]
+app/store/ideas_test.ts:21  (module)  [lsp call]
+app/store/ideas_test.ts:26  (module)  [lsp call]
+app/store/search_test.ts:11  (module)  [lsp call]
+app/store/search_test.ts:47  (module)  [lsp call]
+app/store/search_test.ts:77  (module)  [lsp call]
+app/store/search_test.ts:79  (module)  [lsp call]
+app/store/votes_test.ts:9  (module)  [lsp call]
+app/store/votes_test.ts:22  (module)  [lsp call]
+app/store/votes_test.ts:23  (module)  [lsp call]
+app/store/votes_test.ts:40  (module)  [lsp call]
+app/store/votes_test.ts:68  (module)  [lsp call]
+
+exit=0

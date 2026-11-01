@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Visitor use cases",
+    "subtitle": "Actor outside, use cases inside the board (drawn as architecture: Archify has no use-case type)",
+    "output": "diagrams/usecase-visitor.html"
+  },
+  "components": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitor",
+      "sublabel": "no account",
+      "pos": [40, 280],
+      "size": [130, 60]
+    },
+    {
+      "id": "browse",
+      "type": "frontend",
+      "label": "Browse ideas",
+      "sublabel": "SSR list",
+      "pos": [260, 120],
+      "size": [150, 60]
+    },
+    {
+      "id": "sort",
+      "type": "frontend",
+      "label": "Sort",
+      "sublabel": "newest | votes",
+      "pos": [260, 220],
+      "size": [150, 60]
+    },
+    {
+      "id": "filter",
+      "type": "frontend",
+      "label": "Filter by tag",
+      "sublabel": "index read",
+      "pos": [260, 320],
+      "size": [150, 60]
+    },
+    {
+      "id": "search",
+      "type": "frontend",
+      "label": "Search text",
+      "sublabel": "500 newest",
+      "pos": [260, 420],
+      "size": [150, 60]
+    },
+    {
+      "id": "open",
+      "type": "frontend",
+      "label": "Open an idea",
+      "sublabel": "GET /api/ideas/:id",
+      "pos": [260, 520],
+      "size": [150, 60]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Idea Board",
+      "wraps": ["browse", "sort", "filter", "search", "open"],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    { "from": "visitor", "to": "browse", "label": "opens /" },
+    { "from": "visitor", "to": "sort", "label": "?sort" },
+    { "from": "visitor", "to": "filter", "label": "?tag" },
+    { "from": "visitor", "to": "search", "label": "?q" },
+    { "from": "visitor", "to": "open", "label": "id" }
+  ]
+}

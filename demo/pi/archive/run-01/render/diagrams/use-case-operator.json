@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Operator use cases",
+    "output": "diagrams/use-case-operator.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "operator", "type": "external", "label": "Operator", "sublabel": "laptop or server", "pos": [40, 300], "size": [140, 60] },
+    { "id": "start", "type": "backend", "label": "Start the board", "sublabel": "dev, build or compose", "pos": [290, 150], "size": [180, 64] },
+    { "id": "health", "type": "backend", "label": "Read health", "sublabel": "GET /api/health", "pos": [290, 300], "size": [180, 64] },
+    { "id": "keep", "type": "backend", "label": "Keep the data", "sublabel": "down, then up", "pos": [290, 450], "size": [180, 64] },
+    { "id": "answer", "type": "database", "label": "status ok + version", "sublabel": "JSON", "pos": [550, 300], "size": [170, 60] },
+    { "id": "volume", "type": "database", "label": "named volume ideas", "sublabel": "/data", "pos": [550, 450], "size": [170, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Idea Board runtime", "wraps": ["start", "health", "keep", "answer", "volume"], "pad": 22 }
+  ],
+  "connections": [
+    { "from": "operator", "to": "start", "label": "deno task or compose", "variant": "emphasis" },
+    { "from": "operator", "to": "health", "label": "curl", "variant": "emphasis" },
+    { "from": "operator", "to": "keep", "label": "down and up", "variant": "emphasis" },
+    { "from": "health", "to": "answer", "label": "answers", "variant": "dashed" },
+    { "from": "keep", "to": "volume", "label": "survives", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Three start paths, one contract", "items": ["deno task dev, deno task start and docker compose all serve the same app", "PORT defaults to 8000 everywhere"] },
+    { "dot": "emerald", "title": "Health is cheap", "items": ["The check reads the app's own version and answers JSON", "The container health check runs it with deno eval, no extra tools"] },
+    { "dot": "rose", "title": "Data outlives the process", "items": ["KV_PATH points at the volume in Compose", "down removes the container, not the volume; down -v removes both"] }
+  ]
+}

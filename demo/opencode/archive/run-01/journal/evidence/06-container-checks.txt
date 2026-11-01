@@ -1,0 +1,19 @@
+-- health status:
+healthy
+-- health body:
+{"status":"ok","version":"0.1.0"}
+-- non-root uid:
+1993
+-- create idea:
+Survives restart 01M625BQB29SV06866YCECNVKF
+-- down and up:
+-- health after restart:
+healthy
+-- ideas after restart:
+['Survives restart']
+-- frozen lock probe: deno install --frozen on a modified deno.json exits 1 (build would fail):
+exit=1
+-- compose config valid:
+OK
+-- image user:
+deno

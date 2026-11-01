@@ -1,0 +1,8 @@
+[0m[32mCheck[0m api/app_test.ts
+[0m[1mTS2307 [0m[ERROR]: Cannot find module 'file:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/api/app.ts'.
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/api/app_test.ts[0m:[0m[33m3[0m:[0m[33m27[0m
+
+[0m[1m[31merror[0m: Type checking failed.
+
+  [33minfo:[39m The program failed type-checking, but it still might work correctly.
+  [36mhint:[39m Re-run with [4m--no-check[24m to skip type-checking.

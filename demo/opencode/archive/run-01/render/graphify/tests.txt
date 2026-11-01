@@ -1,0 +1,36 @@
+$ ../tools/architecture/ask --root opencode/workspace untested
+47 source files: 9 imported by a test, 18 named by a test, 8 reached through others, 12 reached by none
+untested: app/main.ts
+untested: app/routes/api/[...path].ts
+untested: app/routes/ideas/[id]/vote.ts
+untested: app/vite.config.ts
+untested: loops/decisions-api/client.sh
+untested: tools/claude-plugins/deno-lsp/scripts/deno-lsp
+untested: tools/claude-plugins/native-lsp/scripts/jdtls-launch
+untested: tools/claude-plugins/native-lsp/scripts/tsc-lsp
+untested: tools/factory-tests
+untested: tools/git-hooks/pre-commit
+untested: tools/git-hooks/pre-push
+untested: tools/release/release
+
+$ ../tools/architecture/ask --root opencode/workspace tests app/store/ideas.ts
+app/api/ideas_test.ts  direct
+app/api/votes_test.ts  direct
+app/routes/index_test.ts  direct
+app/store/ideas_test.ts  direct
+app/store/search_test.ts  direct
+app/store/votes_test.ts  direct
+app/api/app_test.ts  transitive via app/api/app.ts -> app/api/ideas.ts
+app/api/search_test.ts  transitive via app/api/app.ts -> app/api/ideas.ts
+
+$ ../tools/architecture/ask --root opencode/workspace tests app/domain/idea.ts
+app/domain/idea_test.ts  direct
+app/api/app_test.ts  transitive via app/api/app.ts -> app/api/ideas.ts
+app/api/ideas_test.ts  transitive via app/store/ideas.ts
+app/api/search_test.ts  transitive via app/api/app.ts -> app/api/ideas.ts
+app/api/votes_test.ts  transitive via app/store/ideas.ts
+app/domain/form_test.ts  transitive via app/domain/form.ts
+app/routes/index_test.ts  transitive via app/routes/index.tsx
+app/store/ideas_test.ts  transitive via app/store/ideas.ts
+app/store/search_test.ts  transitive via app/store/ideas.ts
+app/store/votes_test.ts  transitive via app/store/ideas.ts

@@ -1,0 +1,14 @@
+[0m[32mTask[0m [0m[36mstart[0m deno serve -A _fresh/server.js
+deno serve: Listening on http://0.0.0.0:8000/
+-- POST valid:
+{"idea":{"id":"01M6243WK99N343M3BTBRWR917","title":"Dark mode","description":"","tags":["ui"],"votes":0,"createdAt":"2026-10-28T20:44:36.841Z"}}
+-- POST invalid:
+{"error":"invalid","field":"title","reason":"too_short"}
+-- POST second idea (id):
+"id":"01M6243WKYJ374ZPDNAJFR3CVS"
+-- GET list limit 5:
+{"ideas":[{"id":"01M6243WKYJ374ZPDNAJFR3CVS","title":"Search by tag","description":"","tags":[],"votes":0,"createdAt":"2026-10-28T20:44:36.862Z"},{"id":"01M6243WK99N343M3BTBRWR917","title":"Dark mode","description":"","tags":["ui"],"votes":0,"createdAt":"2026-10-28T20:44:36.841Z"}],"count":2}
+-- data file:
+ideas.sqlite3
+ideas.sqlite3-shm
+ideas.sqlite3-wal

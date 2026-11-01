@@ -1,0 +1,21 @@
+$ python3 --version
+Python 3.15.2
+exit=0
+
+$ node --version
+v26.12.1
+exit=0
+
+$ deno --version
+deno 2.9.8 (stable, release, aarch64-apple-darwin)
+v8 15.0.245.2-rusty
+typescript 6.0.3
+exit=0
+
+$ git branch --show-current
+develop
+exit=0
+
+Workspace .git exists: False
+
+Workspace app exists: False

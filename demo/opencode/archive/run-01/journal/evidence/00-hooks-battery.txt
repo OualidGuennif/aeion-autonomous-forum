@@ -1,0 +1,16 @@
+PASS guard-path.py    exit=2 'app/.env' :: Blocked by .claude/hooks/guard-path.py: .env holds secrets and is never opened (knowledge/policies/security.md).
+PASS guard-path.py    exit=0 'app/.env.example' :: 
+PASS guard-path.py    exit=0 'app/deno.json' :: 
+PASS guard-path.py    exit=0 'app/data/ideas.sqlite3' :: 
+PASS guard-path.py    exit=2 '**/.env*' :: Blocked by .claude/hooks/guard-path.py: the Grep glob names a secret file, which is never opened (knowledge/policies/security.md).
+PASS guard-bash.py    exit=2 'cat app/.env' :: Blocked by .claude/hooks/guard-bash.py: it reads a secret file (.env). Secrets are never read or printed (to search for the name itself, use the Grep tool).
+PASS guard-bash.py    exit=0 'cd app && deno test -A' :: 
+PASS guard-bash.py    exit=2 'docker compose exec web printenv' :: Blocked by .claude/hooks/guard-bash.py: it prints an environment, which holds keys (to search for a name, use the Grep tool; for prose, write it to a file).
+PASS guard-bash.py    exit=2 "deno eval 'console.log(Deno.env.toObject())'" :: Blocked by .claude/hooks/guard-bash.py: it prints an environment, which holds keys (to search for a name, use the Grep tool; for prose, write it to a file).
+PASS guard-bash.py    exit=0 'head -n 20 app/deno.json' :: 
+info guard-bash.py    exit=0 'cat app/deno.json' :: 
+info guard-bash.py    exit=0 'git init' :: 
+info session-start.py exit=0 'SessionStart' :: Bounded intake: full reads/dumps above 64 KiB or 400 lines are refused. Use targeted Read ranges, limited searches and summaries; see knowledge/policies/bounded-intake.md. git: inactive (plain folder); the branch, review
+info after-edit.py    exit=0 'app/api/app.ts' :: 
+info sign-off.py      exit=0 'Stop' :: 
+hooks battery: 0 failure(s)

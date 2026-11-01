@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "One board, seven parts",
+    "subtitle": "Where does browser behavior meet server authority?",
+    "output": "system.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "viewBox": [
+      1240,
+      570
+    ]
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "HTML and native forms",
+      "pos": [
+        40.0,
+        150
+      ],
+      "size": [
+        164,
+        76
+      ]
+    },
+    {
+      "id": "fresh",
+      "type": "frontend",
+      "label": "Fresh",
+      "sublabel": "SSR and routing",
+      "pos": [
+        284.4,
+        150
+      ],
+      "size": [
+        164,
+        76
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Hono API",
+      "sublabel": "JSON request boundary",
+      "pos": [
+        528.8,
+        150
+      ],
+      "size": [
+        164,
+        76
+      ]
+    },
+    {
+      "id": "store",
+      "type": "backend",
+      "label": "Ideas store",
+      "sublabel": "Atomic KV operations",
+      "pos": [
+        773.1999999999999,
+        150
+      ],
+      "size": [
+        164,
+        76
+      ]
+    },
+    {
+      "id": "kv",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "SQLite persistence",
+      "pos": [
+        1017.5999999999999,
+        150
+      ],
+      "size": [
+        164,
+        76
+      ]
+    },
+    {
+      "id": "islands",
+      "type": "frontend",
+      "label": "Preact islands",
+      "sublabel": "Create, vote, theme",
+      "pos": [
+        284.4,
+        370
+      ],
+      "size": [
+        164,
+        76
+      ]
+    },
+    {
+      "id": "domain",
+      "type": "backend",
+      "label": "Pure domain",
+      "sublabel": "Input and query rules",
+      "pos": [
+        528.8,
+        370
+      ],
+      "size": [
+        164,
+        76
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "browser",
+      "to": "fresh",
+      "label": "HTTP"
+    },
+    {
+      "from": "fresh",
+      "to": "api",
+      "label": "/api/*"
+    },
+    {
+      "from": "api",
+      "to": "store",
+      "label": "Methods"
+    },
+    {
+      "from": "store",
+      "to": "kv",
+      "label": "Read / commit"
+    },
+    {
+      "from": "fresh",
+      "to": "islands",
+      "label": "Hydrate",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "from": "api",
+      "to": "domain",
+      "label": "Validate",
+      "fromSide": "bottom",
+      "toSide": "top"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Progressive enhancement",
+      "items": [
+        "Fresh also calls the store directly for SSR and native forms.",
+        "Islands execute in the browser; API and KV remain on the server."
+      ]
+    }
+  ]
+}

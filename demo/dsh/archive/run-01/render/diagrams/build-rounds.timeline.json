@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "diagram_type": "timeline",
+  "meta": {
+    "title": "The Æion round that built the Idea Board",
+    "subtitle": "Rounds 00-07 of the dsh run, from demo/dsh/journal/.",
+    "output": "diagrams/build-rounds.html",
+    "evidence": "illustrative",
+    "timezone": "Asia/Shanghai",
+    "quality_profile": "showcase"
+  },
+  "layout": {
+    "width": 1400
+  },
+  "lanes": [
+    {
+      "id": "round",
+      "label": "Rounds"
+    },
+    {
+      "id": "gate",
+      "label": "Checks"
+    }
+  ],
+  "events": [
+    {
+      "id": "r00",
+      "at": "2026-10-29T09:00:00+08:00",
+      "title": "00 Setup",
+      "lane": "round",
+      "kind": "default",
+      "detail": "factory checks, hooks battery"
+    },
+    {
+      "id": "r01",
+      "at": "2026-10-29T09:25:00+08:00",
+      "title": "01 Scaffold",
+      "lane": "round",
+      "kind": "change",
+      "detail": "Fresh + Vite + Hono, 6 tests"
+    },
+    {
+      "id": "r02",
+      "at": "2026-10-29T09:50:00+08:00",
+      "title": "02 Ideas API",
+      "lane": "round",
+      "kind": "change",
+      "detail": "Deno KV, 29 tests"
+    },
+    {
+      "id": "r03",
+      "at": "2026-10-29T10:20:00+08:00",
+      "title": "03 Ideas page",
+      "lane": "round",
+      "kind": "change",
+      "detail": "SSR + form island, 39 tests"
+    },
+    {
+      "id": "r04",
+      "at": "2026-10-29T11:00:00+08:00",
+      "title": "04 Votes",
+      "lane": "round",
+      "kind": "change",
+      "detail": "atomic vote, 52 tests"
+    },
+    {
+      "id": "g04",
+      "at": "2026-10-29T11:05:00+08:00",
+      "title": "FB-005",
+      "lane": "gate",
+      "kind": "alert",
+      "detail": "retry cap vs 25 concurrent votes"
+    },
+    {
+      "id": "r05",
+      "at": "2026-10-29T12:30:00+08:00",
+      "title": "05 Tags and search",
+      "lane": "round",
+      "kind": "change",
+      "detail": "tag index, 500-idea bound, 79 tests"
+    },
+    {
+      "id": "g05",
+      "at": "2026-10-29T12:35:00+08:00",
+      "title": "FB-006, FB-007",
+      "lane": "gate",
+      "kind": "alert",
+      "detail": "handover sandbox, log fingerprint"
+    },
+    {
+      "id": "r06",
+      "at": "2026-10-29T13:30:00+08:00",
+      "title": "06 Docker",
+      "lane": "round",
+      "kind": "change",
+      "detail": "image, compose, volume, health"
+    },
+    {
+      "id": "g06",
+      "at": "2026-10-29T13:35:00+08:00",
+      "title": "FB-008",
+      "lane": "gate",
+      "kind": "alert",
+      "detail": "~/.docker outside the sandbox"
+    },
+    {
+      "id": "r07",
+      "at": "2026-10-29T14:30:00+08:00",
+      "title": "07 Architecture",
+      "lane": "round",
+      "kind": "recovery",
+      "detail": "Graphify use cases, Archify gallery"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Every round leaves evidence",
+      "items": [
+        "A journal with the real commands and output",
+        "The test count only goes up"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Frictions become feedback",
+      "items": [
+        "Eight FB files, each with evidence and a proposed fix",
+        "None of them stops the next round"
+      ]
+    }
+  ]
+}

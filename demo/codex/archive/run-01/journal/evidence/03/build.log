@@ -1,0 +1,28 @@
+$ deno task build
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 26 modules transformed.
+rendering chunks...
+computing gzip size...
+_fresh/client/.vite/manifest.json                            1.41 kB │ gzip:  0.35 kB
+_fresh/client/assets/client-entry-CNBVOGh7.css               3.54 kB │ gzip:  1.25 kB
+_fresh/client/assets/jsxRuntime.module-BCl3Xay8.js           0.42 kB │ gzip:  0.30 kB
+_fresh/client/assets/fresh-island__ThemeSelect-BQJSwbdJ.js   0.44 kB │ gzip:  0.28 kB
+_fresh/client/assets/fresh-island__NewIdeaForm-CWLpcA73.js   1.88 kB │ gzip:  0.98 kB
+_fresh/client/assets/hooks.module-B53GdFI2.js                2.66 kB │ gzip:  1.20 kB
+_fresh/client/assets/preact.module-DADv7Q-6.js              11.03 kB │ gzip:  4.66 kB
+_fresh/client/assets/client-entry-Cpl7Nsrb.js               32.94 kB │ gzip: 12.56 kB
+✓ built in 755ms
+vite v7.3.7 building ssr environment for production...
+transforming...
+✓ 223 modules transformed.
+rendering chunks...
+_fresh/server/.vite/manifest.json                             0.83 kB
+_fresh/server/assets/_fresh-route___index-DHClNLEY.mjs        3.22 kB
+_fresh/server/assets/kv-VeQsyoIc.mjs                          5.28 kB
+_fresh/server/assets/_fresh-route___api_path_-CnmtY7Mi.mjs   59.39 kB
+_fresh/server/server-entry.mjs                              185.88 kB
+✓ built in 1.39s
+Task build vite build
+
+exit=0

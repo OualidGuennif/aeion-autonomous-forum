@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Use case: contributor",
+    "output": "diagrams/use-case-contributor.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1120,
+      640
+    ]
+  },
+  "components": [
+    {
+      "id": "actor",
+      "type": "external",
+      "label": "Contributor",
+      "sublabel": "proposes ideas",
+      "pos": [
+        40,
+        250
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "create",
+      "type": "backend",
+      "label": "Create an idea",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        90
+      ],
+      "size": [
+        190,
+        70
+      ]
+    },
+    {
+      "id": "refused",
+      "type": "backend",
+      "label": "See the reason",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        210
+      ],
+      "size": [
+        190,
+        70
+      ]
+    },
+    {
+      "id": "keep",
+      "type": "backend",
+      "label": "Keep the values",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        330
+      ],
+      "size": [
+        190,
+        70
+      ]
+    },
+    {
+      "id": "vote",
+      "type": "backend",
+      "label": "Vote for an idea",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        450
+      ],
+      "size": [
+        190,
+        70
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Idea Board (system boundary)",
+      "wraps": [
+        "create",
+        "refused",
+        "keep",
+        "vote"
+      ],
+      "pad": 30
+    }
+  ],
+  "connections": [
+    {
+      "id": "actor-create",
+      "from": "actor",
+      "to": "create",
+      "label": "submits the form"
+    },
+    {
+      "id": "actor-refused",
+      "from": "actor",
+      "to": "refused",
+      "label": "reads the error"
+    },
+    {
+      "id": "actor-keep",
+      "from": "actor",
+      "to": "keep",
+      "label": "corrects one field"
+    },
+    {
+      "id": "actor-vote",
+      "from": "actor",
+      "to": "vote",
+      "label": "clicks Vote"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "One validator",
+      "items": [
+        "The form and POST /api/ideas refuse the same inputs",
+        "The reason code is the same in both paths"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Nothing lost",
+      "items": [
+        "A refused form keeps title, description and tags",
+        "The error is linked to its field"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Eight rounds, one small board",
+    "subtitle": "Which round built each capability?",
+    "output": "rounds.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none"
+  },
+  "lanes": [
+    {
+      "id": "build",
+      "label": "Foundation and page"
+    },
+    {
+      "id": "finish",
+      "label": "Behavior and operation"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "r00",
+      "lane": "build",
+      "col": 0,
+      "type": "backend",
+      "label": "00 \u00b7 Qualify",
+      "sublabel": "Hooks and factory checks",
+      "width": 200
+    },
+    {
+      "id": "r01",
+      "lane": "build",
+      "col": 1,
+      "type": "backend",
+      "label": "01 \u00b7 Scaffold",
+      "sublabel": "Fresh + Hono",
+      "width": 200
+    },
+    {
+      "id": "r02",
+      "lane": "build",
+      "col": 2,
+      "type": "backend",
+      "label": "02 \u00b7 Persist",
+      "sublabel": "API + KV",
+      "width": 200
+    },
+    {
+      "id": "r03",
+      "lane": "build",
+      "col": 3,
+      "type": "backend",
+      "label": "03 \u00b7 Render",
+      "sublabel": "SSR + create island",
+      "width": 200
+    },
+    {
+      "id": "r04",
+      "lane": "finish",
+      "col": 0,
+      "type": "backend",
+      "label": "04 \u00b7 Vote",
+      "sublabel": "Atomic vote index",
+      "width": 200
+    },
+    {
+      "id": "r05",
+      "lane": "finish",
+      "col": 1,
+      "type": "backend",
+      "label": "05 \u00b7 Discover",
+      "sublabel": "Tag index + search",
+      "width": 200
+    },
+    {
+      "id": "r06",
+      "lane": "finish",
+      "col": 2,
+      "type": "backend",
+      "label": "06 \u00b7 Operate",
+      "sublabel": "Docker + recovery",
+      "width": 200
+    },
+    {
+      "id": "r07",
+      "lane": "finish",
+      "col": 3,
+      "type": "backend",
+      "label": "07 \u00b7 Explain",
+      "sublabel": "Graph + diagrams",
+      "width": 200
+    }
+  ],
+  "edges": [
+    {
+      "from": "r00",
+      "to": "r01",
+      "label": "",
+      "role": "main"
+    },
+    {
+      "from": "r01",
+      "to": "r02",
+      "label": "",
+      "role": "main"
+    },
+    {
+      "from": "r02",
+      "to": "r03",
+      "label": "",
+      "role": "main"
+    },
+    {
+      "from": "r03",
+      "to": "r04",
+      "label": "Continue 04",
+      "role": "branch"
+    },
+    {
+      "from": "r04",
+      "to": "r05",
+      "label": "",
+      "role": "main"
+    },
+    {
+      "from": "r05",
+      "to": "r06",
+      "label": "",
+      "role": "main"
+    },
+    {
+      "from": "r06",
+      "to": "r07",
+      "label": "",
+      "role": "main"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Local experiment",
+      "items": [
+        "Each round has a journal, retained acceptance output and a local commit.",
+        "The workspace is git-ignored; no base-factory changes or pushes are part of this run."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+[0m[32mTask[0m [0m[36mstart[0m deno serve -A _fresh/server.js
+deno serve: Listening on http://0.0.0.0:8000/
+id: 01M624XQSDW1FP7SNA6YKN2HNV
+votes: 3
+top by votes: Vote me
+page vote form route (expect 303 + votes 4):
+303
+4

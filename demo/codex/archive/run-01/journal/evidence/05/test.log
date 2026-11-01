@@ -1,0 +1,77 @@
+$ deno test -A
+running 3 tests from ./api/app_test.ts
+health returns its version and JSON content type ... ok (5ms)
+unknown API route is a JSON 404 ... ok (249µs)
+wrong health method is a JSON 405 ... ok (169µs)
+running 8 tests from ./api/ideas_test.ts
+ideas API creates, lists and reads a persisted idea ... ok (12ms)
+invalid creation requests write nothing and use stable JSON errors ... ok (1ms)
+limit "0" is refused ... ok (669µs)
+limit "51" is refused ... ok (660µs)
+limit "abc" is refused ... ok (608µs)
+limit "1x" is refused ... ok (865µs)
+limit "1.5" is refused ... ok (1ms)
+limit "" is refused ... ok (1ms)
+running 4 tests from ./api/search_test.ts
+search API refuses tag/bad_tag: tag=Bad_Tag ... ok (6ms)
+search API refuses tag/bad_tag: tag= ... ok (762µs)
+search API refuses q/too_long: q=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ... ok (617µs)
+search API combines tag, text and sorting and clears whitespace q ... ok (1ms)
+running 2 tests from ./api/votes_test.ts
+vote API increments votes and returns missing and invalid sort errors ... ok (6ms)
+vote API maps busy errors to JSON 503 ... ok (1ms)
+running 1 test from ./domain/form_test.ts
+form tags are split trimmed lowercased and empties dropped ... ok (628µs)
+running 15 tests from ./domain/idea_test.ts
+idea validation rejects tags/bad_tag: {"title":"valid","tags":null} ... ok (382µs)
+idea validation rejects title/required: {} ... ok (40µs)
+idea validation rejects title/required: {"title":42} ... ok (24µs)
+idea validation rejects title/too_short: {"title":"x","extra":true} ... ok (19µs)
+idea validation rejects title/too_long: {"title":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"} ... ok (18µs)
+idea validation rejects description/too_long: {"title":"valid","description":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"} ... ok (17µs)
+idea validation rejects description/bad_type: {"title":"valid","description":null} ... ok (21µs)
+idea validation rejects tags/too_many: {"title":"valid","tags":["a","b","c","d","e","f"]} ... ok (12µs)
+idea validation rejects tags/bad_tag: {"title":"valid","tags":["Bad_Tag"]} ... ok (43µs)
+idea validation rejects tags/bad_tag: {"title":"valid","tags":"ui"} ... ok (20µs)
+idea validation rejects tags/duplicate: {"title":"valid","tags":["ui","ui"]} ... ok (50µs)
+idea validation rejects votes/unknown_field: {"title":"valid","votes":100} ... ok (21µs)
+idea validation rejects body/bad_type: null ... ok (7µs)
+idea validation trims text and supplies defaults ... ok (37µs)
+idea validation counts Unicode characters at the title boundary ... ok (21µs)
+running 5 tests from ./routes/index_test.tsx
+SSR empty state and labelled form are available without JavaScript ... ok (7ms)
+SSR renders idea details and escapes a script title ... ok (1ms)
+HTML form redirects after valid submission ... ok (1ms)
+invalid HTML form keeps values and associates the error with the field ... ok (771µs)
+page escapes filter text and renders linked tags with retained sort ... ok (1ms)
+running 2 tests from ./routes/vote_test.ts
+native vote redirects while retaining sort and refuses missing ideas ... ok (7ms)
+native vote preserves validated text and tag filters ... ok (1ms)
+running 2 tests from ./store/ideas_test.ts
+store creates and reads an idea with a ULID and zero votes ... ok (3ms)
+store lists newest first with the requested limit ... ok (1ms)
+running 3 tests from ./store/search_test.ts
+tag and literal text filters combine with both sorts ... ok (4ms)
+tag-only filtering reads the tag index without a primary scan ... ok (584µs)
+search is bounded to the 500 newest globally even with tag and votes sort ... ok (23ms)
+running 4 tests from ./store/votes_test.ts
+25 concurrent votes are preserved and leave one index key ... ok (111ms)
+missing vote writes nothing and votes sort breaks ties by newest ... ok (1ms)
+vote stops after ten failed commits with a busy error ... ok (238ms)
+startup backfills earlier ideas idempotently ... ok (2ms)
+
+ok | 49 passed | 0 failed (849ms)
+
+Check api/app_test.ts
+Check api/ideas_test.ts
+Check api/search_test.ts
+Check api/votes_test.ts
+Check domain/form_test.ts
+Check domain/idea_test.ts
+Check routes/index_test.tsx
+Check routes/vote_test.ts
+Check store/ideas_test.ts
+Check store/search_test.ts
+Check store/votes_test.ts
+
+exit=0

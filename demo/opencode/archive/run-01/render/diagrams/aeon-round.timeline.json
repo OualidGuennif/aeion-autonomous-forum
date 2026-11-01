@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "diagram_type": "timeline",
+  "meta": {
+    "title": "The \u00c6ion round that built it",
+    "subtitle": "one day, seven rounds, eight commits, one harness",
+    "output": "diagrams/aeon-round.html",
+    "evidence": "observed"
+  },
+  "lanes": [
+    {
+      "id": "build",
+      "label": "Build"
+    },
+    {
+      "id": "check",
+      "label": "Checks"
+    }
+  ],
+  "events": [
+    {
+      "id": "r00",
+      "at": "2026-10-28T20:30:00Z",
+      "title": "Round 00 \u2014 qualify",
+      "detail": "factory-tests 736, hook battery 0 failures, live guard",
+      "lane": "build"
+    },
+    {
+      "id": "r01",
+      "at": "2026-10-28T20:38:00Z",
+      "title": "Round 01 \u2014 scaffold",
+      "detail": "Fresh 2.3.3 + Vite 7.3.7 + Hono, health/404/405, 3 tests",
+      "lane": "build"
+    },
+    {
+      "id": "r02",
+      "at": "2026-10-28T20:44:00Z",
+      "title": "Round 02 \u2014 ideas API",
+      "detail": "validation, KV store, monotonic ULIDs, 24 tests",
+      "lane": "build"
+    },
+    {
+      "id": "r03",
+      "at": "2026-10-28T20:49:00Z",
+      "title": "Round 03 \u2014 page",
+      "detail": "SSR list, PRG form, NewIdeaForm island, 31 tests",
+      "lane": "build"
+    },
+    {
+      "id": "r04",
+      "at": "2026-10-28T20:55:00Z",
+      "title": "Round 04 \u2014 votes",
+      "detail": "atomic votes, per-id chain, 25/25 concurrent, 42 tests",
+      "lane": "build"
+    },
+    {
+      "id": "r05",
+      "at": "2026-10-28T21:03:00Z",
+      "title": "Round 05 \u2014 filters",
+      "detail": "tag index, literal search, 500 bound, 51 tests",
+      "lane": "build"
+    },
+    {
+      "id": "c1",
+      "at": "2026-10-28T21:10:00Z",
+      "title": "51 tests green",
+      "detail": "fmt, lint, check, build, smoke",
+      "lane": "check"
+    },
+    {
+      "id": "r06",
+      "at": "2026-10-28T21:15:00Z",
+      "title": "Round 06 \u2014 Docker",
+      "detail": "denoland/deno 2.9.8, non-root, named volume, 5 checks",
+      "lane": "build"
+    },
+    {
+      "id": "c2",
+      "at": "2026-10-28T21:22:00Z",
+      "title": "Container healthy",
+      "detail": "restart keeps the idea; uid 1993",
+      "lane": "check"
+    },
+    {
+      "id": "r07",
+      "at": "2026-10-28T21:25:00Z",
+      "title": "Round 07 \u2014 architecture",
+      "detail": "5 graph answers, 14 diagrams, this gallery",
+      "lane": "build"
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "diagram_type": "erd",
+  "meta": {
+    "title": "Three key families, one transaction",
+    "subtitle": "How does KV support order and tags?",
+    "output": "keys.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "viewBox": [
+      1140,
+      480
+    ]
+  },
+  "entities": [
+    {
+      "id": "idea",
+      "label": "ideas",
+      "tag": "Primary KV family",
+      "row": 0,
+      "col": 1,
+      "attributes": [
+        {
+          "name": "id",
+          "type": "ULID",
+          "key": "pk"
+        },
+        {
+          "name": "title / description",
+          "type": "string"
+        },
+        {
+          "name": "tags",
+          "type": "string[]"
+        },
+        {
+          "name": "votes",
+          "type": "number"
+        },
+        {
+          "name": "createdAt",
+          "type": "ISO string"
+        }
+      ]
+    },
+    {
+      "id": "votes",
+      "label": "ideas_by_votes",
+      "tag": "Sorted index",
+      "row": 0,
+      "col": 0,
+      "attributes": [
+        {
+          "name": "votes + id",
+          "type": "key tuple",
+          "key": "pk"
+        },
+        {
+          "name": "value",
+          "type": "idea ID"
+        }
+      ]
+    },
+    {
+      "id": "tags",
+      "label": "ideas_by_tag",
+      "tag": "Membership index",
+      "row": 0,
+      "col": 2,
+      "attributes": [
+        {
+          "name": "tag + id",
+          "type": "key tuple",
+          "key": "pk"
+        },
+        {
+          "name": "value",
+          "type": "idea ID"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "vote-record",
+      "from": "votes",
+      "to": "idea",
+      "label": "Lookup",
+      "fromCardinality": "one",
+      "toCardinality": "one"
+    },
+    {
+      "id": "tag-record",
+      "from": "tags",
+      "to": "idea",
+      "label": "Lookup",
+      "fromCardinality": "many",
+      "toCardinality": "one"
+    }
+  ],
+  "layout": {
+    "mode": "grid",
+    "origin": [
+      50,
+      100
+    ],
+    "gapX": 110,
+    "gapY": 100,
+    "entityW": 260
+  },
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Conceptual model, not SQL",
+      "items": [
+        "Names denote KV key prefixes. Index values are idea IDs, with no SQL foreign keys.",
+        "Create and vote keep the affected families atomic; startup backfills earlier records."
+      ]
+    }
+  ]
+}

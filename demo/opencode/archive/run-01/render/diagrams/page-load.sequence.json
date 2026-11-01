@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Page load (SSR)",
+    "subtitle": "GET / renders the list on the server; islands hydrate after",
+    "output": "diagrams/page-load.html"
+  },
+  "participants": [
+    { "id": "browser", "type": "external", "label": "Browser" },
+    { "id": "fresh", "type": "frontend", "label": "Fresh route" },
+    { "id": "store", "type": "backend", "label": "Idea store" },
+    { "id": "kv", "type": "database", "label": "Deno KV" }
+  ],
+  "messages": [
+    { "from": "browser", "to": "fresh", "y": 160, "label": "GET /" },
+    { "from": "fresh", "to": "store", "y": 210, "label": "handleGet(store)" },
+    { "from": "store", "to": "kv", "y": 260, "label": "list(20, recent)" },
+    { "from": "kv", "to": "store", "y": 310, "label": "20 ideas", "variant": "return" },
+    { "from": "fresh", "to": "browser", "y": 370, "label": "HTML: h1, list, form", "variant": "return" },
+    { "from": "browser", "to": "fresh", "y": 430, "label": "islands hydrate", "variant": "dashed" }
+  ]
+}

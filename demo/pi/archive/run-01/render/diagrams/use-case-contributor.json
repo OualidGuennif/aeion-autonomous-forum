@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Contributor use cases",
+    "output": "diagrams/use-case-contributor.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "contributor", "type": "external", "label": "Contributor", "sublabel": "any visitor", "pos": [40, 260], "size": [140, 60] },
+    { "id": "propose", "type": "backend", "label": "Propose an idea", "sublabel": "title, description, tags", "pos": [300, 150], "size": [190, 64] },
+    { "id": "vote", "type": "backend", "label": "Vote for an idea", "sublabel": "one click, no account", "pos": [300, 350], "size": [190, 64] },
+    { "id": "refused", "type": "security", "label": "See the reason", "sublabel": "field + reason inline", "pos": [560, 150], "size": [170, 64], "tag": "same rules as the API" },
+    { "id": "count", "type": "backend", "label": "Count goes up", "sublabel": "votes + 1", "pos": [560, 350], "size": [170, 64], "tag": "transactional" }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Idea Board", "wraps": ["propose", "vote", "refused", "count"], "pad": 22 }
+  ],
+  "connections": [
+    { "from": "contributor", "to": "propose", "label": "fill the form", "variant": "emphasis" },
+    { "from": "contributor", "to": "vote", "label": "click Vote", "variant": "emphasis" },
+    { "from": "propose", "to": "refused", "label": "invalid input", "variant": "dashed" },
+    { "from": "vote", "to": "count", "label": "accepted vote", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Writing is open too", "items": ["There is no sign-in; the playground trusts its visitors", "The same validator guards the form and POST /api/ideas"] },
+    { "dot": "rose", "title": "Refusals are specific", "items": ["A bad field comes back as field plus reason", "The form keeps what was typed and links the error to the control"] },
+    { "dot": "emerald", "title": "Votes are durable", "items": ["A vote is an optimistic transaction with a retry", "The count and the vote index move together"] }
+  ]
+}

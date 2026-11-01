@@ -1,0 +1,17 @@
+nodes: 1415
+edges: 2470
+files: 207
+inferred calls dropped (no import between the files): 4
+inventory only (no extractor): 32
+code files without a symbol: 8
+toolchain imports: deno info
+unresolved Spec: lines: 0
+unresolved frontmatter sources: 0
+  no symbol: .claude/hooks/context-budget.py
+  no symbol: app/client.ts
+  no symbol: app/domain/form_test.ts
+  no symbol: app/domain/idea_test.ts
+  no symbol: app/routes/_app.tsx
+  no symbol: tools/agents/run
+  no symbol: tools/architecture/setup
+  no symbol: tools/context/run

@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Idea Board system overview",
+    "subtitle": "Browser \u2192 Fresh SSR + islands \u2192 Hono /api \u2192 domain rules \u2192 Deno KV",
+    "output": "diagrams/system.html"
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Visitor browser",
+      "sublabel": "HTML form \u00b7 islands",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "fresh",
+      "type": "frontend",
+      "label": "Fresh 2 (Vite)",
+      "sublabel": "SSR routes \u00b7 static files",
+      "pos": [
+        250,
+        300
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "islands",
+      "type": "frontend",
+      "label": "Islands",
+      "sublabel": "NewIdeaForm \u00b7 VoteButton",
+      "pos": [
+        250,
+        150
+      ],
+      "size": [
+        160,
+        60
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Hono /api",
+      "sublabel": "health \u00b7 ideas \u00b7 votes",
+      "pos": [
+        480,
+        300
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "domain",
+      "type": "security",
+      "label": "Domain rules",
+      "sublabel": "pure validation",
+      "pos": [
+        480,
+        150
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "tag": "no HTTP"
+    },
+    {
+      "id": "store",
+      "type": "backend",
+      "label": "Idea store",
+      "sublabel": "atomic \u00b7 vote chain",
+      "pos": [
+        700,
+        300
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "kv",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "ideas \u00b7 votes \u00b7 tags",
+      "pos": [
+        920,
+        300
+      ],
+      "size": [
+        150,
+        60
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Idea Board server (one Deno process)",
+      "wraps": [
+        "fresh",
+        "api",
+        "domain",
+        "store",
+        "kv"
+      ],
+      "pad": 28
+    }
+  ],
+  "connections": [
+    {
+      "from": "browser",
+      "to": "fresh",
+      "label": "GET / \u00b7 form POST",
+      "labelDy": 48
+    },
+    {
+      "from": "browser",
+      "to": "islands",
+      "label": "hydrate"
+    },
+    {
+      "from": "fresh",
+      "to": "api",
+      "label": "one catch-all"
+    },
+    {
+      "from": "islands",
+      "to": "api",
+      "label": "fetch /api/ideas"
+    },
+    {
+      "from": "api",
+      "to": "domain",
+      "label": "validate",
+      "labelDx": 96
+    },
+    {
+      "from": "api",
+      "to": "store",
+      "label": "create \u00b7 list \u00b7 vote",
+      "labelDy": 54
+    },
+    {
+      "from": "store",
+      "to": "kv",
+      "label": "atomic()"
+    }
+  ]
+}

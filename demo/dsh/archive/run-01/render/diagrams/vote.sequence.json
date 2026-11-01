@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Vote (optimistic transaction with retry)",
+    "output": "diagrams/vote.html",
+    "viewBox": [
+      1080,
+      580
+    ],
+    "column_fit": "spread",
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "person",
+      "type": "external",
+      "label": "Visitor",
+      "sublabel": "clicks Vote"
+    },
+    {
+      "id": "island",
+      "type": "frontend",
+      "label": "VoteButton",
+      "sublabel": "island"
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Hono API",
+      "sublabel": "POST /ideas/:id/vote"
+    },
+    {
+      "id": "store",
+      "type": "backend",
+      "label": "Idea store",
+      "sublabel": "vote(id)"
+    },
+    {
+      "id": "kv",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "versionstamp check"
+    }
+  ],
+  "messages": [
+    {
+      "id": "click",
+      "from": "person",
+      "to": "island",
+      "y": 165,
+      "label": "Vote",
+      "variant": "default"
+    },
+    {
+      "id": "post",
+      "from": "island",
+      "to": "api",
+      "y": 195,
+      "label": "POST /ideas/:id/vote",
+      "variant": "emphasis"
+    },
+    {
+      "id": "vote",
+      "from": "api",
+      "to": "store",
+      "y": 225,
+      "label": "vote(id)",
+      "variant": "default"
+    },
+    {
+      "id": "read",
+      "from": "store",
+      "to": "kv",
+      "y": 255,
+      "label": "get idea + versionstamp",
+      "variant": "default"
+    },
+    {
+      "id": "commit",
+      "from": "store",
+      "to": "kv",
+      "y": 285,
+      "label": "atomic check + set idea + move index",
+      "variant": "emphasis"
+    },
+    {
+      "id": "conflict",
+      "from": "kv",
+      "to": "store",
+      "y": 315,
+      "label": "conflict: retry (at most 10)",
+      "variant": "security"
+    },
+    {
+      "id": "idea",
+      "from": "store",
+      "to": "api",
+      "y": 355,
+      "label": "Idea",
+      "variant": "return"
+    },
+    {
+      "id": "ok",
+      "from": "api",
+      "to": "island",
+      "y": 385,
+      "label": "200 {idea}",
+      "variant": "return"
+    },
+    {
+      "id": "count",
+      "from": "island",
+      "to": "person",
+      "y": 415,
+      "label": "count + 1",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "island",
+      "from": 160,
+      "to": 425,
+      "type": "frontend"
+    },
+    {
+      "participant": "api",
+      "from": 190,
+      "to": 400,
+      "type": "backend"
+    },
+    {
+      "participant": "store",
+      "from": 220,
+      "to": 370,
+      "type": "backend"
+    },
+    {
+      "participant": "kv",
+      "from": 250,
+      "to": 330,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "No lost vote",
+      "items": [
+        "The check is on the idea's versionstamp",
+        "A stale read retries instead of overwriting"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Bounded",
+      "items": [
+        "Votes for one id are serialized in the process",
+        "Ten conflicts answer 503 busy"
+      ]
+    }
+  ]
+}

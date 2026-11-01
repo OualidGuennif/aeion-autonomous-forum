@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Use case: visitor",
+    "output": "diagrams/use-case-visitor.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1120,
+      640
+    ]
+  },
+  "components": [
+    {
+      "id": "actor",
+      "type": "external",
+      "label": "Visitor",
+      "sublabel": "reads the board",
+      "pos": [
+        40,
+        250
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "browse",
+      "type": "backend",
+      "label": "Browse ideas",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        90
+      ],
+      "size": [
+        190,
+        70
+      ]
+    },
+    {
+      "id": "filter",
+      "type": "backend",
+      "label": "Filter by tag",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        210
+      ],
+      "size": [
+        190,
+        70
+      ]
+    },
+    {
+      "id": "search",
+      "type": "backend",
+      "label": "Search text",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        330
+      ],
+      "size": [
+        190,
+        70
+      ]
+    },
+    {
+      "id": "vote",
+      "type": "backend",
+      "label": "Vote for an idea",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        450
+      ],
+      "size": [
+        190,
+        70
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Idea Board (system boundary)",
+      "wraps": [
+        "browse",
+        "filter",
+        "search",
+        "vote"
+      ],
+      "pad": 30
+    }
+  ],
+  "connections": [
+    {
+      "id": "actor-browse",
+      "from": "actor",
+      "to": "browse",
+      "label": "opens /"
+    },
+    {
+      "id": "actor-filter",
+      "from": "actor",
+      "to": "filter",
+      "label": "clicks a tag"
+    },
+    {
+      "id": "actor-search",
+      "from": "actor",
+      "to": "search",
+      "label": "types a query"
+    },
+    {
+      "id": "actor-vote",
+      "from": "actor",
+      "to": "vote",
+      "label": "clicks Vote"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "No account",
+      "items": [
+        "A visitor needs no sign-in",
+        "One vote per click, no identity"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "No JavaScript needed",
+      "items": [
+        "Every use case works from plain HTML forms and links",
+        "The islands only remove a reload"
+      ]
+    }
+  ]
+}

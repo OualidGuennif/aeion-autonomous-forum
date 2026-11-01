@@ -1,0 +1,10 @@
+Check routes/api/handler_test.ts
+running 1 test from ./routes/api/handler_test.ts
+API startup failure returns JSON without storage details ...
+------- output -------
+API storage initialization failed
+----- output end -----
+API startup failure returns JSON without storage details ... ok (5ms)
+
+ok | 1 passed | 0 failed (7ms)
+

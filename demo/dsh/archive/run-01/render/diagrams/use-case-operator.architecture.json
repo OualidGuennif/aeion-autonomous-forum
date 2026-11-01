@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Use case: operator",
+    "output": "diagrams/use-case-operator.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1120,
+      640
+    ]
+  },
+  "components": [
+    {
+      "id": "actor",
+      "type": "external",
+      "label": "Operator",
+      "sublabel": "runs the board",
+      "pos": [
+        40,
+        250
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "start",
+      "type": "backend",
+      "label": "Start the board",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        90
+      ],
+      "size": [
+        190,
+        70
+      ]
+    },
+    {
+      "id": "health",
+      "type": "backend",
+      "label": "Check health",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        210
+      ],
+      "size": [
+        190,
+        70
+      ]
+    },
+    {
+      "id": "keep",
+      "type": "backend",
+      "label": "Keep the data",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        330
+      ],
+      "size": [
+        190,
+        70
+      ]
+    },
+    {
+      "id": "clean",
+      "type": "backend",
+      "label": "Stop and clean up",
+      "sublabel": "use case",
+      "pos": [
+        300,
+        450
+      ],
+      "size": [
+        190,
+        70
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Idea Board (system boundary)",
+      "wraps": [
+        "start",
+        "health",
+        "keep",
+        "clean"
+      ],
+      "pad": 30
+    }
+  ],
+  "connections": [
+    {
+      "id": "actor-start",
+      "from": "actor",
+      "to": "start",
+      "label": "docker compose up"
+    },
+    {
+      "id": "actor-health",
+      "from": "actor",
+      "to": "health",
+      "label": "reads /api/health"
+    },
+    {
+      "id": "actor-keep",
+      "from": "actor",
+      "to": "keep",
+      "label": "restarts the service"
+    },
+    {
+      "id": "actor-clean",
+      "from": "actor",
+      "to": "clean",
+      "label": "down, down -v"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "One command",
+      "items": [
+        "up -d --build builds and starts web",
+        "The health check uses the app's own Deno runtime"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Data is explicit",
+      "items": [
+        "down keeps the named volume",
+        "down -v is the only command that deletes ideas"
+      ]
+    }
+  ]
+}

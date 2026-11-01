@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Filter and search",
+    "subtitle": "tag reads the index, q scans at most 500 newest, filters AND with the sort",
+    "output": "diagrams/search.html"
+  },
+  "participants": [
+    { "id": "visitor", "type": "external", "label": "Visitor" },
+    { "id": "page", "type": "frontend", "label": "GET / or /api/ideas" },
+    { "id": "domain", "type": "security", "label": "validateFilters" },
+    { "id": "store", "type": "backend", "label": "store.search" },
+    { "id": "kv", "type": "database", "label": "Deno KV" }
+  ],
+  "messages": [
+    { "from": "visitor", "to": "page", "y": 160, "label": "?tag=ui&q=dark&sort=votes" },
+    { "from": "page", "to": "domain", "y": 205, "label": "tag / q rules" },
+    { "from": "domain", "to": "page", "y": 250, "label": "ok | bad_tag, too_long", "variant": "return" },
+    { "from": "page", "to": "store", "y": 295, "label": "search({ tag, q, sort, limit })" },
+    { "from": "store", "to": "kv", "y": 340, "label": "tag index | 500 newest" },
+    { "from": "kv", "to": "store", "y": 385, "label": "matching ideas", "variant": "return" },
+    { "from": "store", "to": "page", "y": 430, "label": "filtered, sorted, limited", "variant": "return" },
+    { "from": "page", "to": "visitor", "y": 475, "label": "JSON | HTML with Clear filters", "variant": "return" }
+  ]
+}

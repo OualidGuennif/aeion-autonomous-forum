@@ -1,0 +1,43 @@
+Check codex/workspace/app/routes/api/handler_test.ts
+running 1 test from ./codex/workspace/app/routes/api/handler_test.ts
+API startup failure returns JSON without storage details ...
+------- output -------
+Error: unable to open database file: /private/var/folders/71/5ylk1yz559s8pdrf5r4t71sw0000gn/T/c3330a7c218dbbe7
+    at async Object.openKv (ext:deno_kv/01_db.ts:1:998)
+    at async handler (file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/routes/api/[...path].ts:7:22)
+    at async chain (https://jsr.io/@fresh/core/2.3.3/src/middlewares/mod.ts:117:24)
+    at async segmentMiddleware (https://jsr.io/@fresh/core/2.3.3/src/segments.ts:117:16)
+    at async chain (https://jsr.io/@fresh/core/2.3.3/src/middlewares/mod.ts:117:24)
+    at async segmentMiddleware (https://jsr.io/@fresh/core/2.3.3/src/segments.ts:117:16)
+    at async chain (https://jsr.io/@fresh/core/2.3.3/src/middlewares/mod.ts:117:24)
+    at async segmentMiddleware (https://jsr.io/@fresh/core/2.3.3/src/segments.ts:117:16)
+    at async chain (https://jsr.io/@fresh/core/2.3.3/src/middlewares/mod.ts:117:24)
+    at async https://jsr.io/@fresh/core/2.3.3/src/middlewares/mod.ts:147:16
+----- output end -----
+API startup failure returns JSON without storage details ... FAILED (15ms)
+
+ ERRORS 
+
+API startup failure returns JSON without storage details => ./codex/workspace/app/routes/api/handler_test.ts:6:6
+error: AssertionError: Values are not equal.
+
+
+    [Diff] Actual / Expected
+
+
+-   text/plain
++   application/json
+
+
+  throw new AssertionError(message);
+        ^
+    at assertEquals (https://jsr.io/@std/assert/1.0.19/equals.ts:67:9)
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/routes/api/handler_test.ts:17:5
+
+ FAILURES 
+
+API startup failure returns JSON without storage details => ./codex/workspace/app/routes/api/handler_test.ts:6:6
+
+FAILED | 0 passed | 1 failed (17ms)
+
+error: Test failed

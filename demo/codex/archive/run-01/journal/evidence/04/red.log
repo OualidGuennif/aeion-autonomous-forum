@@ -1,0 +1,70 @@
+Check routes/vote_test.ts
+Check store/votes_test.ts
+Check api/votes_test.ts
+TS2307 [ERROR]: Cannot find module 'file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/routes/ideas/[id]/vote.ts'.
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/routes/vote_test.ts:4:35
+
+TS2307 [ERROR]: Cannot find module 'file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/indexes.ts'.
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/votes_test.ts:4:35
+
+TS2305 [ERROR]: Module '"file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/ideas.ts"' has no exported member 'BusyError'.
+import { BusyError, createIdeasStore } from "../store/ideas.ts";
+         ~~~~~~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/api/votes_test.ts:4:10
+
+TS2353 [ERROR]: Object literal may only specify known properties, and 'vote' does not exist in type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | null>; list(query: ListQuery): Promise<Idea[]>; }'.
+  const api = createApi({ ideas: { ...store, vote: () => Promise.reject(new BusyError()) } });
+                                             ~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/api/votes_test.ts:16:46
+
+TS2305 [ERROR]: Module '"file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/ideas.ts"' has no exported member 'BusyError'.
+import { BusyError, createIdeasStore } from "./ideas.ts";
+         ~~~~~~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/votes_test.ts:3:10
+
+TS2339 [ERROR]: Property 'vote' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | null>; list(query: ListQuery): Promise<Idea[]>; }'.
+  await Promise.all(Array.from({ length: 25 }, () => store.vote(idea.id)));
+                                                           ~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/votes_test.ts:9:60
+
+TS2339 [ERROR]: Property 'vote' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | null>; list(query: ListQuery): Promise<Idea[]>; }'.
+  assertEquals(await store.vote("missing"), null);
+                           ~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/votes_test.ts:16:28
+
+TS2353 [ERROR]: Object literal may only specify known properties, and 'sort' does not exist in type 'ListQuery'.
+  assertEquals((await store.list({ limit: 20, sort: "votes" })).map(i => i.id), [last.id, first.id]);
+                                              ~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/votes_test.ts:18:47
+
+TS2339 [ERROR]: Property 'vote' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | null>; list(query: ListQuery): Promise<Idea[]>; }'.
+  await store.vote(first.id);
+              ~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/votes_test.ts:19:15
+
+TS2353 [ERROR]: Object literal may only specify known properties, and 'sort' does not exist in type 'ListQuery'.
+  assertEquals((await store.list({ limit: 20, sort: "votes" })).map(i => i.id), [first.id, last.id]);
+                                              ~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/votes_test.ts:20:47
+
+TS2353 [ERROR]: Object literal may only specify known properties, and 'sort' does not exist in type 'ListQuery'.
+  assertEquals((await store.list({ limit: 20, sort: "recent" })).map(i => i.id), [last.id, first.id]);
+                                              ~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/votes_test.ts:21:47
+
+TS2339 [ERROR]: Property 'vote' does not exist on type '{ create(input: IdeaInput): Promise<Idea>; get(id: string): Promise<Idea | null>; list(query: ListQuery): Promise<Idea[]>; }'.
+  await assertRejects(() => createIdeasStore(conflicted).vote(idea.id), BusyError);
+                                                         ~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/votes_test.ts:32:58
+
+TS2353 [ERROR]: Object literal may only specify known properties, and 'sort' does not exist in type 'ListQuery'.
+  assertEquals((await store.list({ limit: 20, sort: "votes" })).map(i => i.id), [idea.id]);
+                                              ~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/votes_test.ts:39:47
+
+Found 13 errors.
+
+error: Type checking failed.
+
+  [33minfo:[39m The program failed type-checking, but it still might work correctly.
+  [36mhint:[39m Re-run with [4m--no-check[24m to skip type-checking.

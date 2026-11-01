@@ -1,0 +1,828 @@
+ Image app-web Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 564B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 725B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/denoland/deno:2.9.8
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 154B done
+#4 DONE 0.0s
+
+#5 [1/7] FROM docker.io/denoland/deno:2.9.8@sha256:a0d88a7fcbd44f062cba2748e19df67d30290ad12aa203c7c1e0b12462c483f0
+#5 resolve docker.io/denoland/deno:2.9.8@sha256:a0d88a7fcbd44f062cba2748e19df67d30290ad12aa203c7c1e0b12462c483f0 done
+#5 CACHED
+
+#6 [internal] load build context
+#6 transferring context: 138.64kB 0.0s done
+#6 DONE 0.0s
+
+#7 [2/7] RUN mkdir -p /app /data && chown -R deno:deno /app /data
+#7 DONE 0.1s
+
+#8 [3/7] WORKDIR /app
+#8 DONE 0.0s
+
+#9 [4/7] COPY --chown=deno:deno deno.json deno.lock ./
+#9 DONE 0.0s
+
+#10 [5/7] RUN deno install --frozen
+#10 0.092 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14_meta.json
+#10 0.093 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3_meta.json
+#10 0.093 [0m[32mDownload[0m https://jsr.io/@std/ulid/1.0.0_meta.json
+#10 0.093 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6_meta.json
+#10 0.093 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19_meta.json
+#10 0.093 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2_meta.json
+#10 0.233 [0m[32mDownload[0m https://jsr.io/@std/ulid/meta.json
+#10 0.233 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/meta.json
+#10 0.233 [0m[32mDownload[0m https://jsr.io/@std/path/meta.json
+#10 0.233 [0m[32mDownload[0m https://jsr.io/@std/assert/meta.json
+#10 0.233 [0m[32mDownload[0m https://jsr.io/@hono/hono/meta.json
+#10 0.233 [0m[32mDownload[0m https://jsr.io/@fresh/core/meta.json
+#10 0.233 [0m[32mDownload[0m https://registry.npmjs.org/vite
+#10 0.233 [0m[32mDownload[0m https://registry.npmjs.org/preact
+#10 0.233 [0m[32mDownload[0m https://registry.npmjs.org/preact-render-to-string
+#10 0.233 [0m[32mDownload[0m https://registry.npmjs.org/@types%2fbabel__core
+#10 0.437 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/deno.json
+#10 0.437 [0m[32mDownload[0m https://jsr.io/@std/dotenv/meta.json
+#10 0.437 [0m[32mDownload[0m https://jsr.io/@std/internal/meta.json
+#10 0.437 [0m[32mDownload[0m https://jsr.io/@fresh/build-id/meta.json
+#10 0.438 [0m[32mDownload[0m https://jsr.io/@deno/loader/meta.json
+#10 0.438 [0m[32mDownload[0m https://jsr.io/@std/media-types/meta.json
+#10 0.438 [0m[32mDownload[0m https://jsr.io/@std/fmt/meta.json
+#10 0.438 [0m[32mDownload[0m https://jsr.io/@std/http/meta.json
+#10 0.439 [0m[32mDownload[0m https://jsr.io/@std/net/meta.json
+#10 0.439 [0m[32mDownload[0m https://jsr.io/@std/fs/meta.json
+#10 0.439 [0m[32mDownload[0m https://jsr.io/@std/encoding/meta.json
+#10 0.439 [0m[32mDownload[0m https://jsr.io/@std/semver/meta.json
+#10 0.450 [0m[32mDownload[0m https://jsr.io/@std/html/meta.json
+#10 0.450 [0m[32mDownload[0m https://jsr.io/@deno/esbuild-plugin/meta.json
+#10 0.450 [0m[32mDownload[0m https://jsr.io/@std/uuid/meta.json
+#10 0.450 [0m[32mDownload[0m https://jsr.io/@std/jsonc/meta.json
+#10 0.451 [0m[32mDownload[0m https://registry.npmjs.org/@prefresh%2fvite
+#10 0.451 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fcore
+#10 0.451 [0m[32mDownload[0m https://registry.npmjs.org/@remix-run%2fnode-fetch-server
+#10 0.451 [0m[32mDownload[0m https://registry.npmjs.org/rollup
+#10 0.451 [0m[32mDownload[0m https://registry.npmjs.org/@opentelemetry%2fapi
+#10 0.452 [0m[32mDownload[0m https://registry.npmjs.org/@preact%2fsignals
+#10 0.604 [0m[32mDownload[0m https://jsr.io/@std/dotenv/0.225.7_meta.json
+#10 0.605 [0m[32mDownload[0m https://jsr.io/@std/internal/1.0.14_meta.json
+#10 0.605 [0m[32mDownload[0m https://jsr.io/@fresh/build-id/1.0.1_meta.json
+#10 0.605 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.4.0_meta.json
+#10 0.612 [0m[32mDownload[0m https://jsr.io/@std/media-types/1.1.0_meta.json
+#10 0.616 [0m[32mDownload[0m https://jsr.io/@std/fmt/1.0.10_meta.json
+#10 0.616 [0m[32mDownload[0m https://jsr.io/@std/http/1.1.2_meta.json
+#10 0.616 [0m[32mDownload[0m https://jsr.io/@std/net/1.0.6_meta.json
+#10 0.616 [0m[32mDownload[0m https://jsr.io/@std/fs/1.0.24_meta.json
+#10 0.616 [0m[32mDownload[0m https://jsr.io/@std/encoding/1.0.11_meta.json
+#10 0.616 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8_meta.json
+#10 0.616 [0m[32mDownload[0m https://jsr.io/@std/html/1.0.7_meta.json
+#10 0.667 [0m[32mDownload[0m https://jsr.io/@deno/esbuild-plugin/1.2.1_meta.json
+#10 0.667 [0m[32mDownload[0m https://jsr.io/@std/uuid/1.1.1_meta.json
+#10 0.667 [0m[32mDownload[0m https://jsr.io/@std/jsonc/1.0.2_meta.json
+#10 0.702 [0m[32mDownload[0m https://jsr.io/@std/bytes/meta.json
+#10 0.702 [0m[32mDownload[0m https://jsr.io/@std/json/meta.json
+#10 0.702 [0m[32mDownload[0m https://registry.npmjs.org/esbuild
+#10 0.855 [0m[32mDownload[0m https://jsr.io/@std/bytes/1.0.6_meta.json
+#10 0.855 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.3.14_meta.json
+#10 0.855 [0m[32mDownload[0m https://jsr.io/@std/json/1.1.0_meta.json
+#10 0.879 [0m[32mDownload[0m https://jsr.io/@std/ulid/1.0.0/mod.ts
+#10 0.879 [0m[32mDownload[0m https://jsr.io/@std/ulid/1.0.0/decode_time.ts
+#10 0.879 [0m[32mDownload[0m https://jsr.io/@std/ulid/1.0.0/monotonic_ulid.ts
+#10 0.880 [0m[32mDownload[0m https://jsr.io/@std/ulid/1.0.0/ulid.ts
+#10 0.880 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/mod.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/client.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/mod.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/basename.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/common.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/constants.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/dirname.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/extname.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/format.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/from_file_url.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/glob_to_regexp.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/is_absolute.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/is_glob.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/join.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/join_globs.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/normalize.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/normalize_glob.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/parse.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/mod.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/basename.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/common.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/constants.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/dirname.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/extname.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/format.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/from_file_url.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/glob_to_regexp.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/is_absolute.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/is_glob.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/join.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/join_globs.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/normalize.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/normalize_glob.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/parse.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/relative.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/resolve.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/to_file_url.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/to_namespaced_path.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/relative.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/resolve.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/to_file_url.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/to_namespaced_path.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/types.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/mod.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/basename.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/common.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/constants.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/dirname.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/extname.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/format.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/from_file_url.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/glob_to_regexp.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/is_absolute.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/is_glob.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/join.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/join_globs.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/normalize.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/normalize_glob.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/parse.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/relative.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/resolve.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/to_file_url.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/to_namespaced_path.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/mod.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/assert.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/almost_equals.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/array_includes.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/equals.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/unstable_equals.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/exists.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/false.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/greater.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/greater_or_equal.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/instance_of.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/is_error.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/less.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/less_or_equal.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/match.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/unstable_never.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/not_equals.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/not_instance_of.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/not_match.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/not_strict_equals.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/object_match.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/rejects.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/strict_equals.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/unstable_strict_equals.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/string_includes.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/throws.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/assertion_error.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/equal.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/fail.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/unimplemented.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@std/assert/1.0.19/unreachable.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/request.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/types.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/hono-base.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/preset/tiny.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/preset/quick.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/http-exception.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/basic-auth/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/bearer-auth/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/body-limit/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/ip-restriction/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/cache/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/route/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/mount/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/cookie/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/accepts/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/compress/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/context-storage/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/cors/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/csrf/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/etag/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/trailing-slash/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/html/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/css/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/index.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/jsx-dev-runtime.ts
+#10 0.881 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/jsx-runtime.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/streaming.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/jsx-renderer/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/jsx-dev-runtime.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/jsx-runtime.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/client.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/css.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/server.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/jwt/jwt.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/jwk/jwk.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/timeout/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/timing/timing.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/logger/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/method-not-allowed/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/method-override/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/powered-by/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/pretty-json/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/request-id/request-id.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/language/language.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/secure-headers/secure-headers.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/combine/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/ssg/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/streaming/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/validator/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/reg-exp-router/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/smart-router/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/trie-router/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/pattern-router/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/linear-router/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/client/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/adapter/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/factory/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/serve-static/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/cloudflare-workers/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/cloudflare-pages/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/deno/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/bun/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/aws-lambda/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/vercel/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/netlify/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/lambda-edge/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/service-worker/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/testing/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/dev/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/websocket/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/conninfo/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/proxy/index.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/body.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/buffer.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/color.ts
+#10 0.882 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/concurrent.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/cookie.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/crypto.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/encode.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/filepath.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/handler.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/headers.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/html.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/http-status.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/accept.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/jwt/index.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/jwt/jwa.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/jwt/jws.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/jwt/jwt.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/jwt/types.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/jwt/utf8.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/mime.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/stream.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/types.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/url.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/ipaddr.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/mod.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/runtime/shared.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/runtime/client/mod.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/mod.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/compat.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/internals.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/internals_dev.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/ulid/1.0.0/_util.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/utils.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/deno.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/server_entry.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/client_entry.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/dev_server.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/build_id.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/client_snapshot.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/server_snapshot.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/patches.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/verify_imports.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/shared.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/common.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/glob_to_reg_exp.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/basename.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/strip_trailing_separators.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/posix/_util.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/dirname.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/constants.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/assert_path.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/format.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/from_file_url.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/normalize.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/normalize_string.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/relative.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/env.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/_common/to_file_url.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@std/path/1.1.6/windows/_util.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/hono.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/context.ts
+#10 0.883 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/request/constants.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/compose.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/constants.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/basic-auth.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/accepts/accepts.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/utils/compress.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/etag/digest.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/constants.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/css/common.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/base.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/children.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/components.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/context.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/hooks/index.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/hooks/index.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/types.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/intrinsic-elements.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/utils.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/components.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/render.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/context.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/intrinsic-element/components.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/secure-headers/permissions-policy.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/ssg/ssg.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/ssg/middleware.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/ssg/plugins.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/streaming/stream.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/streaming/sse.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/streaming/text.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/validator/validator.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/validator/utils.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/reg-exp-router/router.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/reg-exp-router/prepared-router.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/smart-router/router.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/trie-router/router.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/pattern-router/router.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/linear-router/router.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/client/client.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/client/utils.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/client/types.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/middleware/serve-static/path.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/cloudflare-workers/serve-static-module.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/cloudflare-workers/websocket.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/cloudflare-workers/conninfo.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/cloudflare-pages/handler.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/cloudflare-pages/conninfo.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/deno/serve-static.ts
+#10 0.884 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/deno/ssg.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/deno/websocket.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/deno/conninfo.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/bun/serve-static.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/bun/ssg.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/bun/websocket.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/bun/conninfo.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/bun/server.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/aws-lambda/handler.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/aws-lambda/conninfo.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/aws-lambda/types.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/vercel/handler.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/vercel/conninfo.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/netlify/mod.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/lambda-edge/handler.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/lambda-edge/conninfo.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/service-worker/handler.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/conninfo/types.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/app.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/middlewares/trailing_slashes.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/handlers.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/types.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/middlewares/mod.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/middlewares/static_files.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/middlewares/csrf.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/middlewares/cors.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/middlewares/ip_filter.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/middlewares/csp.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/config.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/context.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/define.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/router.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/error.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/render.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/runtime/shared_internal.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/runtime/head.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/runtime/client/polyfills.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/runtime/client/preact_hooks_client.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/runtime/client/partials.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/runtime/client/reviver.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/builder.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/file_transformer.ts
+#10 0.885 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/build_cache.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/constants.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/fs_crawl.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/fs.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/dev_build_cache.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/utils.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/update_check.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/patches/http_absolute.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/patches/commonjs.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/patches/jsx_comment.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/patches/inline_env_vars.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/patches/remove_polyfills.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@fresh/plugin-vite/1.1.2/src/plugins/patches/code_eval.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/intrinsic-element/common.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/intrinsic-element/components.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/jsx/dom/utils.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/ssg/utils.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/helper/streaming/utils.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/utils.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/reg-exp-router/matcher.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/reg-exp-router/node.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/reg-exp-router/trie.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/router/trie-router/node.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/client/fetch-result-please.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/cloudflare-workers/serve-static.ts
+#10 0.886 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/netlify/handler.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/netlify/conninfo.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/service-worker/types.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/segments.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/commands.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/test_utils.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/otel.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/runtime/server/preact_hooks.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/jsonify/parse.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/esbuild.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/middlewares/live_reload.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/middlewares/error_overlay/middleware.tsx
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/middlewares/automatic_workspace_folders.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/check.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/fs_routes.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/file_url.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@hono/hono/4.13.14/src/adapter/cloudflare-workers/utils.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/jsonify/stringify.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/middlewares/error_overlay/code_frame.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/jsonify/constants.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@fresh/core/2.3.3/src/dev/middlewares/error_overlay/overlay.tsx
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@std/dotenv/0.225.7/mod.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@std/internal/1.0.14/os.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@std/internal/1.0.14/format.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@std/internal/1.0.14/build_message.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@std/internal/1.0.14/diff.ts
+#10 0.887 [0m[32mDownload[0m https://jsr.io/@std/internal/1.0.14/diff_str.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/internal/1.0.14/truncate_build_message.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/internal/1.0.14/styles.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@fresh/build-id/1.0.1/mod.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.4.0/src/mod.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/media-types/1.1.0/content_type.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/fmt/1.0.10/colors.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/http/1.1.2/status.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/net/1.0.6/unstable_ip.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/fs/1.0.24/walk.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/encoding/1.0.11/hex.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/mod.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/html/1.0.7/mod.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@deno/esbuild-plugin/1.2.1/src/mod.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/http/1.1.2/etag.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/uuid/1.1.1/v5.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/uuid/1.1.1/constants.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/jsonc/1.0.2/mod.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/dotenv/0.225.7/parse.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/dotenv/0.225.7/stringify.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/internal/1.0.14/_os.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/internal/1.0.14/types.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/media-types/1.1.0/parse_media_type.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/media-types/1.1.0/get_charset.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/media-types/1.1.0/format_media_type.ts
+#10 0.888 [0m[32mDownload[0m https://jsr.io/@std/media-types/1.1.0/_db.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/media-types/1.1.0/type_by_extension.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/fs/1.0.24/_to_path_string.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/fs/1.0.24/_create_walk_entry.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/encoding/1.0.11/_common16.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/encoding/1.0.11/_common_detach.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/encoding/1.0.11/_types.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/compare.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/difference.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/format.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/satisfies.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/increment.ts
+#10 0.889 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/is_semver.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/max_satisfying.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/min_satisfying.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/parse_range.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/parse.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/range_intersects.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/types.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/try_parse_range.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/is_range.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/can_parse.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/try_parse.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/format_range.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/equals.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/not_equals.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/greater_than.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/greater_than_range.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/greater_or_equal.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/less_than.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/less_than_range.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/less_or_equal.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/html/1.0.7/entities.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@deno/esbuild-plugin/1.2.1/src/plugin.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/uuid/1.1.1/_common.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/uuid/1.1.1/common.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/jsonc/1.0.2/parse.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/media-types/1.1.0/_util.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/media-types/1.1.0/vendor/db.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/_shared.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/_test_comparator_set.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/semver/1.0.8/_constants.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/encoding/1.0.11/base64.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/bytes/1.0.6/concat.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.3.14/src/mod.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/json/1.1.0/types.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/encoding/1.0.11/_common64.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@std/bytes/1.0.6/_types.ts
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.3.14/src/lib/rs_lib.js
+#10 0.890 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.3.14/src/lib/rs_lib.wasm
+#10 0.891 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.3.14/src/lib/rs_lib.internal.js
+#10 0.891 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.3.14/src/lib/rs_lib.d.ts
+#10 0.891 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.3.14/src/lib/snippets/rs_lib-aa8c88480f363a4a/helpers.js
+#10 0.891 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.3.14/src/lib/snippets/sys_traits-4d1fdc43f822dba1/inline0.js
+#10 0.891 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.4.0/src/lib/rs_lib.js
+#10 0.891 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.4.0/src/rs_lib_node.js
+#10 0.891 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.4.0/src/lib/rs_lib.wasm
+#10 0.891 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.4.0/src/lib/rs_lib.internal.js
+#10 0.891 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.4.0/src/lib/rs_lib.d.ts
+#10 0.891 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.4.0/src/lib/snippets/rs_lib-aa8c88480f363a4a/helpers.js
+#10 0.892 [0m[32mDownload[0m https://jsr.io/@deno/loader/0.4.0/src/lib/snippets/sys_traits-fdde735e1838e811/inline0.js
+#10 0.892 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fpreset-react
+#10 0.892 [0m[32mDownload[0m https://registry.npmjs.org/esbuild-wasm
+#10 1.339 [0m[32mDownload[0m https://registry.npmjs.org/@types/babel__core/-/babel__core-7.20.5.tgz
+#10 1.339 [0m[32mDownload[0m https://registry.npmjs.org/preact-render-to-string/-/preact-render-to-string-6.8.2.tgz
+#10 1.340 [0m[32mDownload[0m https://registry.npmjs.org/esbuild/-/esbuild-0.25.7.tgz
+#10 1.340 [0m[32mDownload[0m https://registry.npmjs.org/preact/-/preact-10.29.8.tgz
+#10 1.340 [0m[32mDownload[0m https://registry.npmjs.org/@preact/signals/-/signals-2.11.4.tgz
+#10 1.340 [0m[32mDownload[0m https://registry.npmjs.org/@babel/core/-/core-7.29.7.tgz
+#10 1.340 [0m[32mDownload[0m https://registry.npmjs.org/rollup/-/rollup-4.65.1.tgz
+#10 1.340 [0m[32mDownload[0m https://registry.npmjs.org/esbuild-wasm/-/esbuild-wasm-0.25.12.tgz
+#10 1.341 [0m[32mDownload[0m https://registry.npmjs.org/@opentelemetry/api/-/api-1.10.0.tgz
+#10 1.341 [0m[32mDownload[0m https://registry.npmjs.org/@babel/preset-react/-/preset-react-7.29.7.tgz
+#10 1.341 [0m[32mDownload[0m https://registry.npmjs.org/vite/-/vite-7.3.7.tgz
+#10 1.341 [0m[32mDownload[0m https://registry.npmjs.org/@prefresh/vite/-/vite-2.4.12.tgz
+#10 1.341 [0m[32mDownload[0m https://registry.npmjs.org/@remix-run/node-fetch-server/-/node-fetch-server-0.12.0.tgz
+#10 1.341 [0m[32mDownload[0m https://registry.npmjs.org/esbuild/-/esbuild-0.25.12.tgz
+#10 1.341 [0m[32mDownload[0m https://registry.npmjs.org/@types/babel__template/-/babel__template-7.4.4.tgz
+#10 1.341 [0m[32mDownload[0m https://registry.npmjs.org/@types/babel__traverse/-/babel__traverse-7.28.0.tgz
+#10 1.341 [0m[32mDownload[0m https://registry.npmjs.org/@types/babel__generator/-/babel__generator-7.27.0.tgz
+#10 1.341 [0m[32mDownload[0m https://registry.npmjs.org/@babel/parser/-/parser-7.29.11.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@babel/types/-/types-7.29.11.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.7.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@preact/signals-core/-/signals-core-1.14.5.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.7.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/json5/-/json5-2.2.3.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@babel/helper-module-transforms/-/helper-module-transforms-7.29.7.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@babel/helper-compilation-targets/-/helper-compilation-targets-7.29.7.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/gensync/-/gensync-1.0.0-beta.2.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@babel/template/-/template-7.29.7.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/debug/-/debug-4.4.3.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@babel/traverse/-/traverse-7.29.10.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@babel/helpers/-/helpers-7.29.10.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/convert-source-map/-/convert-source-map-2.0.0.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/semver/-/semver-6.3.1.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@jridgewell/remapping/-/remapping-2.3.5.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@babel/generator/-/generator-7.29.8.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@types/estree/-/estree-1.0.9.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@rollup/rollup-linux-arm64-gnu/-/rollup-linux-arm64-gnu-4.65.1.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@rollup/rollup-linux-arm64-musl/-/rollup-linux-arm64-musl-4.65.1.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@babel/plugin-transform-react-jsx-development/-/plugin-transform-react-jsx-development-7.29.7.tgz
+#10 1.342 [0m[32mDownload[0m https://registry.npmjs.org/@babel/plugin-transform-react-pure-annotations/-/plugin-transform-react-pure-annotations-7.29.7.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@babel/helper-validator-option/-/helper-validator-option-7.29.7.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@babel/plugin-transform-react-display-name/-/plugin-transform-react-display-name-7.29.7.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@babel/plugin-transform-react-jsx/-/plugin-transform-react-jsx-7.29.7.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@babel/helper-plugin-utils/-/helper-plugin-utils-7.29.7.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/esbuild/-/esbuild-0.28.2.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/postcss/-/postcss-8.5.32.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-4.2.1.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@prefresh/babel-plugin/-/babel-plugin-0.5.4.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@prefresh/utils/-/utils-1.2.1.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@prefresh/core/-/core-1.5.11.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.12.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@babel/helper-string-parser/-/helper-string-parser-7.29.11.tgz
+#10 1.343 [0m[32mDownload[0m https://registry.npmjs.org/@babel/helper-validator-identifier/-/helper-validator-identifier-7.29.7.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/@babel/helper-module-imports/-/helper-module-imports-7.29.7.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/browserslist/-/browserslist-4.29.5.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/lru-cache/-/lru-cache-5.1.1.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.29.7.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/ms/-/ms-2.1.3.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/@babel/helper-globals/-/helper-globals-7.29.7.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/jsesc/-/jsesc-3.1.0.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/@babel/helper-annotate-as-pure/-/helper-annotate-as-pure-7.29.7.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/@babel/plugin-syntax-jsx/-/plugin-syntax-jsx-7.29.7.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.28.2.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/nanoid/-/nanoid-3.3.20.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.2.tgz
+#10 1.344 [0m[32mDownload[0m https://registry.npmjs.org/picomatch/-/picomatch-2.3.2.tgz
+#10 1.345 [0m[32mDownload[0m https://registry.npmjs.org/estree-walker/-/estree-walker-2.0.2.tgz
+#10 1.345 [0m[32mDownload[0m https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.11.34.tgz
+#10 1.345 [0m[32mDownload[0m https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001819.tgz
+#10 1.345 [0m[32mDownload[0m https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.466.tgz
+#10 1.345 [0m[32mDownload[0m https://registry.npmjs.org/node-releases/-/node-releases-2.0.60.tgz
+#10 1.345 [0m[32mDownload[0m https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.3.4.tgz
+#10 1.345 [0m[32mDownload[0m https://registry.npmjs.org/yallist/-/yallist-3.1.1.tgz
+#10 1.345 [0m[32mDownload[0m https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.6.0.tgz
+#10 1.345 [0m[32mDownload[0m https://registry.npmjs.org/@jridgewell/resolve-uri/-/resolve-uri-3.1.2.tgz
+#10 1.345 [0m[32mDownload[0m https://registry.npmjs.org/escalade/-/escalade-3.2.0.tgz
+#10 1.407 [0m[32mInitialize[0m @types/babel__core@7.20.5
+#10 1.411 [0m[32mInitialize[0m esbuild@0.25.7
+#10 1.460 [0m[32mInitialize[0m @babel/preset-react@7.29.7
+#10 1.539 [0m[32mInitialize[0m @prefresh/vite@2.4.12
+#10 1.539 [0m[32mInitialize[0m esbuild@0.25.12
+#10 1.549 [0m[32mInitialize[0m @types/babel__traverse@7.28.0
+#10 1.853 [0m[32mInitialize[0m @types/estree@1.0.9
+#10 1.890 [0m[32mInitialize[0m @types/babel__generator@7.27.0
+#10 1.890 [0m[32mInitialize[0m @types/babel__template@7.4.4
+#10 1.890 [0m[32mInitialize[0m @jridgewell/remapping@2.3.5
+#10 1.890 [0m[32mInitialize[0m escalade@3.2.0
+#10 1.890 [0m[32mInitialize[0m @preact/signals-core@1.14.5
+#10 1.890 [0m[32mInitialize[0m gensync@1.0.0-beta.2
+#10 1.890 [0m[32mInitialize[0m convert-source-map@2.0.0
+#10 1.890 [0m[32mInitialize[0m @babel/helper-compilation-targets@7.29.7
+#10 1.890 [0m[32mInitialize[0m semver@6.3.1
+#10 1.890 [0m[32mInitialize[0m @babel/template@7.29.7
+#10 1.890 [0m[32mInitialize[0m debug@4.4.3
+#10 1.890 [0m[32mInitialize[0m @babel/helper-module-transforms@7.29.7
+#10 1.890 [0m[32mInitialize[0m @babel/code-frame@7.29.7
+#10 1.890 [0m[32mInitialize[0m @babel/plugin-transform-react-pure-annotations@7.29.7
+#10 1.890 [0m[32mInitialize[0m @babel/helper-plugin-utils@7.29.7
+#10 1.890 [0m[32mInitialize[0m json5@2.2.3
+#10 1.890 [0m[32mInitialize[0m @babel/plugin-transform-react-jsx-development@7.29.7
+#10 1.922 [0m[32mInitialize[0m @babel/plugin-transform-react-display-name@7.29.7
+#10 1.922 [0m[32mInitialize[0m fdir@6.5.0
+#10 1.922 [0m[32mInitialize[0m esbuild@0.28.2
+#10 1.922 [0m[32mInitialize[0m @babel/plugin-transform-react-jsx@7.29.7
+#10 1.922 [0m[32mInitialize[0m picomatch@4.0.7
+#10 1.922 [0m[32mInitialize[0m browserslist@4.29.5
+#10 1.922 [0m[32mInitialize[0m js-tokens@4.0.0
+#10 1.922 [0m[32mInitialize[0m lru-cache@5.1.1
+#10 1.922 [0m[32mInitialize[0m @babel/helper-string-parser@7.29.11
+#10 1.922 [0m[32mInitialize[0m @babel/generator@7.29.8
+#10 1.922 [0m[32mInitialize[0m @babel/helper-validator-option@7.29.7
+#10 1.922 [0m[32mInitialize[0m tinyglobby@0.2.17
+#10 1.922 [0m[32mInitialize[0m @babel/helper-globals@7.29.7
+#10 1.922 [0m[32mInitialize[0m @babel/helper-validator-identifier@7.29.7
+#10 1.922 [0m[32mInitialize[0m jsesc@3.1.0
+#10 1.922 [0m[32mInitialize[0m ms@2.1.3
+#10 1.922 [0m[32mInitialize[0m picocolors@1.1.1
+#10 1.922 [0m[32mInitialize[0m @babel/plugin-syntax-jsx@7.29.7
+#10 1.922 [0m[32mInitialize[0m @rollup/pluginutils@4.2.1
+#10 1.922 [0m[32mInitialize[0m @babel/helper-module-imports@7.29.7
+#10 1.923 [0m[32mInitialize[0m @prefresh/utils@1.2.1
+#10 1.929 [0m[32mInitialize[0m yallist@3.1.1
+#10 1.929 [0m[32mInitialize[0m node-releases@2.0.60
+#10 1.934 [0m[32mInitialize[0m @prefresh/core@1.5.11
+#10 1.934 [0m[32mInitialize[0m picomatch@2.3.2
+#10 1.937 [0m[32mInitialize[0m @babel/compat-data@7.29.7
+#10 1.939 [0m[32mInitialize[0m @rollup/rollup-linux-arm64-gnu@4.65.1
+#10 2.036 [0m[32mInitialize[0m nanoid@3.3.20
+#10 2.072 [0m[32mInitialize[0m @rollup/rollup-linux-arm64-musl@4.65.1
+#10 2.123 [0m[32mInitialize[0m @babel/helper-annotate-as-pure@7.29.7
+#10 2.141 [0m[32mInitialize[0m update-browserslist-db@1.3.4
+#10 2.149 [0m[32mInitialize[0m rollup@4.65.1
+#10 2.362 [0m[32mInitialize[0m @jridgewell/resolve-uri@3.1.2
+#10 2.362 [0m[32mInitialize[0m @babel/parser@7.29.11
+#10 2.362 [0m[32mInitialize[0m estree-walker@2.0.2
+#10 2.442 [0m[32mInitialize[0m @jridgewell/trace-mapping@0.3.31
+#10 2.464 [0m[32mInitialize[0m source-map-js@1.2.2
+#10 2.538 [0m[32mInitialize[0m @jridgewell/gen-mapping@0.3.13
+#10 2.545 [0m[32mInitialize[0m postcss@8.5.32
+#10 2.696 [0m[32mInitialize[0m preact-render-to-string@6.8.2
+#10 2.713 [0m[32mInitialize[0m electron-to-chromium@1.5.466
+#10 2.713 [0m[32mInitialize[0m baseline-browser-mapping@2.11.34
+#10 2.953 [0m[32mInitialize[0m @jridgewell/sourcemap-codec@1.6.0
+#10 3.183 [0m[32mInitialize[0m @prefresh/babel-plugin@0.5.4
+#10 3.502 [0m[32mInitialize[0m vite@7.3.7
+#10 3.583 [0m[32mInitialize[0m @remix-run/node-fetch-server@0.12.0
+#10 3.778 [0m[32mInitialize[0m @esbuild/linux-arm64@0.28.2
+#10 3.814 [0m[32mInitialize[0m @preact/signals@2.11.4
+#10 3.928 [0m[32mInitialize[0m @esbuild/linux-arm64@0.25.12
+#10 4.053 [0m[32mInitialize[0m @esbuild/linux-arm64@0.25.7
+#10 4.312 [0m[32mInitialize[0m esbuild-wasm@0.25.12
+#10 4.503 [0m[32mInitialize[0m @babel/traverse@7.29.10
+#10 4.743 [0m[32mInitialize[0m @babel/core@7.29.7
+#10 5.093 [0m[32mInitialize[0m preact@10.29.8
+#10 5.109 [0m[32mInitialize[0m @babel/types@7.29.11
+#10 5.118 [0m[32mInitialize[0m @babel/helpers@7.29.10
+#10 5.217 [0m[32mInitialize[0m @opentelemetry/api@1.10.0
+#10 5.280 [0m[32mInitialize[0m caniuse-lite@1.0.30001819
+#10 5.360 [0m[38;5;245mInstalled[0m 106 [0m[38;5;245mpackages[0m [0m[38;5;245min[0m 5s
+#10 5.360 [0m[38;5;245mReused[0m 0 [0m[38;5;245mpackages from cache[0m
+#10 5.360 [0m[38;5;245mDownloaded[0m 24 [0m[38;5;245mpackages from JSR[0m
+#10 5.360 [0m[32m++++++++++++++++++++++++[0m
+#10 5.360 [0m[38;5;245mDownloaded[0m 82 [0m[38;5;245mpackages from npm[0m
+#10 5.360 [0m[32m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++[0m
+#10 5.361 
+#10 5.361 [0m[36mDependencies:[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@deno/esbuild-plugin [0m[38;5;245m1.2.1[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@deno/loader [0m[38;5;245m0.3.14[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@deno/loader [0m[38;5;245m0.4.0[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@fresh/build-id [0m[38;5;245m1.0.1[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@fresh/core [0m[38;5;245m2.3.3[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@fresh/plugin-vite [0m[38;5;245m1.1.2[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@hono/hono [0m[38;5;245m4.13.14[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/assert [0m[38;5;245m1.0.19[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/bytes [0m[38;5;245m1.0.6[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/dotenv [0m[38;5;245m0.225.7[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/encoding [0m[38;5;245m1.0.11[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/fmt [0m[38;5;245m1.0.10[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/fs [0m[38;5;245m1.0.24[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/html [0m[38;5;245m1.0.7[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/http [0m[38;5;245m1.1.2[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/internal [0m[38;5;245m1.0.14[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/json [0m[38;5;245m1.1.0[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/jsonc [0m[38;5;245m1.0.2[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/media-types [0m[38;5;245m1.1.0[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/net [0m[38;5;245m1.0.6[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/path [0m[38;5;245m1.1.6[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/semver [0m[38;5;245m1.0.8[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/ulid [0m[38;5;245m1.0.0[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mjsr:[0m@std/uuid [0m[38;5;245m1.1.1[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0m@babel/core [0m[38;5;245m7.29.7[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0m@babel/preset-react [0m[38;5;245m7.29.7[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0m@opentelemetry/api [0m[38;5;245m1.10.0[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0m@preact/signals [0m[38;5;245m2.11.4[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0m@prefresh/vite [0m[38;5;245m2.4.12[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0m@remix-run/node-fetch-server [0m[38;5;245m0.12.0[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0m@types/babel__core [0m[38;5;245m7.20.5[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0mesbuild [0m[38;5;245m0.25.7[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0mesbuild [0m[38;5;245m0.25.12[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0mesbuild-wasm [0m[38;5;245m0.25.12[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0mpreact [0m[38;5;245m10.29.8[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0mpreact-render-to-string [0m[38;5;245m6.8.2[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0mrollup [0m[38;5;245m4.65.1[0m
+#10 5.361 [0m[32m+[0m [0m[38;5;245mnpm:[0mvite [0m[38;5;245m7.3.7[0m
+#10 5.361 
+#10 DONE 5.5s
+
+#11 [6/7] COPY --chown=deno:deno . .
+#11 DONE 0.1s
+
+#12 [7/7] RUN deno task build
+#12 0.131 [0m[32mTask[0m [0m[36mbuild[0m vite build
+#12 0.707 vite v7.3.7 building client environment for production...
+#12 0.809 transforming...
+#12 1.675 ✓ 28 modules transformed.
+#12 1.700 rendering chunks...
+#12 1.719 computing gzip size...
+#12 1.724 _fresh/client/.vite/manifest.json                            1.16 kB │ gzip:  0.31 kB
+#12 1.724 _fresh/client/assets/client-entry-k9VX3Kue.css               0.99 kB │ gzip:  0.55 kB
+#12 1.724 _fresh/client/assets/jsxRuntime.module-B0WSwHeu.js           0.41 kB │ gzip:  0.30 kB
+#12 1.724 _fresh/client/assets/fresh-island__VoteButton-CBd0_GsV.js    0.60 kB │ gzip:  0.41 kB
+#12 1.724 _fresh/client/assets/fresh-island__NewIdeaForm-BkT_S7Ke.js   2.13 kB │ gzip:  0.97 kB
+#12 1.724 _fresh/client/assets/hooks.module-gmXfnyD-.js               13.70 kB │ gzip:  5.67 kB
+#12 1.724 _fresh/client/assets/client-entry-C6RNHeAs.js               32.87 kB │ gzip: 12.52 kB
+#12 1.725 ✓ built in 1.00s
+#12 1.725 vite v7.3.7 building ssr environment for production...
+#12 1.727 transforming...
+#12 2.990 ✓ 229 modules transformed.
+#12 3.016 rendering chunks...
+#12 3.045 _fresh/server/.vite/manifest.json                                 1.62 kB
+#12 3.045 _fresh/server/assets/search-DRPhu1lZ.mjs                          0.53 kB
+#12 3.045 _fresh/server/assets/_fresh-route___ideas_id_vote-B1rxQEGi.mjs    0.58 kB
+#12 3.045 _fresh/server/assets/page_vote-BeJ4Goav.mjs                       1.04 kB
+#12 3.045 _fresh/server/assets/_fresh-route___index-DZaN6fad.mjs            4.66 kB
+#12 3.045 _fresh/server/assets/kv-D_WIGCO6.mjs                              9.24 kB
+#12 3.045 _fresh/server/assets/_fresh-route___api_path_-B_61mTTl.mjs       63.98 kB
+#12 3.045 _fresh/server/server-entry.mjs                                  189.13 kB
+#12 3.045 ✓ built in 1.32s
+#12 DONE 3.1s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 2.4s done
+#13 exporting manifest sha256:cab8bee1649165e8c65fc126f43762f5abf392f93bd68fac1b6d2f6f5b890ecd done
+#13 exporting config sha256:97522b71a6ce50aaf3038f94bb79d875eec02c72cb4433cfcdf678f6c359326c done
+#13 exporting attestation manifest sha256:ffcdff706adcf5e992dfbb00f9a01379b0023766b2f744e3a434719659d28faa done
+#13 exporting manifest list sha256:31ab15000a959a115f584a028256f847455ac535b257c40916e797336122b393 done
+#13 naming to docker.io/library/app-web:latest done
+#13 unpacking to docker.io/library/app-web:latest
+#13 unpacking to docker.io/library/app-web:latest 1.0s done
+#13 DONE 3.4s
+
+#14 resolving provenance for metadata file
+#14 DONE 0.0s
+ Image app-web Built 
+ Network app_default Creating 
+ Volume app_ideas-data Creating 
+ Volume app_ideas-data Creating 
+ Network app_default Creating 
+ Volume app_ideas-data Created 
+ Volume app_ideas-data Created 
+ Network app_default Created 
+ Network app_default Created 
+ Container app-web-1 Creating 
+ Container app-web-1 Created 
+ Container app-web-1 Starting 
+ Container app-web-1 Started 

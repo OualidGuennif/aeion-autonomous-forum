@@ -1,0 +1,27 @@
+[0m[32mTask[0m [0m[36mbuild[0m vite build
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 28 modules transformed.
+rendering chunks...
+computing gzip size...
+_fresh/client/.vite/manifest.json                            1.16 kB │ gzip:  0.31 kB
+_fresh/client/assets/client-entry-k9VX3Kue.css               0.99 kB │ gzip:  0.55 kB
+_fresh/client/assets/jsxRuntime.module-B0WSwHeu.js           0.41 kB │ gzip:  0.30 kB
+_fresh/client/assets/fresh-island__VoteButton-CBd0_GsV.js    0.60 kB │ gzip:  0.41 kB
+_fresh/client/assets/fresh-island__NewIdeaForm-BkT_S7Ke.js   2.13 kB │ gzip:  0.97 kB
+_fresh/client/assets/hooks.module-gmXfnyD-.js               13.70 kB │ gzip:  5.67 kB
+_fresh/client/assets/client-entry-4OKpl0l-.js               32.90 kB │ gzip: 12.55 kB
+✓ built in 557ms
+vite v7.3.7 building ssr environment for production...
+transforming...
+✓ 229 modules transformed.
+rendering chunks...
+_fresh/server/.vite/manifest.json                                 1.62 kB
+_fresh/server/assets/search-DRPhu1lZ.mjs                          0.53 kB
+_fresh/server/assets/_fresh-route___ideas_id_vote-B1rxQEGi.mjs    0.58 kB
+_fresh/server/assets/page_vote-BeJ4Goav.mjs                       1.04 kB
+_fresh/server/assets/_fresh-route___index-DZaN6fad.mjs            4.66 kB
+_fresh/server/assets/kv-D_WIGCO6.mjs                              9.24 kB
+_fresh/server/assets/_fresh-route___api_path_-B_61mTTl.mjs       63.98 kB
+_fresh/server/server-entry.mjs                                  189.19 kB
+✓ built in 1.17s

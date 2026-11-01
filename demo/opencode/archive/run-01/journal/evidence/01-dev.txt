@@ -1,0 +1,9 @@
+[0m[32mTask[0m [0m[36mdev[0m vite
+
+  VITE v7.3.7  ready in 414 ms
+
+  ➜  Local:   http://127.0.0.1:8000/
+  ➜  Network: use --host to expose
+--- dev smoke (port 8000):
+{"status":"ok","version":"0.1.0"}
+200

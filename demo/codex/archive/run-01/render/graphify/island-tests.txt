@@ -1,0 +1,4 @@
+$ ../tools/architecture/ask --root codex/workspace tests app/islands/NewIdeaForm.tsx
+app/routes/index_test.tsx  transitive via app/routes/index.tsx
+
+exit=0

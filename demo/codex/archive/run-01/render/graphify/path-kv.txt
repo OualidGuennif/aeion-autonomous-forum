@@ -1,0 +1,4 @@
+$ ../tools/architecture/ask --root codex/workspace path app/routes/api/[...path].ts app/store/kv.ts
+app/routes/api/[...path].ts -> app/store/kv.ts  [imports at app/routes/api/[...path].ts:4]
+
+exit=0

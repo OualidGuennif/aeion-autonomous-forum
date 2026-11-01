@@ -1,0 +1,7 @@
+{
+  "exit": 2,
+  "generated_html_files": 14,
+  "raw_log_files": 4,
+  "findings": 251,
+  "policy": "Preserve generated artifact bytes and raw command output; check authored Markdown/JSON separately."
+}

@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "diagram_type": "erd",
+  "meta": {
+    "title": "Deno KV key model",
+    "output": "diagrams/kv-keys.html",
+    "quality_profile": "showcase"
+  },
+  "layout": {
+    "mode": "grid",
+    "gapY": 60,
+    "gapX": 90
+  },
+  "entities": [
+    {
+      "id": "idea",
+      "label": "idea",
+      "tag": "[\"ideas\", id]",
+      "row": 0,
+      "col": 1,
+      "width": 250,
+      "attributes": [
+        {
+          "name": "id",
+          "type": "ulid",
+          "key": "pk"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "tags",
+          "type": "string[]"
+        },
+        {
+          "name": "votes",
+          "type": "number"
+        },
+        {
+          "name": "createdAt",
+          "type": "iso8601"
+        }
+      ]
+    },
+    {
+      "id": "vote_index",
+      "label": "ideas_by_votes",
+      "tag": "[\"ideas_by_votes\", votes, id]",
+      "row": 0,
+      "col": 2,
+      "width": 250,
+      "attributes": [
+        {
+          "name": "votes",
+          "type": "number",
+          "key": "pk"
+        },
+        {
+          "name": "id",
+          "type": "ulid",
+          "key": "fk",
+          "references": "idea.id"
+        }
+      ]
+    },
+    {
+      "id": "tag_index",
+      "label": "ideas_by_tag",
+      "tag": "[\"ideas_by_tag\", tag, id]",
+      "row": 1,
+      "col": 0,
+      "width": 250,
+      "attributes": [
+        {
+          "name": "tag",
+          "type": "string",
+          "key": "pk"
+        },
+        {
+          "name": "id",
+          "type": "ulid",
+          "key": "fk",
+          "references": "idea.id"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "idea-votes",
+      "from": "idea",
+      "to": "vote_index",
+      "label": "one key per count",
+      "fromCardinality": "one",
+      "toCardinality": "one"
+    },
+    {
+      "id": "idea-tags",
+      "from": "idea",
+      "to": "tag_index",
+      "label": "one key per tag",
+      "fromCardinality": "one",
+      "toCardinality": "many"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Prefixes are the queries",
+      "items": [
+        "[\"ideas\"] reverse = newest first",
+        "[\"ideas_by_votes\"] reverse = most voted",
+        "[\"ideas_by_tag\", tag] = one tag"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Indexes are written with the idea",
+      "items": [
+        "create() sets the idea, the 0-vote key and every tag key in one atomic commit",
+        "vote() moves the vote key in the same commit"
+      ]
+    }
+  ]
+}

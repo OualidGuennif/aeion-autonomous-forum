@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Visitor: discover ideas",
+    "subtitle": "What can a visitor do without JavaScript?",
+    "output": "visitor.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "viewBox": [
+      940,
+      650
+    ]
+  },
+  "components": [
+    {
+      "id": "actor",
+      "type": "external",
+      "label": "Visitor",
+      "sublabel": "External actor",
+      "pos": [
+        65,
+        250
+      ],
+      "size": [
+        200,
+        76
+      ]
+    },
+    {
+      "id": "browse",
+      "type": "backend",
+      "label": "Browse recent ideas",
+      "sublabel": "Server-rendered cards",
+      "pos": [
+        520,
+        90
+      ],
+      "size": [
+        260,
+        76
+      ]
+    },
+    {
+      "id": "filter",
+      "type": "backend",
+      "label": "Filter and search",
+      "sublabel": "Tag + query + sort",
+      "pos": [
+        520,
+        270
+      ],
+      "size": [
+        260,
+        76
+      ]
+    },
+    {
+      "id": "theme",
+      "type": "backend",
+      "label": "Choose a theme",
+      "sublabel": "System / light / dark",
+      "pos": [
+        520,
+        450
+      ],
+      "size": [
+        260,
+        76
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "actor",
+      "to": "browse",
+      "label": "",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "actor",
+      "to": "filter",
+      "label": "",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "actor",
+      "to": "theme",
+      "label": "",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Idea Board system",
+      "wraps": [
+        "browse",
+        "filter",
+        "theme"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Use case notation",
+      "items": [
+        "Archify has no use-case type. Architecture IR represents the external actor and bounded use cases.",
+        "These are public demo actions; there is no login or per-user vote limit."
+      ]
+    }
+  ]
+}

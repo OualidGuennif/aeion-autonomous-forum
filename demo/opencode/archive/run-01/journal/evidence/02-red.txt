@@ -1,0 +1,50 @@
+[0m[32mCheck[0m api/ideas_test.ts
+[0m[32mCheck[0m domain/idea_test.ts
+[0m[32mCheck[0m store/ideas_test.ts
+[0m[1mTS2307 [0m[ERROR]: Cannot find module 'file:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/ideas.ts'.
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/api/ideas_test.ts[0m:[0m[33m4[0m:[0m[33m33[0m
+
+[0m[1mTS2307 [0m[ERROR]: Cannot find module 'file:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/domain/idea.ts'.
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/domain/idea_test.ts[0m:[0m[33m3[0m:[0m[33m35[0m
+
+[0m[1mTS2551 [0m[ERROR]: Property 'openKv' does not exist on type 'typeof Deno'. Did you mean 'open'? 'Deno.openKv' is an unstable API. Did you mean 'open'? If not, try changing the 'lib' compiler option to include 'deno.unstable' or add a triple-slash directive to the top of your entrypoint (main file): /// <reference lib="deno.unstable" />
+  const kv = await Deno.openKv(':memory:');
+[0m[31m                        ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/api/ideas_test.ts[0m:[0m[33m8[0m:[0m[33m25[0m
+
+    'open' is declared here.
+      export function open(
+    [0m[36m                  ~~~~[0m
+        at [0m[36masset:///lib.deno.ns.d.ts[0m:[0m[33m1991[0m:[0m[33m19[0m
+
+[0m[1mTS2322 [0m[ERROR]: Type 'any' is not assignable to type 'never'.
+  return { api: createApi({ kv }), store: createIdeaStore(kv), kv };
+[0m[31m                            ~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/api/ideas_test.ts[0m:[0m[33m9[0m:[0m[33m29[0m
+
+[0m[1mTS2551 [0m[ERROR]: Property 'openKv' does not exist on type 'typeof Deno'. Did you mean 'open'? 'Deno.openKv' is an unstable API. Did you mean 'open'? If not, try changing the 'lib' compiler option to include 'deno.unstable' or add a triple-slash directive to the top of your entrypoint (main file): /// <reference lib="deno.unstable" />
+  return createIdeaStore(await Deno.openKv(':memory:'));
+[0m[31m                                    ~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/ideas_test.ts[0m:[0m[33m7[0m:[0m[33m37[0m
+
+    'open' is declared here.
+      export function open(
+    [0m[36m                  ~~~~[0m
+        at [0m[36masset:///lib.deno.ns.d.ts[0m:[0m[33m1991[0m:[0m[33m19[0m
+
+[0m[1mTS7006 [0m[ERROR]: Parameter 'idea' implicitly has an 'any' type.
+  assertEquals(all.map((idea) => idea.title), [
+[0m[31m                        ~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/ideas_test.ts[0m:[0m[33m28[0m:[0m[33m25[0m
+
+[0m[1mTS7006 [0m[ERROR]: Parameter 'idea' implicitly has an 'any' type.
+  assertEquals(top.map((idea) => idea.title), ['Idea 5', 'Idea 4']);
+[0m[31m                        ~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/store/ideas_test.ts[0m:[0m[33m37[0m:[0m[33m25[0m
+
+Found 7 errors.
+
+[0m[1m[31merror[0m: Type checking failed.
+
+  [33minfo:[39m The program failed type-checking, but it still might work correctly.
+  [36mhint:[39m Re-run with [4m--no-check[24m to skip type-checking.

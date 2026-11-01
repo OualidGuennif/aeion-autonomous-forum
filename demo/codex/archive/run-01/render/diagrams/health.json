@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Health crosses the real route",
+    "subtitle": "What does the container health check prove?",
+    "output": "health.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "viewBox": [
+      960,
+      600
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "d",
+      "type": "external",
+      "label": "Docker",
+      "sublabel": "Deno health probe"
+    },
+    {
+      "id": "f",
+      "type": "frontend",
+      "label": "Fresh",
+      "sublabel": "API catch-all"
+    },
+    {
+      "id": "a",
+      "type": "backend",
+      "label": "Hono",
+      "sublabel": "Health handler"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m0",
+      "from": "d",
+      "to": "f",
+      "label": "GET /api/health",
+      "y": 180,
+      "variant": "default"
+    },
+    {
+      "id": "m1",
+      "from": "f",
+      "to": "a",
+      "label": "Forward original request",
+      "y": 238,
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "a",
+      "to": "f",
+      "label": "200 {status: ok, version}",
+      "y": 296,
+      "variant": "return"
+    },
+    {
+      "id": "m3",
+      "from": "f",
+      "to": "d",
+      "label": "HTTP success \u2192 healthy",
+      "y": 354,
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Readiness scope",
+      "items": [
+        "The catch-all obtains the cached KV store before dispatch.",
+        "First use opens KV and backfills indexes; failure prevents a healthy response.",
+        "This checks the local application, not an external dependency or an image CVE scan."
+      ]
+    }
+  ]
+}

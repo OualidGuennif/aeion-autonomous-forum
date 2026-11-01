@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagrams</title>
+<style>
+  :root { --bg: #fafaf9; --fg: #1c1917; --muted: #57534e; --card: #fff; --line: #e7e5e4; --link: #1d4ed8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1c1917; --fg: #f5f5f4; --muted: #a8a29e; --card: #292524; --line: #44403c; --link: #93c5fd; }
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 16px; }
+  h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  h2 { margin: 32px 0 8px; font-size: 1.15rem; }
+  p { margin: 0 0 12px; color: var(--muted); }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px;
+       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  li { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  a { color: var(--link); text-decoration: none; font-weight: 600; }
+  a:hover { text-decoration: underline; }
+  small { display: block; color: var(--muted); }
+  code { font-size: .9em; }
+</style>
+</head>
+<body>
+<main>
+<h1>Diagrams</h1>
+<p>Shortcuts to every Archify diagram in this repository. Open this file in a browser; every link is local.</p>
+
+<h2>Æion Factory architecture</h2>
+<p>Built locally by <code>tools/architecture/refresh --target HEAD</code>, one folder per commit (not tracked).</p>
+<ul>
+  <li><a href="../.aeion/analysis/index.html">All baselines, newest first</a><small>overview, delivery workflow and lifecycle views per commit</small></li>
+  <li><a href="slides/workflow-human.html">The human workflow</a><small>slides: how a task flows from plan to release</small></li>
+</ul>
+
+<h2>Demo: the Idea Board built by Claude Code</h2>
+<p>Round 07 of <a href="../demo/README.md">the demo</a>; each diagram answers one question.</p>
+<ul>
+  <li><a href="../demo/claude_code/render/index.html">Gallery</a><small>all 14 diagrams with live thumbnails</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/system-overview.html">System overview</a><small>browser, Fresh, islands, Hono, store, KV</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/docker-deployment.html">Docker deployment</a><small>image, Compose, healthcheck, volume</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/sequence-page-load.html">Page load</a><small>server-side rendering of the list</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/sequence-create-idea.html">Create an idea</a><small>island, API, validation, KV</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/sequence-vote.html">Vote</a><small>atomic transaction with retry</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/sequence-filter-search.html">Filter and search</a><small>tag and text filters</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/sequence-health.html">Health check</a><small>what /api/health proves</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/use-cases-visitor.html">Use cases: Visitor</a><small>browse, sort, filter</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/use-cases-contributor.html">Use cases: Contributor</a><small>propose and vote</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/use-cases-operator.html">Use cases: Operator</a><small>run, check, keep data</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/idea-lifecycle.html">Idea lifecycle</a><small>draft, validated, stored, listed, voted</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/kv-key-model.html">KV key model</a><small>ideas, vote index, tag index</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/request-dataflow.html">Request data flow</a><small>where a request's data goes</small></li>
+  <li><a href="../demo/claude_code/render/diagrams/aeion-round.html">An Æion round</a><small>plan, spec, tests, build, checks, sign-off</small></li>
+</ul>
+</main>
+</body>
+</html>

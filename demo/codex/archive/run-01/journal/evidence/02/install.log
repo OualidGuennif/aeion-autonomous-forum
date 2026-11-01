@@ -1,0 +1,17 @@
+Download https://jsr.io/@std/ulid/meta.json
+Download https://jsr.io/@std/ulid/1.0.0_meta.json
+Download https://jsr.io/@std/ulid/1.0.0/mod.ts
+Download https://jsr.io/@std/ulid/1.0.0/decode_time.ts
+Download https://jsr.io/@std/ulid/1.0.0/monotonic_ulid.ts
+Download https://jsr.io/@std/ulid/1.0.0/ulid.ts
+Download https://jsr.io/@std/ulid/1.0.0/_util.ts
+Installed 1 package in 427ms
+Reused 22 packages from cache
+++++++++++++++++++++++
+Downloaded 1 package from JSR
++
+Downloaded 0 packages from npm
+
+Dependencies:
++ jsr:@std/ulid 1.0.0
+

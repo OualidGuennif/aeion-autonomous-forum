@@ -1,0 +1,12 @@
+[0m[32mTask[0m [0m[36mstart[0m deno serve -A _fresh/server.js
+deno serve: Listening on http://0.0.0.0:8000/
+-- tag=ui all have ui:
+True
+-- q=DARK count:
+1
+-- bad tag status:
+400
+-- page filter + clear link:
+1
+-- page tag link:
+href="/?tag=ui"

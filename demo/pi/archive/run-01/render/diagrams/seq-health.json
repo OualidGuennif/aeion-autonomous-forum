@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Health check inside the container",
+    "output": "diagrams/seq-health.html",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "compose", "type": "external", "label": "Docker", "sublabel": "HEALTHCHECK" },
+    { "id": "server", "type": "backend", "label": "Deno process", "sublabel": "deno eval" },
+    { "id": "api", "type": "backend", "label": "Hono route", "sublabel": "GET /api/health" },
+    { "id": "version", "type": "backend", "label": "APP_VERSION", "sublabel": "version.ts" }
+  ],
+  "segments": [
+    { "from": 150, "to": 420, "label": "Probe" }
+  ],
+  "messages": [
+    { "from": "compose", "to": "server", "y": 180, "label": "every 15 s", "note": "no curl in the image: Deno fetches its own port" },
+    { "from": "server", "to": "api", "y": 234, "label": "GET /api/health" },
+    { "from": "api", "to": "version", "y": 276, "label": "APP_VERSION" },
+    { "from": "version", "to": "api", "y": 318, "label": "0.1.0", "variant": "return" },
+    { "from": "api", "to": "server", "y": 360, "label": "200 {status, version}", "variant": "return" },
+    { "from": "server", "to": "compose", "y": 402, "label": "exit 0 means healthy", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "server", "from": 174, "to": 410, "type": "backend" },
+    { "participant": "api", "from": 228, "to": 366, "type": "backend" },
+    { "participant": "version", "from": 270, "to": 324, "type": "backend" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "The image has no curl", "items": ["The probe is a Deno one-liner, so the image stays minimal", "It fails if the port does not answer"] },
+    { "dot": "emerald", "title": "Health is a route", "items": ["The same endpoint a person can open, without a database read", "It reports the version the build baked in"] },
+    { "dot": "rose", "title": "Compose owns the answer", "items": ["Three failures in a row mark the container unhealthy", "Data lives on the volume, never in the container"] }
+  ]
+}

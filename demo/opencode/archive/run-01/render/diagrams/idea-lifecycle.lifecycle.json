@@ -1,0 +1,87 @@
+{
+  "schema_version": 3,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Idea lifecycle",
+    "subtitle": "Created \u2192 indexed \u2192 listed \u2192 voted \u2192 filtered away",
+    "output": "diagrams/idea-lifecycle.html"
+  },
+  "mainPath": [
+    "created",
+    "indexed",
+    "listed",
+    "voted"
+  ],
+  "states": [
+    {
+      "id": "created",
+      "type": "start",
+      "label": "Created",
+      "sublabel": "POST /api/ideas"
+    },
+    {
+      "id": "indexed",
+      "type": "active",
+      "label": "Indexed",
+      "sublabel": "vote + tag keys"
+    },
+    {
+      "id": "listed",
+      "type": "active",
+      "label": "Listed",
+      "sublabel": "GET / \u00b7 /api/ideas"
+    },
+    {
+      "id": "voted",
+      "type": "success",
+      "label": "Voted",
+      "sublabel": "votes + 1"
+    },
+    {
+      "id": "filtered",
+      "type": "neutral",
+      "label": "Filtered out",
+      "sublabel": "tag/q mismatch"
+    },
+    {
+      "id": "rejected",
+      "type": "failure",
+      "label": "Rejected",
+      "sublabel": "400 invalid"
+    }
+  ],
+  "transitions": [
+    {
+      "from": "created",
+      "to": "indexed",
+      "label": "atomic()"
+    },
+    {
+      "from": "indexed",
+      "to": "listed",
+      "label": "in the 20 newest"
+    },
+    {
+      "from": "listed",
+      "to": "voted",
+      "label": "\u25b2"
+    },
+    {
+      "from": "listed",
+      "to": "filtered",
+      "label": "?tag / ?q"
+    },
+    {
+      "from": "voted",
+      "to": "listed",
+      "label": "next load",
+      "variant": "dashed"
+    },
+    {
+      "from": "indexed",
+      "to": "rejected",
+      "label": "never \u2014 invalid writes nothing",
+      "variant": "dashed"
+    }
+  ]
+}

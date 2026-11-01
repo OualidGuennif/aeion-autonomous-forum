@@ -1,0 +1,86 @@
+[
+  {
+    "name": "system",
+    "title": "One board, seven parts",
+    "type": "architecture",
+    "question": "Where does browser behavior meet server authority?"
+  },
+  {
+    "name": "deployment",
+    "title": "One container, one durable volume",
+    "type": "architecture",
+    "question": "What survives a container restart?"
+  },
+  {
+    "name": "ssr",
+    "title": "The first page needs no JavaScript",
+    "type": "sequence",
+    "question": "How is GET / rendered?"
+  },
+  {
+    "name": "create",
+    "title": "Validate before one atomic write",
+    "type": "sequence",
+    "question": "What happens after enhanced creation?"
+  },
+  {
+    "name": "vote",
+    "title": "Votes move the index atomically",
+    "type": "sequence",
+    "question": "How do concurrent votes avoid lost updates?"
+  },
+  {
+    "name": "search",
+    "title": "Filters meet a stated bound",
+    "type": "sequence",
+    "question": "Which rows can a search match?"
+  },
+  {
+    "name": "health",
+    "title": "Health crosses the real route",
+    "type": "sequence",
+    "question": "What does the container health check prove?"
+  },
+  {
+    "name": "visitor",
+    "title": "Visitor: discover ideas",
+    "type": "architecture",
+    "question": "What can a visitor do without JavaScript?"
+  },
+  {
+    "name": "contributor",
+    "title": "Contributor: create and vote",
+    "type": "architecture",
+    "question": "Which mutations does the application offer?"
+  },
+  {
+    "name": "operator",
+    "title": "Operator: run and verify",
+    "type": "architecture",
+    "question": "How is the board operated locally?"
+  },
+  {
+    "name": "lifecycle",
+    "title": "An idea is stored, then voted",
+    "type": "lifecycle",
+    "question": "Which states and refusals exist?"
+  },
+  {
+    "name": "keys",
+    "title": "Three key families, one transaction",
+    "type": "erd",
+    "question": "How does KV support order and tags?"
+  },
+  {
+    "name": "dataflow",
+    "title": "From untrusted fields to visible ideas",
+    "type": "dataflow",
+    "question": "Where does the data become trusted?"
+  },
+  {
+    "name": "rounds",
+    "title": "Eight rounds, one small board",
+    "type": "workflow",
+    "question": "Which round built each capability?"
+  }
+]

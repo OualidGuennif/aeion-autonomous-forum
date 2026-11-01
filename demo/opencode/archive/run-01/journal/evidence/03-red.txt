@@ -1,0 +1,26 @@
+[0m[32mCheck[0m domain/form_test.ts
+[0m[32mCheck[0m routes/index_test.ts
+[0m[1mTS2307 [0m[ERROR]: Cannot find module 'file:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/domain/form.ts'.
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/domain/form_test.ts[0m:[0m[33m3[0m:[0m[33m46[0m
+
+[0m[1mTS2614 [0m[ERROR]: Module '"file:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/routes/index.tsx"' has no exported member 'handleGet'. Did you mean to use 'import handleGet from "file:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/routes/index.tsx"' instead?
+import { handleGet, handlePost, HomeView } from './index.tsx';
+[0m[31m         ~~~~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/routes/index_test.ts[0m:[0m[33m5[0m:[0m[33m10[0m
+
+[0m[1mTS2614 [0m[ERROR]: Module '"file:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/routes/index.tsx"' has no exported member 'handlePost'. Did you mean to use 'import handlePost from "file:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/routes/index.tsx"' instead?
+import { handleGet, handlePost, HomeView } from './index.tsx';
+[0m[31m                    ~~~~~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/routes/index_test.ts[0m:[0m[33m5[0m:[0m[33m21[0m
+
+[0m[1mTS2614 [0m[ERROR]: Module '"file:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/routes/index.tsx"' has no exported member 'HomeView'. Did you mean to use 'import HomeView from "file:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/routes/index.tsx"' instead?
+import { handleGet, handlePost, HomeView } from './index.tsx';
+[0m[31m                                ~~~~~~~~[0m
+    at [0m[36mfile:///Users/wallseven/Desktop/aeion-factory/demo/opencode/workspace/app/routes/index_test.ts[0m:[0m[33m5[0m:[0m[33m33[0m
+
+Found 4 errors.
+
+[0m[1m[31merror[0m: Type checking failed.
+
+  [33minfo:[39m The program failed type-checking, but it still might work correctly.
+  [36mhint:[39m Re-run with [4m--no-check[24m to skip type-checking.

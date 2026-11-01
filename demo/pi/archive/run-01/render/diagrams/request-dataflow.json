@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Request data through Idea Board",
+    "output": "diagrams/request-dataflow.html",
+    "quality_profile": "showcase"
+  },
+  "stages": [
+    { "label": "Browser" },
+    { "label": "Routes" },
+    { "label": "Rules" },
+    { "label": "Store" },
+    { "label": "Deno KV" }
+  ],
+  "nodes": [
+    { "id": "form", "type": "frontend", "label": "Page form", "sublabel": "urlencoded fields", "stage": 0, "row": 0, "tag": "no JS needed" },
+    { "id": "island", "type": "frontend", "label": "Island", "sublabel": "JSON fetch", "stage": 0, "row": 2, "tag": "with JS" },
+    { "id": "page", "type": "backend", "label": "Page handler", "sublabel": "routes/index.tsx", "stage": 1, "row": 0 },
+    { "id": "api", "type": "backend", "label": "Hono route", "sublabel": "POST /api/ideas", "stage": 1, "row": 2 },
+    { "id": "filters", "type": "backend", "label": "parseFilters", "sublabel": "tag + q", "stage": 2, "row": 0 },
+    { "id": "validator", "type": "backend", "label": "validateIdea", "sublabel": "field + reason", "stage": 2, "row": 2 },
+    { "id": "store", "type": "backend", "label": "Idea store", "sublabel": "create, list, vote", "stage": 3, "row": 1 },
+    { "id": "kv", "type": "database", "label": "Deno KV", "sublabel": "ideas + two indices", "stage": 4, "row": 1 }
+  ],
+  "flows": [
+    { "from": "form", "to": "page", "label": "fields", "classification": "form-urlencoded", "variant": "emphasis", "route": "straight" },
+    { "from": "island", "to": "api", "label": "idea JSON", "classification": "application/json", "variant": "emphasis", "route": "straight" },
+    { "from": "page", "to": "filters", "label": "?tag, ?q", "classification": "URL query", "variant": "default", "route": "straight" },
+    { "from": "filters", "to": "page", "label": "tag + text", "classification": "filters", "variant": "dashed", "route": "straight" },
+    { "from": "api", "to": "validator", "label": "body", "classification": "parsed JSON", "variant": "emphasis", "route": "straight" },
+    { "from": "validator", "to": "api", "label": "400", "classification": "field + reason", "variant": "security", "route": "straight", "labelDy": 30 },
+    { "from": "page", "to": "store", "label": "list, create", "classification": "NewIdea", "variant": "emphasis", "route": "straight" },
+    { "from": "api", "to": "store", "label": "list, create, vote", "classification": "NewIdea / id", "variant": "emphasis", "route": "vertical-channel" },
+    { "from": "store", "to": "kv", "label": "keys", "classification": "atomic commit", "variant": "emphasis", "route": "straight" },
+    { "from": "kv", "to": "store", "label": "entries", "classification": "Idea, ids", "variant": "dashed", "route": "straight" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Two entrances, one rule set", "items": ["The no-JavaScript form and the island end at the same validator", "Filters are parsed once, by the page and by the API"] },
+    { "dot": "emerald", "title": "What the store receives", "items": ["Only validated values reach the store", "A refusal never reaches KV, so an invalid request writes nothing"] },
+    { "dot": "rose", "title": "What the keys mean", "items": ["The idea is the value; the vote and tag keys are the indices", "The store lists by index and fetches only the ideas it needs"] }
+  ]
+}

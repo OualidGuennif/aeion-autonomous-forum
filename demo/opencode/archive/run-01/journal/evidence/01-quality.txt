@@ -1,0 +1,29 @@
+== deno fmt --check
+Checked 12 files
+FMT-OK
+== deno lint
+Checked 10 files
+LINT-OK
+== deno check
+[0m[32mCheck[0m api/app.ts
+[0m[32mCheck[0m api/app_test.ts
+[0m[32mCheck[0m client.ts
+[0m[32mCheck[0m main.ts
+[0m[32mCheck[0m routes/_app.tsx
+[0m[32mCheck[0m routes/api/[...path].ts
+[0m[32mCheck[0m routes/index.tsx
+[0m[32mCheck[0m utils.ts
+[0m[32mCheck[0m version.ts
+[0m[32mCheck[0m vite.config.ts
+CHECK-OK
+== deno test -A
+[0m[32mCheck[0m api/app_test.ts
+[0m[38;5;245mrunning 3 tests from ./api/app_test.ts[0m
+health answers ok with the app version and JSON content type ... [0m[32mok[0m [0m[38;5;245m(4ms)[0m
+unknown api route answers a JSON 404, never the Fresh HTML page ... [0m[32mok[0m [0m[38;5;245m(293µs)[0m
+wrong method on a known route answers a JSON 405 ... [0m[32mok[0m [0m[38;5;245m(124µs)[0m
+
+[0m[32mok[0m | 3 passed | 0 failed [0m[38;5;245m(7ms)[0m
+
+TEST-OK
+QUALITY-OK

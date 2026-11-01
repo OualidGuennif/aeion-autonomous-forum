@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Filters meet a stated bound",
+    "subtitle": "Which rows can a search match?",
+    "output": "search.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "viewBox": [
+      960,
+      608
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "b",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "GET controls"
+    },
+    {
+      "id": "a",
+      "type": "backend",
+      "label": "Hono / Fresh",
+      "sublabel": "Query boundary"
+    },
+    {
+      "id": "s",
+      "type": "backend",
+      "label": "Ideas store",
+      "sublabel": "list(query)"
+    },
+    {
+      "id": "k",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "Indexes / records"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m0",
+      "from": "b",
+      "to": "a",
+      "label": "GET ?tag=ui&q=idea&sort=votes",
+      "y": 180,
+      "variant": "default"
+    },
+    {
+      "id": "m1",
+      "from": "a",
+      "to": "s",
+      "label": "Validated query",
+      "y": 238,
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "s",
+      "to": "k",
+      "label": "Read tag IDs + newest 500 ideas",
+      "y": 296,
+      "variant": "default"
+    },
+    {
+      "id": "m3",
+      "from": "k",
+      "to": "s",
+      "label": "Candidate records",
+      "y": 354,
+      "variant": "return"
+    },
+    {
+      "id": "m4",
+      "from": "s",
+      "to": "a",
+      "label": "Intersect, literal match, sort, limit",
+      "y": 412,
+      "variant": "return"
+    },
+    {
+      "id": "m5",
+      "from": "a",
+      "to": "b",
+      "label": "JSON or server-rendered HTML",
+      "y": 470,
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Deliberate cost bound",
+      "items": [
+        "q searches only the 500 newest ideas globally; tag uses AND semantics.",
+        "Tag-only reads use the tag index; no primary-table scan.",
+        "Votes sort uses its index unless a tag/search filter needs in-memory ordering."
+      ]
+    }
+  ]
+}

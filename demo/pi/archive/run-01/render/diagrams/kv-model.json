@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "diagram_type": "tree",
+  "meta": {
+    "title": "Idea Board KV key model",
+    "subtitle": "Three prefixes: the idea itself, its place in the vote order and its place in each tag.",
+    "output": "diagrams/kv-model.html",
+    "quality_profile": "showcase"
+  },
+  "layout": { "direction": "right" },
+  "nodes": [
+    { "id": "kv", "label": "Deno KV", "sublabel": "SQLite file at KV_PATH" },
+    { "id": "ideas", "label": "[\"ideas\", id]", "sublabel": "the source of truth", "parent": "kv" },
+    { "id": "votes", "label": "[\"ideas_by_votes\", votes, id]", "sublabel": "sort by votes", "parent": "kv" },
+    { "id": "tags", "label": "[\"ideas_by_tag\", tag, id]", "sublabel": "filter by tag", "parent": "kv" },
+    { "id": "idea_value", "label": "Idea JSON", "sublabel": "title, description, tags, votes, createdAt", "parent": "ideas" },
+    { "id": "idea_order", "label": "id order = creation order", "sublabel": "monotonic ULID", "parent": "ideas" },
+    { "id": "vote_value", "label": "value: id", "sublabel": "reverse order = most votes, ties newest", "parent": "votes" },
+    { "id": "tag_value", "label": "value: id", "sublabel": "one key per idea and tag", "parent": "tags" }
+  ]
+}

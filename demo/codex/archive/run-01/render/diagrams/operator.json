@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Operator: run and verify",
+    "subtitle": "How is the board operated locally?",
+    "output": "operator.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "viewBox": [
+      940,
+      650
+    ]
+  },
+  "components": [
+    {
+      "id": "actor",
+      "type": "external",
+      "label": "Operator",
+      "sublabel": "External actor",
+      "pos": [
+        65,
+        250
+      ],
+      "size": [
+        200,
+        76
+      ]
+    },
+    {
+      "id": "build",
+      "type": "backend",
+      "label": "Build locked image",
+      "sublabel": "Frozen lockfile",
+      "pos": [
+        520,
+        90
+      ],
+      "size": [
+        260,
+        76
+      ]
+    },
+    {
+      "id": "run",
+      "type": "backend",
+      "label": "Run and recover",
+      "sublabel": "Persistent Compose volume",
+      "pos": [
+        520,
+        270
+      ],
+      "size": [
+        260,
+        76
+      ]
+    },
+    {
+      "id": "verify",
+      "type": "backend",
+      "label": "Check health and tests",
+      "sublabel": "HTTP probe + local gates",
+      "pos": [
+        520,
+        450
+      ],
+      "size": [
+        260,
+        76
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "actor",
+      "to": "build",
+      "label": "",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "actor",
+      "to": "run",
+      "label": "",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "actor",
+      "to": "verify",
+      "label": "",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Idea Board system",
+      "wraps": [
+        "build",
+        "run",
+        "verify"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Use case notation",
+      "items": [
+        "Archify has no use-case type. Architecture IR represents the external actor and bounded use cases.",
+        "These are public demo actions; there is no login or per-user vote limit."
+      ]
+    }
+  ]
+}

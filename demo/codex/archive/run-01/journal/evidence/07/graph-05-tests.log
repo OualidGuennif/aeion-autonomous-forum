@@ -1,0 +1,12 @@
+$ ../tools/architecture/ask --root codex/workspace tests app/store/ideas.ts
+app/api/ideas_test.ts  direct
+app/api/search_test.ts  direct
+app/api/votes_test.ts  direct
+app/routes/index_test.tsx  direct
+app/routes/vote_test.ts  direct
+app/store/ideas_test.ts  direct
+app/store/search_test.ts  direct
+app/store/votes_test.ts  direct
+app/api/app_test.ts  transitive via app/api/app.ts
+
+exit=0

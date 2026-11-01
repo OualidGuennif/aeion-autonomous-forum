@@ -1,0 +1,305 @@
+{
+  "declared_sources": 24,
+  "missing_or_mismatched": [],
+  "source_edges": [
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/store/indexes.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/domain/idea.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/domain/query.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/store/ideas.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/store/kv.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/start.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/api/app.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/version.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/main.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/client.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/vite.config.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/routes/api/[...path].ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-api.md",
+      "file": "app/routes/_app.tsx",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-api.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-runtime.md",
+      "file": "app/Dockerfile",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-runtime.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-runtime.md",
+      "file": "app/compose.yaml",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-runtime.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-runtime.md",
+      "file": "app/.dockerignore",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-runtime.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-page.md",
+      "file": "app/islands/VoteButton.tsx",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-page.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-page.md",
+      "file": "app/routes/ideas/[id]/vote.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-page.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-page.md",
+      "file": "app/islands/ThemeSelect.tsx",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-page.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-page.md",
+      "file": "app/routes/index.tsx",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-page.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-page.md",
+      "file": "app/domain/form.ts",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-page.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-page.md",
+      "file": "app/islands/NewIdeaForm.tsx",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-page.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-page.md",
+      "file": "app/assets/styles.css",
+      "specifies_edges": 1,
+      "header": "knowledge/components/idea-board-page.md",
+      "ok": true
+    },
+    {
+      "spec": "knowledge/components/idea-board-architecture.md",
+      "file": "tools/architecture/ask",
+      "specifies_edges": 1,
+      "header": "knowledge/components/graph-queries.md",
+      "ok": true
+    }
+  ],
+  "app_code_headers": [
+    {
+      "file": "app/main.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/start.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/client.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/version.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/vite.config.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/islands/NewIdeaForm.tsx",
+      "spec": "knowledge/components/idea-board-page.md"
+    },
+    {
+      "file": "app/islands/ThemeSelect.tsx",
+      "spec": "knowledge/components/idea-board-page.md"
+    },
+    {
+      "file": "app/islands/VoteButton.tsx",
+      "spec": "knowledge/components/idea-board-page.md"
+    },
+    {
+      "file": "app/api/search_test.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/api/app.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/api/ideas_test.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/api/votes_test.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/api/app_test.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/assets/styles.css",
+      "spec": "knowledge/components/idea-board-page.md"
+    },
+    {
+      "file": "app/domain/idea.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/domain/form.ts",
+      "spec": "knowledge/components/idea-board-page.md"
+    },
+    {
+      "file": "app/domain/idea_test.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/domain/form_test.ts",
+      "spec": "knowledge/components/idea-board-page.md"
+    },
+    {
+      "file": "app/domain/query.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/routes/index.tsx",
+      "spec": "knowledge/components/idea-board-page.md"
+    },
+    {
+      "file": "app/routes/vote_test.ts",
+      "spec": "knowledge/components/idea-board-page.md"
+    },
+    {
+      "file": "app/routes/index_test.tsx",
+      "spec": "knowledge/components/idea-board-page.md"
+    },
+    {
+      "file": "app/routes/_app.tsx",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/store/search_test.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/store/indexes.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/store/ideas.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/store/ideas_test.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/store/kv.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/store/votes_test.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/routes/api/handler_test.ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/routes/api/[...path].ts",
+      "spec": "knowledge/components/idea-board-api.md"
+    },
+    {
+      "file": "app/routes/ideas/[id]/vote.ts",
+      "spec": "knowledge/components/idea-board-page.md"
+    }
+  ],
+  "code_without_header": []
+}

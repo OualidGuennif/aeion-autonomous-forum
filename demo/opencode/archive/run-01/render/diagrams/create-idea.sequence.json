@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Create an idea",
+    "subtitle": "Form POST without JS, island fetch with JS; one validation path",
+    "output": "diagrams/create-idea.html"
+  },
+  "participants": [
+    { "id": "user", "type": "external", "label": "Contributor" },
+    { "id": "page", "type": "frontend", "label": "Fresh route / island" },
+    { "id": "api", "type": "backend", "label": "Hono /api" },
+    { "id": "domain", "type": "security", "label": "validateIdeaInput" },
+    { "id": "store", "type": "backend", "label": "Idea store" },
+    { "id": "kv", "type": "database", "label": "Deno KV" }
+  ],
+  "messages": [
+    { "from": "user", "to": "page", "y": 160, "label": "submit title, tags" },
+    { "from": "page", "to": "domain", "y": 210, "label": "validateFormInput / JSON" },
+    { "from": "domain", "to": "page", "y": 255, "label": "ok | field, reason", "variant": "return" },
+    { "from": "page", "to": "api", "y": 300, "label": "POST /api/ideas (island only)" },
+    { "from": "api", "to": "store", "y": 345, "label": "create(input)" },
+    { "from": "store", "to": "kv", "y": 390, "label": "atomic: idea + vote + tag keys" },
+    { "from": "store", "to": "api", "y": 435, "label": "Idea", "variant": "return" },
+    { "from": "api", "to": "page", "y": 480, "label": "201 { idea }", "variant": "return" },
+    { "from": "page", "to": "user", "y": 525, "label": "303 to / (or inline error)", "variant": "return" }
+  ]
+}

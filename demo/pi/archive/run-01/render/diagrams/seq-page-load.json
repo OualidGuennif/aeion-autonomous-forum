@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Page load, server-rendered",
+    "output": "diagrams/seq-page-load.html",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "browser", "type": "external", "label": "Visitor", "sublabel": "browser" },
+    { "id": "page", "type": "backend", "label": "Page handler", "sublabel": "routes/index.tsx" },
+    { "id": "store", "type": "backend", "label": "Idea store", "sublabel": "store/ideas.ts" },
+    { "id": "kv", "type": "database", "label": "Deno KV", "sublabel": "SQLite file" }
+  ],
+  "segments": [
+    { "from": 150, "to": 430, "label": "Server render" }
+  ],
+  "messages": [
+    { "from": "browser", "to": "page", "y": 180, "label": "GET /?sort=votes", "variant": "emphasis" },
+    { "from": "page", "to": "store", "y": 222, "label": "list(50, votes, filters)" },
+    { "from": "store", "to": "kv", "y": 264, "label": "kv.list ideas" },
+    { "from": "kv", "to": "store", "y": 306, "label": "index ids", "variant": "return" },
+    { "from": "store", "to": "page", "y": 348, "label": "Idea[] in order", "variant": "return" },
+    { "from": "page", "to": "browser", "y": 390, "label": "HTML (SSR)", "variant": "return", "note": "islands arrive as markup and hydrate after paint" }
+  ],
+  "activations": [
+    { "participant": "page", "from": 174, "to": 440, "type": "backend" },
+    { "participant": "store", "from": 216, "to": 356, "type": "backend" },
+    { "participant": "kv", "from": 258, "to": 314, "type": "database" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "One request, one render", "items": ["The page handler reads the store before any HTML exists", "The visitor gets a complete list without JavaScript"] },
+    { "dot": "emerald", "title": "Order comes from the key", "items": ["recent reverses the ULID key order", "votes reverses the vote index, ties newest first"] },
+    { "dot": "rose", "title": "Islands are an upgrade", "items": ["The same HTML carries the form and the vote buttons", "Hydration adds fetching, not the controls themselves"] }
+  ]
+}

@@ -1,0 +1,12 @@
+$ ../tools/architecture/ask --root opencode/workspace rdeps app/store/ideas.ts --depth 2
+app/api/ideas.ts  [imports at app/api/ideas.ts:6]  depth 1
+app/api/ideas_test.ts  [imports at app/api/ideas_test.ts:4]  depth 1
+app/api/votes_test.ts  [imports at app/api/votes_test.ts:4]  depth 1
+app/page_vote.ts  [imports at app/page_vote.ts:4]  depth 1
+app/routes/index.tsx  [imports at app/routes/index.tsx:9]  depth 1
+app/routes/index_test.ts  [imports at app/routes/index_test.ts:4]  depth 1
+app/store/ideas_test.ts  [imports at app/store/ideas_test.ts:3]  depth 1
+app/store/search_test.ts  [imports at app/store/search_test.ts:3]  depth 1
+app/store/votes_test.ts  [imports at app/store/votes_test.ts:3]  depth 1
+app/api/app.ts  [imports at app/api/app.ts:5] via app/api/ideas.ts  depth 2
+app/routes/ideas/[id]/vote.ts  [imports at app/routes/ideas/[id]/vote.ts:4] via app/page_vote.ts  depth 2

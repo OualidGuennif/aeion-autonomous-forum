@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Idea Board as one Deno process",
+    "output": "diagrams/system-overview.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "visitor", "type": "external", "label": "Visitor", "sublabel": "browser", "pos": [40, 300], "size": [130, 60] },
+    { "id": "fresh", "type": "frontend", "label": "Fresh 2 + Vite", "sublabel": "SSR pages + islands", "pos": [250, 300], "size": [150, 66], "tag": "app/" },
+    { "id": "hono", "type": "backend", "label": "Hono API", "sublabel": "mounted at /api", "pos": [480, 300], "size": [140, 60], "tag": "api/app.ts" },
+    { "id": "domain", "type": "backend", "label": "Domain", "sublabel": "validate + filter", "pos": [480, 150], "size": [140, 60], "tag": "pure functions" },
+    { "id": "store", "type": "backend", "label": "Idea store", "sublabel": "indices + votes", "pos": [700, 300], "size": [140, 60], "tag": "store/ideas.ts" },
+    { "id": "kv", "type": "database", "label": "Deno KV", "sublabel": "SQLite file", "pos": [920, 300], "size": [140, 60], "tag": "data/ideas.sqlite3" }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "One Deno process", "wraps": ["fresh", "hono", "domain", "store", "kv"], "pad": 18 }
+  ],
+  "connections": [
+    { "from": "visitor", "to": "fresh", "label": "GET /", "variant": "emphasis" },
+    { "from": "fresh", "to": "visitor", "label": "HTML", "variant": "dashed", "fromSide": "top", "toSide": "top" },
+    { "from": "fresh", "to": "hono", "label": "catch-all", "variant": "emphasis" },
+    { "from": "hono", "to": "domain", "label": "rules" },
+    { "from": "domain", "to": "hono", "label": "clean input", "variant": "dashed", "fromSide": "right", "toSide": "right" },
+    { "from": "hono", "to": "store", "label": "create / vote", "variant": "emphasis" },
+    { "from": "store", "to": "kv", "label": "keys", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Two ways in", "items": ["A page request is server-rendered by Fresh", "A form or island call reaches Hono under /api through one catch-all route"] },
+    { "dot": "emerald", "title": "One rule set", "items": ["The API and the page run the same validator", "Filter parsing is shared, so tag and text rules match"] },
+    { "dot": "rose", "title": "State", "items": ["Ideas, the vote index and the tag index live in KV", "A vote moves the vote index key in the same atomic transaction"] }
+  ]
+}

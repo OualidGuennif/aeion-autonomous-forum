@@ -1,0 +1,4 @@
+RESULT: PASS (0 problem(s))
+RESULT: PASS (60 links checked)
+repo-health: AGENTS.md 118 lines, work/current.md 12, 7 top-level folders, 0 big files, 0 long comment blocks
+exit=0

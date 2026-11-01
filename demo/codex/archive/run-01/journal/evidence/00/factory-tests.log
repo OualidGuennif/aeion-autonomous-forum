@@ -1,0 +1,93 @@
+== python3 tools/knowledge/tests/test_doc_links.py
+43 passed, 0 failed
+== python3 .claude/hooks/test_hooks.py
+hook tests: 559 passed, 0 failed
+== python3 .claude/hooks/test_token_feedback.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 0.628s
+
+OK
+== python3 tools/repo-health/tests/test_repo_health.py
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 0.611s
+
+OK
+== python3 tools/git-hooks/tests/test_pre_push.py
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 1.591s
+
+OK
+== python3 tools/release/tests/test_release.py
+s.....
+----------------------------------------------------------------------
+Ran 6 tests in 0.433s
+
+OK (skipped=1)
+== python3 tools/context/tests/test_budget.py
+...........................
+----------------------------------------------------------------------
+Ran 27 tests in 4.330s
+
+OK
+== python3 tools/architecture/tests/test_refresh.py
+git: warning: confstr() failed with code 5: couldn't get path of DARWIN_USER_TEMP_DIR; using /tmp instead
+git: warning: confstr() failed with code 5: couldn't get path of DARWIN_USER_TEMP_DIR; using /tmp instead
+................
+----------------------------------------------------------------------
+Ran 16 tests in 2.772s
+
+OK
+== python3 tools/architecture/tests/test_ask.py
+.............s
+----------------------------------------------------------------------
+Ran 14 tests in 6.094s
+
+OK (skipped=1)
+== python3 tools/agents/tests/test_hooks.py
+.....................................
+----------------------------------------------------------------------
+Ran 37 tests in 18.593s
+
+OK
+== node --test tools/agents/tests/test_opencode.mjs
+✔ OpenCode V2 registers native tool and compaction hooks (0.880667ms)
+✔ OpenCode V2 shell/read payloads refuse secrets before execution (201.225625ms)
+✔ OpenCode V2 started in a subfolder finds the project hooks (147.590667ms)
+✔ OpenCode V2 compaction refuses a missing checkpoint (57.943458ms)
+✔ OpenCode V2 past 250k is held to closure by its step tokens (48.255958ms)
+✔ OpenCode V2 compacts itself once the hook reports a verified handover (41.761125ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 552.539125
+== node --test tools/agents/tests/test_pi.mjs
+✔ Pi registers the start, tool and compaction events (0.60425ms)
+✔ Pi tool calls that read a secret are blocked before execution (204.011417ms)
+✔ Pi treats an unknown tool carrying a command as a shell call (66.851625ms)
+✔ Pi started in a subfolder finds the project hooks (129.993458ms)
+✔ Pi compaction is cancelled without a verified checkpoint (52.818709ms)
+✔ Pi gives the factory context once per session, and again after a compaction (287.249958ms)
+✔ Pi past 250k is held to closure by its own context measure (69.655375ms)
+✔ Pi compacts itself once the hook reports a verified handover (25.0185ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 877.961334
+== python3 tools/loops/tests/test_loops.py
+......
+----------------------------------------------------------------------
+Ran 6 tests in 3.827s
+
+OK
+factory-tests: PASS

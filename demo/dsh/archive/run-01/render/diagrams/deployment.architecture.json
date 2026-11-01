@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Idea Board deployment",
+    "output": "diagrams/deployment.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1120,
+      640
+    ]
+  },
+  "components": [
+    {
+      "id": "operator",
+      "type": "external",
+      "label": "Operator",
+      "sublabel": "one command",
+      "pos": [
+        40,
+        140
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "compose",
+      "type": "cloud",
+      "label": "Docker Compose",
+      "sublabel": "app/compose.yaml",
+      "pos": [
+        250,
+        140
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "image",
+      "type": "external",
+      "label": "denoland/deno:2.9.8",
+      "sublabel": "pinned base image",
+      "pos": [
+        250,
+        350
+      ],
+      "size": [
+        170,
+        70
+      ]
+    },
+    {
+      "id": "web",
+      "type": "backend",
+      "label": "web container",
+      "sublabel": "user deno (1993)",
+      "pos": [
+        470,
+        140
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "port",
+      "type": "external",
+      "label": "Port 8000",
+      "sublabel": "localhost",
+      "pos": [
+        690,
+        140
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "volume",
+      "type": "database",
+      "label": "named volume ideas",
+      "sublabel": "/data",
+      "pos": [
+        470,
+        350
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "kvfile",
+      "type": "database",
+      "label": "ideas.sqlite3",
+      "sublabel": "KV_PATH=/data",
+      "pos": [
+        690,
+        350
+      ],
+      "size": [
+        150,
+        70
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Docker host",
+      "wraps": [
+        "compose",
+        "image",
+        "web",
+        "port",
+        "volume",
+        "kvfile"
+      ],
+      "pad": 26
+    }
+  ],
+  "connections": [
+    {
+      "id": "op-compose",
+      "from": "operator",
+      "to": "compose",
+      "label": "up -d --build"
+    },
+    {
+      "id": "compose-web",
+      "from": "compose",
+      "to": "web",
+      "label": "build + run"
+    },
+    {
+      "id": "image-web",
+      "from": "image",
+      "to": "web",
+      "label": "runtime",
+      "fromSide": "right",
+      "toSide": "bottom"
+    },
+    {
+      "id": "web-port",
+      "from": "web",
+      "to": "port",
+      "label": "listen 8000"
+    },
+    {
+      "id": "web-volume",
+      "from": "web",
+      "to": "volume",
+      "label": "KV_PATH=/data",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "volume-kvfile",
+      "from": "volume",
+      "to": "kvfile",
+      "label": "one file"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Reproducible",
+      "items": [
+        "The base tag is exact",
+        "deno install --frozen refuses a stale lock"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Not root",
+      "items": [
+        "The image ends with USER deno",
+        "id -u is 1993 inside the container"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Durable",
+      "items": [
+        "/data is a named volume, created owned by deno",
+        "down keeps it; down -v removes it"
+      ]
+    }
+  ]
+}

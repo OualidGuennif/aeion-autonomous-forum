@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "The first page needs no JavaScript",
+    "subtitle": "How is GET / rendered?",
+    "output": "ssr.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "viewBox": [
+      960,
+      608
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "b",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "Native HTML"
+    },
+    {
+      "id": "f",
+      "type": "frontend",
+      "label": "Fresh",
+      "sublabel": "Home handler"
+    },
+    {
+      "id": "s",
+      "type": "backend",
+      "label": "Ideas store",
+      "sublabel": "list(query)"
+    },
+    {
+      "id": "k",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "Recent ideas"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m0",
+      "from": "b",
+      "to": "f",
+      "label": "GET /",
+      "y": 180,
+      "variant": "default"
+    },
+    {
+      "id": "m1",
+      "from": "f",
+      "to": "s",
+      "label": "list(validated query)",
+      "y": 238,
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "s",
+      "to": "k",
+      "label": "Read keys / records",
+      "y": 296,
+      "variant": "default"
+    },
+    {
+      "id": "m3",
+      "from": "k",
+      "to": "s",
+      "label": "Ideas",
+      "y": 354,
+      "variant": "return"
+    },
+    {
+      "id": "m4",
+      "from": "s",
+      "to": "f",
+      "label": "Ordered ideas",
+      "y": 412,
+      "variant": "return"
+    },
+    {
+      "id": "m5",
+      "from": "f",
+      "to": "b",
+      "label": "Escaped HTML + island assets",
+      "y": 470,
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Fallback works",
+      "items": [
+        "Native creation and voting use POST \u2192 303.",
+        "Search and filters are ordinary GET forms / links."
+      ]
+    }
+  ]
+}

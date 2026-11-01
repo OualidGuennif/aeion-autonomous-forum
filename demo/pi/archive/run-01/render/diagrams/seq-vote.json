@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "A vote: optimistic, queued, retried",
+    "output": "diagrams/seq-vote.html",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "island", "type": "frontend", "label": "VoteButton", "sublabel": "island" },
+    { "id": "api", "type": "backend", "label": "Hono route", "sublabel": "POST /api/ideas/:id/vote" },
+    { "id": "store", "type": "backend", "label": "Idea store", "sublabel": "vote(id)" },
+    { "id": "kv", "type": "database", "label": "Deno KV", "sublabel": "check and set" }
+  ],
+  "segments": [
+    { "from": 150, "to": 336, "label": "Read" },
+    { "from": 340, "to": 560, "label": "Optimistic write" }
+  ],
+  "messages": [
+    { "from": "island", "to": "api", "y": 180, "label": "POST /ideas/:id/vote", "variant": "emphasis", "note": "no body: the path names the idea" },
+    { "from": "api", "to": "store", "y": 236, "label": "vote(id)", "variant": "emphasis", "note": "queued per idea id, in arrival order" },
+    { "from": "store", "to": "kv", "y": 290, "label": "kv.get idea" },
+    { "from": "kv", "to": "store", "y": 332, "label": "value and versionstamp", "variant": "return" },
+    { "from": "store", "to": "kv", "y": 374, "label": "atomic check + set", "variant": "emphasis", "note": "rewrite the idea, move its vote key" },
+    { "from": "kv", "to": "store", "y": 428, "label": "conflict", "variant": "dashed" },
+    { "from": "kv", "to": "store", "y": 470, "label": "commit ok, votes + 1", "variant": "return" },
+    { "from": "store", "to": "api", "y": 512, "label": "Idea", "variant": "return" },
+    { "from": "api", "to": "island", "y": 552, "label": "200 {idea}", "variant": "return", "note": "the island moves the count in place" }
+  ],
+  "activations": [
+    { "participant": "api", "from": 174, "to": 562, "type": "backend" },
+    { "participant": "store", "from": 230, "to": 518, "type": "backend" },
+    { "participant": "kv", "from": 284, "to": 478, "type": "database" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Concurrency is explicit", "items": ["The transaction checks the versionstamp it read", "A conflict retries the whole read and write, up to ten times"] },
+    { "dot": "emerald", "title": "One queue, in process", "items": ["A per-id queue keeps a burst of votes from fighting itself", "A second instance would still be correct, only busier"] },
+    { "dot": "rose", "title": "Busy is not a lie", "items": ["Exhausted retries answer 503 busy, and the button says so", "A vote is never counted twice and never silently lost"] }
+  ]
+}

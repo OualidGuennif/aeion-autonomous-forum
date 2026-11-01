@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Vote (optimistic transaction)",
+    "subtitle": "Per-id chain, atomic check, index key moved, retry up to 10",
+    "output": "diagrams/vote.html"
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "Contributor"
+    },
+    {
+      "id": "button",
+      "type": "frontend",
+      "label": "VoteButton / form"
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "POST /api/ideas/:id/vote"
+    },
+    {
+      "id": "store",
+      "type": "backend",
+      "label": "store.vote"
+    },
+    {
+      "id": "kv",
+      "type": "database",
+      "label": "Deno KV"
+    }
+  ],
+  "messages": [
+    {
+      "from": "user",
+      "to": "button",
+      "y": 160,
+      "label": "click \u25b2"
+    },
+    {
+      "from": "button",
+      "to": "api",
+      "y": 205,
+      "label": "fetch POST (or form POST)"
+    },
+    {
+      "from": "api",
+      "to": "store",
+      "y": 250,
+      "label": "vote(id) \u2014 queued per id"
+    },
+    {
+      "from": "store",
+      "to": "kv",
+      "y": 295,
+      "label": "get(idea)"
+    },
+    {
+      "from": "store",
+      "to": "kv",
+      "y": 340,
+      "label": "atomic check + set + index move",
+      "note": "retries on conflict, up to 10, then 503 busy"
+    },
+    {
+      "from": "kv",
+      "to": "store",
+      "y": 385,
+      "label": "ok | conflict",
+      "variant": "return"
+    },
+    {
+      "from": "store",
+      "to": "api",
+      "y": 430,
+      "label": "Idea (votes + 1)",
+      "variant": "return"
+    },
+    {
+      "from": "api",
+      "to": "button",
+      "y": 475,
+      "label": "200 { idea }",
+      "variant": "return"
+    },
+    {
+      "from": "button",
+      "to": "user",
+      "y": 520,
+      "label": "count updates in place",
+      "variant": "return"
+    }
+  ]
+}

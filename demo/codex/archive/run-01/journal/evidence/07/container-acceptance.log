@@ -1,0 +1,246 @@
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml up -d --build
+#1 [internal] load local bake definitions
+#1 reading from stdin 584B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 674B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/denoland/deno:2.9.8
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 139B done
+#4 DONE 0.0s
+
+#5 [build 1/6] FROM docker.io/denoland/deno:2.9.8@sha256:a0d88a7fcbd44f062cba2748e19df67d30290ad12aa203c7c1e0b12462c483f0
+#5 resolve docker.io/denoland/deno:2.9.8@sha256:a0d88a7fcbd44f062cba2748e19df67d30290ad12aa203c7c1e0b12462c483f0 done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 5.02kB done
+#6 DONE 0.0s
+
+#7 [build 3/6] COPY deno.json deno.lock ./
+#7 CACHED
+
+#8 [build 2/6] WORKDIR /app
+#8 CACHED
+
+#9 [build 4/6] RUN deno install --frozen
+#9 CACHED
+
+#10 [build 5/6] COPY . .
+#10 DONE 0.0s
+
+#11 [build 6/6] RUN deno task build && deno cache --frozen _fresh/server.js
+#11 0.141 [0m[32mTask[0m [0m[36mbuild[0m vite build
+#11 1.076 vite v7.3.7 building client environment for production...
+#11 1.231 transforming...
+#11 1.808 ✓ 27 modules transformed.
+#11 1.834 rendering chunks...
+#11 1.852 computing gzip size...
+#11 1.858 _fresh/client/.vite/manifest.json                            1.74 kB │ gzip:  0.39 kB
+#11 1.858 _fresh/client/assets/client-entry-D4l08YPM.css               4.06 kB │ gzip:  1.38 kB
+#11 1.859 _fresh/client/assets/jsxRuntime.module-BCl3Xay8.js           0.42 kB │ gzip:  0.30 kB
+#11 1.859 _fresh/client/assets/fresh-island__ThemeSelect-BQJSwbdJ.js   0.44 kB │ gzip:  0.28 kB
+#11 1.859 _fresh/client/assets/fresh-island__VoteButton-CINTXymK.js    0.81 kB │ gzip:  0.53 kB
+#11 1.859 _fresh/client/assets/fresh-island__NewIdeaForm-CWLpcA73.js   1.88 kB │ gzip:  0.98 kB
+#11 1.859 _fresh/client/assets/hooks.module-B53GdFI2.js                2.66 kB │ gzip:  1.20 kB
+#11 1.859 _fresh/client/assets/preact.module-DADv7Q-6.js              11.03 kB │ gzip:  4.66 kB
+#11 1.859 _fresh/client/assets/client-entry-BcDQO2Cj.js               32.91 kB │ gzip: 12.53 kB
+#11 1.859 ✓ built in 754ms
+#11 1.859 vite v7.3.7 building ssr environment for production...
+#11 1.861 transforming...
+#11 3.154 ✓ 228 modules transformed.
+#11 3.201 rendering chunks...
+#11 3.298 _fresh/server/.vite/manifest.json                                 1.14 kB
+#11 3.298 _fresh/server/assets/_fresh-route___ideas_id_vote-URkDfnsu.mjs    1.24 kB
+#11 3.298 _fresh/server/assets/_fresh-route___index-LukIspO8.mjs            5.12 kB
+#11 3.298 _fresh/server/assets/kv-wtQIB5yP.mjs                              9.66 kB
+#11 3.298 _fresh/server/assets/_fresh-route___api_path_-DWMRS9zL.mjs       59.67 kB
+#11 3.298 _fresh/server/server-entry.mjs                                  187.78 kB
+#11 3.299 ✓ built in 1.44s
+#11 DONE 3.4s
+
+#8 [build 2/6] WORKDIR /app
+#8 CACHED
+
+#12 [stage-1 3/7] COPY --from=build --chown=deno:deno /deno-dir /deno-dir
+#12 DONE 1.1s
+
+#13 [stage-1 4/7] COPY --from=build --chown=deno:deno /app/node_modules ./node_modules
+#13 DONE 0.6s
+
+#14 [stage-1 5/7] COPY --from=build --chown=deno:deno /app/_fresh ./_fresh
+#14 DONE 0.0s
+
+#15 [stage-1 6/7] COPY --chown=deno:deno deno.json deno.lock start.ts ./
+#15 DONE 0.0s
+
+#16 [stage-1 7/7] RUN mkdir -p /data && chown deno:deno /data
+#16 DONE 0.2s
+
+#17 exporting to image
+#17 exporting layers
+#17 exporting layers 2.3s done
+#17 exporting manifest sha256:02b8c6b3f661e3f9ba76b5c175f0c49c9b4a54c0d1cc46b8475f57ca36f30f09 done
+#17 exporting config sha256:d40605c3cd20ba45d699594a4c39aeb0eaa186d8d7018c32efbb62a0f1202034 done
+#17 exporting attestation manifest sha256:46ed1c3a890c5c700eb54e724dd2511c0b1b5392eb0ecd5498ad0009b76cd46e done
+#17 exporting manifest list sha256:effb6219d2f68f15d1bf56582af984c60e820a88d152a4d527a277e88472f933 done
+#17 naming to docker.io/library/aeion-codex-demo-web:latest done
+#17 unpacking to docker.io/library/aeion-codex-demo-web:latest
+#17 unpacking to docker.io/library/aeion-codex-demo-web:latest 1.3s done
+#17 DONE 3.6s
+
+#18 resolving provenance for metadata file
+#18 DONE 0.0s
+ Image aeion-codex-demo-web Building 
+ Image aeion-codex-demo-web Built 
+ Network aeion-codex-demo_default Creating 
+ Volume aeion-codex-demo_ideas Creating 
+ Network aeion-codex-demo_default Creating 
+ Volume aeion-codex-demo_ideas Creating 
+ Volume aeion-codex-demo_ideas Created 
+ Volume aeion-codex-demo_ideas Created 
+ Network aeion-codex-demo_default Created 
+ Network aeion-codex-demo_default Created 
+ Container aeion-codex-demo-web-1 Creating 
+ Container aeion-codex-demo-web-1 Created 
+ Container aeion-codex-demo-web-1 Starting 
+ Container aeion-codex-demo-web-1 Started 
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+healthy
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Name}} {{.Health}}
+aeion-codex-demo-web-1 healthy
+exit=0
+
+/api/health 200 {"status": "ok", "version": "0.1.0"}
+
+/api/ideas 201 {"idea": {"title": "Survives container restart", "description": "", "tags": ["ops"], "id": "01M62A4NAY8XB3HDSJSW0TCAV6", "votes": 0, "createdAt": "2026-10-28T22:29:53.630Z"}}
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml down
+ Container aeion-codex-demo-web-1 Stopping 
+ Container aeion-codex-demo-web-1 Stopped 
+ Container aeion-codex-demo-web-1 Removing 
+ Container aeion-codex-demo-web-1 Removed 
+ Network aeion-codex-demo_default Removing 
+ Network aeion-codex-demo_default Removed 
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml up -d
+ Network aeion-codex-demo_default Creating 
+ Network aeion-codex-demo_default Creating 
+ Network aeion-codex-demo_default Created 
+ Network aeion-codex-demo_default Created 
+ Container aeion-codex-demo-web-1 Creating 
+ Container aeion-codex-demo-web-1 Created 
+ Container aeion-codex-demo-web-1 Starting 
+ Container aeion-codex-demo-web-1 Started 
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+starting
+exit=0
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml ps --format {{.Health}}
+healthy
+exit=0
+
+Healthy after restart: 5.52 seconds
+
+/api/ideas/01M62A4NAY8XB3HDSJSW0TCAV6 200 {"idea": {"title": "Survives container restart", "description": "", "tags": ["ops"], "id": "01M62A4NAY8XB3HDSJSW0TCAV6", "votes": 0, "createdAt": "2026-10-28T22:29:53.630Z"}}
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml exec -T web id -u
+1993
+exit=0
+
+$ docker image inspect aeion-codex-demo-web --format {{.Id}} {{.Config.User}}
+sha256:effb6219d2f68f15d1bf56582af984c60e820a88d152a4d527a277e88472f933 deno
+exit=0
+
+CONTAINER CHECKS PASS
+
+$ docker compose --env-file /dev/null -p aeion-codex-demo -f compose.yaml down -v
+ Container aeion-codex-demo-web-1 Stopping 
+ Container aeion-codex-demo-web-1 Stopped 
+ Container aeion-codex-demo-web-1 Removing 
+ Container aeion-codex-demo-web-1 Removed 
+ Volume aeion-codex-demo_ideas Removing 
+ Network aeion-codex-demo_default Removing 
+ Volume aeion-codex-demo_ideas Removed 
+ Network aeion-codex-demo_default Removed 
+exit=0

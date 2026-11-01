@@ -1,0 +1,6 @@
+Task dev vite --host 0.0.0.0 '--port' '18101'
+
+  VITE v7.3.7  ready in 450 ms
+
+  ➜  Local:   http://localhost:18101/
+  ➜  Network: http://192.168.1.29:18101/

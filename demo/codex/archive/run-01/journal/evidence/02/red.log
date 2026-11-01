@@ -1,0 +1,40 @@
+Check domain/idea_test.ts
+Check store/ideas_test.ts
+Check api/ideas_test.ts
+TS2307 [ERROR]: Cannot find module 'file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/domain/idea.ts'.
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/domain/idea_test.ts:3:30
+
+TS2307 [ERROR]: Cannot find module 'file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/ideas.ts'.
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/ideas_test.ts:3:34
+
+TS2322 [ERROR]: Type 'any' is not assignable to type 'never'.
+  const api = createApi({ ideas: createIdeasStore(kv) });
+                          ~~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/api/ideas_test.ts:8:27
+
+TS2322 [ERROR]: Type 'any' is not assignable to type 'never'.
+  const api = createApi({ ideas: store });
+                          ~~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/api/ideas_test.ts:20:27
+
+TS2322 [ERROR]: Type 'any' is not assignable to type 'never'.
+    const api = createApi({ ideas: createIdeasStore(kv) });
+                            ~~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/api/ideas_test.ts:36:29
+
+TS7006 [ERROR]: Parameter 'i' implicitly has an 'any' type.
+  assertEquals((await store.list({ limit: 1 })).map(i => i.id), [last.id]);
+                                                    ^
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/ideas_test.ts:19:53
+
+TS7006 [ERROR]: Parameter 'i' implicitly has an 'any' type.
+  assertEquals((await store.list({ limit: 20 })).map(i => i.id), [last.id, first.id]);
+                                                     ^
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/store/ideas_test.ts:20:54
+
+Found 7 errors.
+
+error: Type checking failed.
+
+  [33minfo:[39m The program failed type-checking, but it still might work correctly.
+  [36mhint:[39m Re-run with [4m--no-check[24m to skip type-checking.

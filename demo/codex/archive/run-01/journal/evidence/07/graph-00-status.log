@@ -1,0 +1,26 @@
+$ ../tools/architecture/ask --root codex/workspace status
+nodes: 1406
+edges: 2492
+files: 207
+inferred calls dropped (no import between the files): 6
+inventory only (no extractor): 31
+code files without a symbol: 14
+toolchain imports: deno info
+unresolved Spec: lines: 0
+unresolved frontmatter sources: 0
+  no symbol: .claude/hooks/context-budget.py
+  no symbol: app/api/app_test.ts
+  no symbol: app/api/ideas_test.ts
+  no symbol: app/api/search_test.ts
+  no symbol: app/api/votes_test.ts
+  no symbol: app/client.ts
+  no symbol: app/domain/form_test.ts
+  no symbol: app/routes/index_test.tsx
+  no symbol: app/routes/vote_test.ts
+  no symbol: app/store/ideas_test.ts
+  no symbol: app/vite.config.ts
+  no symbol: tools/agents/run
+  no symbol: tools/architecture/setup
+  no symbol: tools/context/run
+
+exit=0

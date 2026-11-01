@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Contributor use cases",
+    "subtitle": "Actor outside, use cases inside the board (drawn as architecture: Archify has no use-case type)",
+    "output": "diagrams/usecase-contributor.html"
+  },
+  "components": [
+    {
+      "id": "contributor",
+      "type": "external",
+      "label": "Contributor",
+      "sublabel": "no account",
+      "pos": [40, 260],
+      "size": [130, 60]
+    },
+    {
+      "id": "propose",
+      "type": "frontend",
+      "label": "Propose an idea",
+      "sublabel": "form | island",
+      "pos": [260, 140],
+      "size": [160, 60]
+    },
+    {
+      "id": "validate",
+      "type": "security",
+      "label": "See field errors",
+      "sublabel": "400 + kept values",
+      "pos": [260, 260],
+      "size": [160, 60]
+    },
+    {
+      "id": "vote",
+      "type": "frontend",
+      "label": "Vote",
+      "sublabel": "▲, atomic",
+      "pos": [260, 380],
+      "size": [160, 60]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Idea Board",
+      "wraps": ["propose", "validate", "vote"],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    { "from": "contributor", "to": "propose", "label": "submit" },
+    { "from": "contributor", "to": "validate", "label": "mistake" },
+    { "from": "contributor", "to": "vote", "label": "click" }
+  ]
+}

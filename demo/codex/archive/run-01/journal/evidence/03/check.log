@@ -1,0 +1,25 @@
+$ deno check
+Check api/app.ts
+Check api/app_test.ts
+Check api/ideas_test.ts
+Check client.ts
+Check domain/form.ts
+Check domain/form_test.ts
+Check domain/idea.ts
+Check domain/idea_test.ts
+Check domain/query.ts
+Check islands/NewIdeaForm.tsx
+Check islands/ThemeSelect.tsx
+Check main.ts
+Check routes/_app.tsx
+Check routes/api/[...path].ts
+Check routes/index.tsx
+Check routes/index_test.tsx
+Check start.ts
+Check store/ideas.ts
+Check store/ideas_test.ts
+Check store/kv.ts
+Check version.ts
+Check vite.config.ts
+
+exit=0

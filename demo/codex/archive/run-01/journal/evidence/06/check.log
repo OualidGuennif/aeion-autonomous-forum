@@ -1,0 +1,3 @@
+$ deno check
+
+exit=0

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Operator use cases",
+    "subtitle": "Actor outside, use cases inside the deployment (drawn as architecture: Archify has no use-case type)",
+    "output": "diagrams/usecase-operator.html"
+  },
+  "components": [
+    {
+      "id": "operator",
+      "type": "external",
+      "label": "Operator",
+      "sublabel": "terminal",
+      "pos": [40, 260],
+      "size": [130, 60]
+    },
+    {
+      "id": "run",
+      "type": "frontend",
+      "label": "Run locally",
+      "sublabel": "deno task dev|start",
+      "pos": [260, 120],
+      "size": [170, 60]
+    },
+    {
+      "id": "container",
+      "type": "cloud",
+      "label": "Run in Docker",
+      "sublabel": "compose up",
+      "pos": [260, 230],
+      "size": [170, 60]
+    },
+    {
+      "id": "health",
+      "type": "security",
+      "label": "Know it is healthy",
+      "sublabel": "/api/health",
+      "pos": [260, 340],
+      "size": [170, 60]
+    },
+    {
+      "id": "data",
+      "type": "database",
+      "label": "Keep its data",
+      "sublabel": "KV_PATH + volume",
+      "pos": [260, 450],
+      "size": [170, 60]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Deployment",
+      "wraps": ["run", "container", "health", "data"],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    { "from": "operator", "to": "run", "label": "development" },
+    { "from": "operator", "to": "container", "label": "production" },
+    { "from": "operator", "to": "health", "label": "curl" },
+    { "from": "operator", "to": "data", "label": "restart" }
+  ]
+}

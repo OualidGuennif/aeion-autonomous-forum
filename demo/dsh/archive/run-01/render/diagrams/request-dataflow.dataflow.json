@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Request data flow",
+    "output": "diagrams/request-dataflow.html",
+    "viewBox": [
+      1080,
+      520
+    ],
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "stages": [
+    {
+      "label": "Client"
+    },
+    {
+      "label": "Fresh route"
+    },
+    {
+      "label": "Hono / page"
+    },
+    {
+      "label": "Rules"
+    },
+    {
+      "label": "Store + KV"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "HTML form or island",
+      "stage": 0,
+      "row": 1,
+      "tag": "input"
+    },
+    {
+      "id": "route",
+      "type": "frontend",
+      "label": "Fresh route",
+      "sublabel": "GET / or /api/*",
+      "stage": 1,
+      "row": 1,
+      "tag": "entry"
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Hono API",
+      "sublabel": "status + JSON",
+      "stage": 2,
+      "row": 0,
+      "tag": "contract"
+    },
+    {
+      "id": "page",
+      "type": "frontend",
+      "label": "Page handler",
+      "sublabel": "SSR + filter UI",
+      "stage": 2,
+      "row": 2,
+      "tag": "render"
+    },
+    {
+      "id": "validate",
+      "type": "security",
+      "label": "validateIdea",
+      "sublabel": "title, tags, body",
+      "stage": 3,
+      "row": 0,
+      "tag": "refuse"
+    },
+    {
+      "id": "filters",
+      "type": "security",
+      "label": "parseFilters",
+      "sublabel": "tag, q",
+      "stage": 3,
+      "row": 2,
+      "tag": "refuse"
+    },
+    {
+      "id": "store",
+      "type": "backend",
+      "label": "Idea store",
+      "sublabel": "atomic + indexes",
+      "stage": 4,
+      "row": 1,
+      "tag": "one writer"
+    },
+    {
+      "id": "kv",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "ideas.sqlite3",
+      "stage": 4,
+      "row": 2,
+      "tag": "durable"
+    }
+  ],
+  "flows": [
+    {
+      "id": "browser-route",
+      "from": "browser",
+      "to": "route",
+      "label": "HTTP",
+      "classification": "user input",
+      "variant": "emphasis"
+    },
+    {
+      "id": "route-api",
+      "from": "route",
+      "to": "api",
+      "label": "/api/*",
+      "classification": "JSON",
+      "variant": "emphasis"
+    },
+    {
+      "id": "route-page",
+      "from": "route",
+      "to": "page",
+      "label": "/ and /ideas/:id/vote",
+      "classification": "form data"
+    },
+    {
+      "id": "api-validate",
+      "from": "api",
+      "to": "validate",
+      "label": "body",
+      "classification": "pure rule",
+      "variant": "security",
+      "route": "straight"
+    },
+    {
+      "id": "page-filters",
+      "from": "page",
+      "to": "filters",
+      "label": "query string",
+      "classification": "pure rule",
+      "variant": "security",
+      "route": "straight"
+    },
+    {
+      "id": "api-store",
+      "from": "api",
+      "to": "store",
+      "label": "create, vote",
+      "classification": "domain call",
+      "variant": "emphasis"
+    },
+    {
+      "id": "page-store",
+      "from": "page",
+      "to": "store",
+      "label": "list",
+      "classification": "domain call"
+    },
+    {
+      "id": "store-kv",
+      "from": "store",
+      "to": "kv",
+      "label": "get, list, atomic",
+      "classification": "one writer",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Two entry paths, one rule set",
+      "items": [
+        "The API and the page call the same validateIdea and parseFilters",
+        "A refusal carries field + reason in both"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "One writer",
+      "items": [
+        "Only the store touches KV",
+        "Every index write rides the idea's commit"
+      ]
+    }
+  ]
+}

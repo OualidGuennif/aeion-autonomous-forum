@@ -1,0 +1,34 @@
+{
+  "schema_version": 3,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Idea lifecycle",
+    "output": "diagrams/idea-lifecycle.html",
+    "quality_profile": "showcase"
+  },
+  "mainPath": ["created", "indexed", "visible", "voted"],
+  "states": [
+    { "id": "created", "type": "start", "label": "Created", "sublabel": "validated input", "tag": "votes: 0", "step": "01" },
+    { "id": "indexed", "type": "active", "label": "Indexed", "sublabel": "vote and tag keys written", "tag": "atomic", "step": "02" },
+    { "id": "visible", "type": "active", "label": "Listed", "sublabel": "page and API can read it", "tag": "recent or votes", "step": "03" },
+    { "id": "voted", "type": "active", "label": "Voted", "sublabel": "votes + 1", "tag": "index moved", "step": "04" },
+    { "id": "kept", "type": "success", "label": "Kept", "sublabel": "no edit, no delete", "tag": "terminal" },
+    { "id": "filtered", "type": "waiting", "label": "Hidden by filter", "sublabel": "tag or text excludes it", "tag": "still stored" },
+    { "id": "refused", "type": "failure", "label": "Refused", "sublabel": "invalid title, tags or body", "tag": "nothing written" }
+  ],
+  "transitions": [
+    { "id": "created-indexed", "from": "created", "to": "indexed", "label": "atomic set" },
+    { "id": "indexed-visible", "from": "indexed", "to": "visible", "label": "listed" },
+    { "id": "visible-voted", "from": "visible", "to": "voted", "label": "POST vote" },
+    { "id": "voted-visible", "from": "voted", "to": "visible", "label": "count refreshed" },
+    { "id": "visible-filtered", "from": "visible", "to": "filtered", "label": "filter miss", "variant": "dashed" },
+    { "id": "filtered-visible", "from": "filtered", "to": "visible", "label": "clear filters", "variant": "dashed" },
+    { "id": "created-refused", "from": "created", "to": "refused", "label": "validation fails", "variant": "security" },
+    { "id": "voted-kept", "from": "voted", "to": "kept", "label": "stays forever" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Only two writes", "items": ["A create writes the idea, its vote key and one key per tag in one atomic operation", "A vote moves the vote key and sets the idea in one transaction"] },
+    { "dot": "rose", "title": "No delete, no edit", "items": ["The board has no edit or delete path by design", "A refused create leaves the store untouched"] },
+    { "dot": "emerald", "title": "Filters hide, never remove", "items": ["A filtered idea is still stored and still votable by id", "Clearing the filters brings it back"] }
+  ]
+}

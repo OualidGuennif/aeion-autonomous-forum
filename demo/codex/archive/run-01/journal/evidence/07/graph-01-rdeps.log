@@ -1,0 +1,17 @@
+$ ../tools/architecture/ask --root codex/workspace rdeps app/store/ideas.ts --depth 2
+app/api/app.ts  [imports at app/api/app.ts:7]  depth 1
+app/api/ideas_test.ts  [imports at app/api/ideas_test.ts:4]  depth 1
+app/api/search_test.ts  [imports at app/api/search_test.ts:4]  depth 1
+app/api/votes_test.ts  [imports at app/api/votes_test.ts:4]  depth 1
+app/routes/ideas/[id]/vote.ts  [imports at app/routes/ideas/[id]/vote.ts:4]  depth 1
+app/routes/index.tsx  [imports at app/routes/index.tsx:8]  depth 1
+app/routes/index_test.tsx  [imports at app/routes/index_test.tsx:5]  depth 1
+app/routes/vote_test.ts  [imports at app/routes/vote_test.ts:5]  depth 1
+app/store/ideas_test.ts  [imports at app/store/ideas_test.ts:3]  depth 1
+app/store/kv.ts  [imports at app/store/kv.ts:4]  depth 1
+app/store/search_test.ts  [imports at app/store/search_test.ts:3]  depth 1
+app/store/votes_test.ts  [imports at app/store/votes_test.ts:3]  depth 1
+app/api/app_test.ts  [imports at app/api/app_test.ts:3] via app/api/app.ts  depth 2
+app/routes/api/[...path].ts  [imports at app/routes/api/[...path].ts:3] via app/api/app.ts  depth 2
+
+exit=0

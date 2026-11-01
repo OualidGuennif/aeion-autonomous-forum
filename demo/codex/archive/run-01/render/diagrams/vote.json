@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Votes move the index atomically",
+    "subtitle": "How do concurrent votes avoid lost updates?",
+    "output": "vote.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "b",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "Vote island / form"
+    },
+    {
+      "id": "a",
+      "type": "backend",
+      "label": "Hono API",
+      "sublabel": "POST vote"
+    },
+    {
+      "id": "s",
+      "type": "backend",
+      "label": "Ideas store",
+      "sublabel": "vote(id)"
+    },
+    {
+      "id": "k",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "Version check"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m0",
+      "from": "b",
+      "to": "a",
+      "label": "POST /api/ideas/:id/vote",
+      "y": 180,
+      "variant": "default"
+    },
+    {
+      "id": "m1",
+      "from": "a",
+      "to": "s",
+      "label": "vote(id)",
+      "y": 238,
+      "variant": "default"
+    },
+    {
+      "id": "m2",
+      "from": "s",
+      "to": "k",
+      "label": "Read idea + versionstamp",
+      "y": 296,
+      "variant": "default"
+    },
+    {
+      "id": "m3",
+      "from": "k",
+      "to": "s",
+      "label": "Current value",
+      "y": 354,
+      "variant": "return"
+    },
+    {
+      "id": "m4",
+      "from": "s",
+      "to": "k",
+      "label": "Check + increment + move index",
+      "y": 412,
+      "variant": "default"
+    },
+    {
+      "id": "m5",
+      "from": "k",
+      "to": "s",
+      "label": "Commit result",
+      "y": 470,
+      "variant": "return"
+    },
+    {
+      "id": "m6",
+      "from": "s",
+      "to": "a",
+      "label": "Idea / missing / BusyError",
+      "y": 528,
+      "variant": "return"
+    },
+    {
+      "id": "m7",
+      "from": "a",
+      "to": "b",
+      "label": "200 / 404 / 503",
+      "y": 586,
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Bounded conflict retry",
+      "items": [
+        "A conflict retries from a fresh read, with short jitter.",
+        "Ten failed commits return 503 busy; native forms return 303 on success."
+      ]
+    }
+  ]
+}

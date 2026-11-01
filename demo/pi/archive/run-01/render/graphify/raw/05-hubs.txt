@@ -1,0 +1,10 @@
+app/store/ideas.ts  used by 13 files, uses 3
+.claude/hooks/project_files.py  used by 9 files, uses 0
+app/domain/idea.ts  used by 8 files, uses 0
+.claude/hooks/secret_names.py  used by 7 files, uses 0
+app/api/app.ts  used by 5 files, uses 4
+app/utils.ts  used by 5 files, uses 1
+tools/knowledge/doc-links  used by 4 files, uses 2
+tools/agents/hook.py  used by 4 files, uses 1
+tools/architecture/process.py  used by 4 files, uses 0
+tools/context/budget.py  used by 3 files, uses 2

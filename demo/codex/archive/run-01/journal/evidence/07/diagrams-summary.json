@@ -1,0 +1,114 @@
+[
+  {
+    "diagram": "system",
+    "type": "architecture",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "system-browser/system.browser-check.json"
+  },
+  {
+    "diagram": "deployment",
+    "type": "architecture",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "deployment-browser/deployment.browser-check.json"
+  },
+  {
+    "diagram": "ssr",
+    "type": "sequence",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "ssr-browser/ssr.browser-check.json"
+  },
+  {
+    "diagram": "create",
+    "type": "sequence",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "create-browser-final/create.browser-check.json"
+  },
+  {
+    "diagram": "vote",
+    "type": "sequence",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "vote-browser-final/vote.browser-check.json"
+  },
+  {
+    "diagram": "search",
+    "type": "sequence",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "search-browser/search.browser-check.json"
+  },
+  {
+    "diagram": "health",
+    "type": "sequence",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "health-browser/health.browser-check.json"
+  },
+  {
+    "diagram": "visitor",
+    "type": "architecture",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "visitor-browser/visitor.browser-check.json"
+  },
+  {
+    "diagram": "contributor",
+    "type": "architecture",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "contributor-browser/contributor.browser-check.json"
+  },
+  {
+    "diagram": "operator",
+    "type": "architecture",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "operator-browser/operator.browser-check.json"
+  },
+  {
+    "diagram": "lifecycle",
+    "type": "lifecycle",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "lifecycle-browser/lifecycle.browser-check.json"
+  },
+  {
+    "diagram": "keys",
+    "type": "erd",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "keys-browser/keys.browser-check.json"
+  },
+  {
+    "diagram": "dataflow",
+    "type": "dataflow",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "dataflow-browser/dataflow.browser-check.json"
+  },
+  {
+    "diagram": "rounds",
+    "type": "workflow",
+    "validate": true,
+    "render": true,
+    "browser": true,
+    "receipt": "rounds-browser/rounds.browser-check.json"
+  }
+]

@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Health check",
+    "output": "diagrams/health-check.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "compose",
+      "type": "cloud",
+      "label": "Docker Compose",
+      "sublabel": "healthcheck"
+    },
+    {
+      "id": "container",
+      "type": "backend",
+      "label": "web container",
+      "sublabel": "deno eval"
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Hono API",
+      "sublabel": "GET /api/health"
+    },
+    {
+      "id": "version",
+      "type": "backend",
+      "label": "version.ts",
+      "sublabel": "APP_VERSION"
+    }
+  ],
+  "messages": [
+    {
+      "id": "probe",
+      "from": "compose",
+      "to": "container",
+      "y": 165,
+      "label": "deno eval fetch /api/health",
+      "variant": "emphasis"
+    },
+    {
+      "id": "get",
+      "from": "container",
+      "to": "api",
+      "y": 200,
+      "label": "GET /api/health",
+      "variant": "emphasis"
+    },
+    {
+      "id": "read",
+      "from": "api",
+      "to": "version",
+      "y": 235,
+      "label": "APP_VERSION",
+      "variant": "default"
+    },
+    {
+      "id": "ok",
+      "from": "api",
+      "to": "container",
+      "y": 265,
+      "label": "200 {status, version}",
+      "variant": "return"
+    },
+    {
+      "id": "healthy",
+      "from": "container",
+      "to": "compose",
+      "y": 305,
+      "label": "exit 0 -> healthy",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "container",
+      "from": 160,
+      "to": 315,
+      "type": "backend"
+    },
+    {
+      "participant": "api",
+      "from": 195,
+      "to": 275,
+      "type": "backend"
+    },
+    {
+      "participant": "version",
+      "from": 230,
+      "to": 240,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "No extra tool",
+      "items": [
+        "The check runs deno eval, the app's own runtime",
+        "No curl is added to the image"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "One truth",
+      "items": [
+        "The probe asks the real endpoint",
+        "The version comes from version.ts"
+      ]
+    }
+  ]
+}

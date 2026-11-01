@@ -1,0 +1,149 @@
+{
+  "schema_version": 3,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Idea lifecycle",
+    "output": "diagrams/idea-lifecycle.html",
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "mainPath": [
+    "proposed",
+    "stored",
+    "listed",
+    "found",
+    "voted"
+  ],
+  "states": [
+    {
+      "id": "proposed",
+      "type": "start",
+      "label": "Proposed",
+      "sublabel": "form or JSON body",
+      "tag": "input",
+      "step": "01"
+    },
+    {
+      "id": "stored",
+      "type": "active",
+      "label": "Stored",
+      "sublabel": "idea + vote + tag keys",
+      "tag": "atomic",
+      "step": "02"
+    },
+    {
+      "id": "listed",
+      "type": "active",
+      "label": "Listed",
+      "sublabel": "recent or most voted",
+      "tag": "read",
+      "step": "03"
+    },
+    {
+      "id": "found",
+      "type": "decision",
+      "label": "Found",
+      "sublabel": "tag or text match",
+      "tag": "filter",
+      "step": "04"
+    },
+    {
+      "id": "voted",
+      "type": "success",
+      "label": "Voted",
+      "sublabel": "votes + 1, index moved",
+      "tag": "done",
+      "step": "05"
+    },
+    {
+      "id": "refused",
+      "type": "failure",
+      "label": "Refused",
+      "sublabel": "400 with field + reason",
+      "tag": "invalid"
+    },
+    {
+      "id": "busy",
+      "type": "waiting",
+      "label": "Busy",
+      "sublabel": "10 conflicts, 503",
+      "tag": "retry"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "proposed-stored",
+      "from": "proposed",
+      "to": "stored",
+      "label": "valid"
+    },
+    {
+      "id": "proposed-refused",
+      "from": "proposed",
+      "to": "refused",
+      "label": "invalid",
+      "variant": "security"
+    },
+    {
+      "id": "refused-proposed",
+      "from": "refused",
+      "to": "proposed",
+      "label": "corrected"
+    },
+    {
+      "id": "stored-listed",
+      "from": "stored",
+      "to": "listed",
+      "label": "GET /"
+    },
+    {
+      "id": "listed-found",
+      "from": "listed",
+      "to": "found",
+      "label": "tag or q"
+    },
+    {
+      "id": "found-voted",
+      "from": "found",
+      "to": "voted",
+      "label": "POST vote"
+    },
+    {
+      "id": "voted-listed",
+      "from": "voted",
+      "to": "listed",
+      "label": "re-render"
+    },
+    {
+      "id": "voted-busy",
+      "from": "voted",
+      "to": "busy",
+      "label": "conflict x10",
+      "variant": "dashed"
+    },
+    {
+      "id": "busy-voted",
+      "from": "busy",
+      "to": "voted",
+      "label": "retry"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "One write",
+      "items": [
+        "An idea exists only after its atomic commit",
+        "Its vote key and tag keys arrive with it"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Nothing is edited",
+      "items": [
+        "Only votes change an idea after creation",
+        "There is no edit or delete path"
+      ]
+    }
+  ]
+}

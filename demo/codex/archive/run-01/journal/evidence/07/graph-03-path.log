@@ -1,0 +1,4 @@
+$ ../tools/architecture/ask --root codex/workspace path app/api/app.ts app/store/ideas.ts
+app/api/app.ts -> app/store/ideas.ts  [imports at app/api/app.ts:7]
+
+exit=0

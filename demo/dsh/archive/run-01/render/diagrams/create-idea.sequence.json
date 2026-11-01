@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Create an idea",
+    "output": "diagrams/create-idea.html",
+    "column_fit": "spread",
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "person",
+      "type": "external",
+      "label": "Contributor",
+      "sublabel": "fills the form"
+    },
+    {
+      "id": "island",
+      "type": "frontend",
+      "label": "NewIdeaForm",
+      "sublabel": "island"
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Hono API",
+      "sublabel": "POST /api/ideas"
+    },
+    {
+      "id": "domain",
+      "type": "backend",
+      "label": "Domain",
+      "sublabel": "validateIdea"
+    },
+    {
+      "id": "store",
+      "type": "backend",
+      "label": "Idea store",
+      "sublabel": "create(input)"
+    },
+    {
+      "id": "kv",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "one atomic commit"
+    }
+  ],
+  "messages": [
+    {
+      "id": "submit",
+      "from": "person",
+      "to": "island",
+      "y": 165,
+      "label": "submit",
+      "variant": "default"
+    },
+    {
+      "id": "post",
+      "from": "island",
+      "to": "api",
+      "y": 195,
+      "label": "POST /api/ideas (JSON)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "check",
+      "from": "api",
+      "to": "domain",
+      "y": 225,
+      "label": "validateIdea(body)",
+      "variant": "default"
+    },
+    {
+      "id": "verdict",
+      "from": "domain",
+      "to": "api",
+      "y": 255,
+      "label": "ok | reason",
+      "variant": "return"
+    },
+    {
+      "id": "create",
+      "from": "api",
+      "to": "store",
+      "y": 295,
+      "label": "create(input)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "commit",
+      "from": "store",
+      "to": "kv",
+      "y": 325,
+      "label": "atomic: idea + vote key + tag keys",
+      "variant": "emphasis"
+    },
+    {
+      "id": "stored",
+      "from": "store",
+      "to": "api",
+      "y": 365,
+      "label": "Idea",
+      "variant": "return"
+    },
+    {
+      "id": "created",
+      "from": "api",
+      "to": "island",
+      "y": 395,
+      "label": "201 {idea}",
+      "variant": "return"
+    },
+    {
+      "id": "reload",
+      "from": "island",
+      "to": "person",
+      "y": 435,
+      "label": "reload the board",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "island",
+      "from": 160,
+      "to": 445,
+      "type": "frontend"
+    },
+    {
+      "participant": "api",
+      "from": 190,
+      "to": 410,
+      "type": "backend"
+    },
+    {
+      "participant": "domain",
+      "from": 220,
+      "to": 265,
+      "type": "backend"
+    },
+    {
+      "participant": "store",
+      "from": 290,
+      "to": 380,
+      "type": "backend"
+    },
+    {
+      "participant": "kv",
+      "from": 320,
+      "to": 335,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "One atomic write",
+      "items": [
+        "The idea, its vote key and every tag key commit together",
+        "A failed commit writes nothing"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "One refusal shape",
+      "items": [
+        "An invalid body is 400 with field and reason",
+        "The island shows the same wording as the page"
+      ]
+    }
+  ]
+}

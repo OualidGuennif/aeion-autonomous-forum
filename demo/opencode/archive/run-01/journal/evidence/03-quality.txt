@@ -1,0 +1,70 @@
+Checked 23 files
+Checked 21 files
+[0m[32mCheck[0m api/app.ts
+[0m[32mCheck[0m api/app_test.ts
+[0m[32mCheck[0m api/ideas.ts
+[0m[32mCheck[0m api/ideas_test.ts
+[0m[32mCheck[0m client.ts
+[0m[32mCheck[0m domain/form.ts
+[0m[32mCheck[0m domain/form_test.ts
+[0m[32mCheck[0m domain/idea.ts
+[0m[32mCheck[0m domain/idea_test.ts
+[0m[32mCheck[0m islands/NewIdeaForm.tsx
+[0m[32mCheck[0m main.ts
+[0m[32mCheck[0m routes/_app.tsx
+[0m[32mCheck[0m routes/api/[...path].ts
+[0m[32mCheck[0m routes/index.tsx
+[0m[32mCheck[0m routes/index_test.ts
+[0m[32mCheck[0m store/ideas.ts
+[0m[32mCheck[0m store/ideas_test.ts
+[0m[32mCheck[0m store/kv.ts
+[0m[32mCheck[0m utils.ts
+[0m[32mCheck[0m version.ts
+[0m[32mCheck[0m vite.config.ts
+[0m[32mCheck[0m api/app_test.ts
+[0m[32mCheck[0m api/ideas_test.ts
+[0m[32mCheck[0m domain/form_test.ts
+[0m[32mCheck[0m domain/idea_test.ts
+[0m[32mCheck[0m routes/index_test.ts
+[0m[32mCheck[0m store/ideas_test.ts
+[0m[38;5;245mrunning 3 tests from ./api/app_test.ts[0m
+health answers ok with the app version and JSON content type ... [0m[32mok[0m [0m[38;5;245m(2ms)[0m
+unknown api route answers a JSON 404, never the Fresh HTML page ... [0m[32mok[0m [0m[38;5;245m(302µs)[0m
+wrong method on a known route answers a JSON 405 ... [0m[32mok[0m [0m[38;5;245m(118µs)[0m
+[0m[38;5;245mrunning 8 tests from ./api/ideas_test.ts[0m
+a valid post answers 201 with the idea, votes zero ... [0m[32mok[0m [0m[38;5;245m(5ms)[0m
+an invalid post answers 400 with the first failing field ... [0m[32mok[0m [0m[38;5;245m(743µs)[0m
+not JSON answers 415, a too large body 413 ... [0m[32mok[0m [0m[38;5;245m(766µs)[0m
+listing answers ideas newest first with the count ... [0m[32mok[0m [0m[38;5;245m(1ms)[0m
+limit out of range answers 400 field limit out_of_range ... [0m[32mok[0m [0m[38;5;245m(832µs)[0m
+get by id answers 200 or a JSON 404 ... [0m[32mok[0m [0m[38;5;245m(907µs)[0m
+an invalid request writes nothing ... [0m[32mok[0m [0m[38;5;245m(748µs)[0m
+wrong methods on the idea routes answer 405 ... [0m[32mok[0m [0m[38;5;245m(606µs)[0m
+[0m[38;5;245mrunning 2 tests from ./domain/form_test.ts[0m
+parseTags splits on commas, trims, lowercases, and drops empty items ... [0m[32mok[0m [0m[38;5;245m(306µs)[0m
+validateFormInput shares the domain rules and reason codes ... [0m[32mok[0m [0m[38;5;245m(438µs)[0m
+[0m[38;5;245mrunning 10 tests from ./domain/idea_test.ts[0m
+title required: absent or not a string ... [0m[32mok[0m [0m[38;5;245m(281µs)[0m
+title too short after trimming ... [0m[32mok[0m [0m[38;5;245m(35µs)[0m
+title too long after trimming ... [0m[32mok[0m [0m[38;5;245m(35µs)[0m
+description optional, trimmed, defaulted, and too long over 500 ... [0m[32mok[0m [0m[38;5;245m(50µs)[0m
+tags too many over five ... [0m[32mok[0m [0m[38;5;245m(24µs)[0m
+tags bad: wrong type, wrong shape, wrong item ... [0m[32mok[0m [0m[38;5;245m(76µs)[0m
+tags duplicate items are refused ... [0m[32mok[0m [0m[38;5;245m(21µs)[0m
+unknown fields are refused after the known fields pass ... [0m[32mok[0m [0m[38;5;245m(26µs)[0m
+trimming applies to the title, and valid input passes whole ... [0m[32mok[0m [0m[38;5;245m(27µs)[0m
+a non-object body fails on the first field, title required ... [0m[32mok[0m [0m[38;5;245m(17µs)[0m
+[0m[38;5;245mrunning 5 tests from ./routes/index_test.ts[0m
+empty state shows the heading and No ideas yet. ... [0m[32mok[0m [0m[38;5;245m(3ms)[0m
+list renders the ideas with title, description, tags and votes ... [0m[32mok[0m [0m[38;5;245m(886µs)[0m
+a valid form post stores the idea and returns 303 to / ... [0m[32mok[0m [0m[38;5;245m(2ms)[0m
+an invalid form post returns 400, keeps the values and links the error ... [0m[32mok[0m [0m[38;5;245m(723µs)[0m
+user text is escaped: a script title renders as text, never a tag ... [0m[32mok[0m [0m[38;5;245m(677µs)[0m
+[0m[38;5;245mrunning 3 tests from ./store/ideas_test.ts[0m
+create then get round-trips the idea ... [0m[32mok[0m [0m[38;5;245m(2ms)[0m
+list returns newest first and honors the limit ... [0m[32mok[0m [0m[38;5;245m(1ms)[0m
+a missing id answers undefined ... [0m[32mok[0m [0m[38;5;245m(545µs)[0m
+
+[0m[32mok[0m | 31 passed | 0 failed [0m[38;5;245m(182ms)[0m
+
+QUALITY-OK

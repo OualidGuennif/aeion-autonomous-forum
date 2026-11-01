@@ -1,0 +1,8 @@
+Check api/app_test.ts
+TS2307 [ERROR]: Cannot find module 'file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/api/app.ts'.
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/api/app_test.ts:3:27
+
+error: Type checking failed.
+
+  [33minfo:[39m The program failed type-checking, but it still might work correctly.
+  [36mhint:[39m Re-run with [4m--no-check[24m to skip type-checking.

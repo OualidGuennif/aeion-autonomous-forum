@@ -1,0 +1,83 @@
+{
+  "schema_version": 3,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "An idea is stored, then voted",
+    "subtitle": "Which states and refusals exist?",
+    "output": "lifecycle.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none"
+  },
+  "mainPath": [
+    "draft",
+    "validate",
+    "stored",
+    "voted"
+  ],
+  "states": [
+    {
+      "id": "draft",
+      "type": "start",
+      "label": "Draft",
+      "sublabel": "Untrusted fields"
+    },
+    {
+      "id": "validate",
+      "type": "decision",
+      "label": "Validate",
+      "sublabel": "Pure domain rules"
+    },
+    {
+      "id": "stored",
+      "type": "success",
+      "label": "Stored",
+      "sublabel": "ULID; zero votes"
+    },
+    {
+      "id": "voted",
+      "type": "active",
+      "label": "Voted",
+      "sublabel": "Counter + index moved"
+    },
+    {
+      "id": "rejected",
+      "type": "failure",
+      "label": "Rejected",
+      "sublabel": "400; no writes"
+    }
+  ],
+  "transitions": [
+    {
+      "from": "draft",
+      "to": "validate",
+      "label": "Submit"
+    },
+    {
+      "from": "validate",
+      "to": "stored",
+      "label": "Valid"
+    },
+    {
+      "from": "stored",
+      "to": "voted",
+      "label": "Atomic vote"
+    },
+    {
+      "from": "validate",
+      "to": "rejected",
+      "label": "Invalid",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Scope",
+      "items": [
+        "No edit, delete or authentication flow is implemented.",
+        "A missing idea returns 404; exhausted vote conflicts return 503."
+      ]
+    }
+  ]
+}

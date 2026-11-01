@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Visitor use cases",
+    "output": "diagrams/use-case-visitor.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "visitor", "type": "external", "label": "Visitor", "sublabel": "no account", "pos": [40, 300], "size": [130, 60] },
+    { "id": "newest", "type": "backend", "label": "See newest ideas", "sublabel": "GET /", "pos": [280, 120], "size": [170, 60] },
+    { "id": "sort", "type": "backend", "label": "Sort by votes", "sublabel": "?sort=votes", "pos": [280, 250], "size": [170, 60] },
+    { "id": "tag", "type": "backend", "label": "Filter by tag", "sublabel": "?tag=ui", "pos": [280, 380], "size": [170, 60] },
+    { "id": "search", "type": "backend", "label": "Search text", "sublabel": "?q=dark", "pos": [280, 510], "size": [170, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Idea Board (no accounts)", "wraps": ["newest", "sort", "tag", "search"], "pad": 22 }
+  ],
+  "connections": [
+    { "from": "visitor", "to": "newest", "label": "open the page" },
+    { "from": "visitor", "to": "sort", "label": "most voted" },
+    { "from": "visitor", "to": "tag", "label": "click a tag" },
+    { "from": "visitor", "to": "search", "label": "type text" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Reading is open", "items": ["Every use case is a GET with no credential", "Filters and sort combine in one URL"] },
+    { "dot": "emerald", "title": "Same page", "items": ["Sort links, tag chips and the search box all live on /", "The page shows which filters are active"] }
+  ]
+}

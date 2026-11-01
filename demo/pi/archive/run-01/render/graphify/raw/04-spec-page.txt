@@ -1,0 +1,2 @@
+knowledge/components/idea-board-api.md  [in the spec's sources; its Spec: line names idea-board-page.md]
+knowledge/components/idea-board-page.md  [both]

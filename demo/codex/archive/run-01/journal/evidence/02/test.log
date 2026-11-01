@@ -1,0 +1,42 @@
+$ deno test -A
+running 3 tests from ./api/app_test.ts
+health returns its version and JSON content type ... ok (4ms)
+unknown API route is a JSON 404 ... ok (267µs)
+wrong health method is a JSON 405 ... ok (181µs)
+running 8 tests from ./api/ideas_test.ts
+ideas API creates, lists and reads a persisted idea ... ok (7ms)
+invalid creation requests write nothing and use stable JSON errors ... ok (1ms)
+limit "0" is refused ... ok (546µs)
+limit "51" is refused ... ok (519µs)
+limit "abc" is refused ... ok (450µs)
+limit "1x" is refused ... ok (415µs)
+limit "1.5" is refused ... ok (355µs)
+limit "" is refused ... ok (359µs)
+running 15 tests from ./domain/idea_test.ts
+idea validation rejects tags/bad_tag: {"title":"valid","tags":null} ... ok (296µs)
+idea validation rejects title/required: {} ... ok (29µs)
+idea validation rejects title/required: {"title":42} ... ok (27µs)
+idea validation rejects title/too_short: {"title":"x","extra":true} ... ok (16µs)
+idea validation rejects title/too_long: {"title":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"} ... ok (23µs)
+idea validation rejects description/too_long: {"title":"valid","description":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"} ... ok (16µs)
+idea validation rejects description/bad_type: {"title":"valid","description":null} ... ok (11µs)
+idea validation rejects tags/too_many: {"title":"valid","tags":["a","b","c","d","e","f"]} ... ok (18µs)
+idea validation rejects tags/bad_tag: {"title":"valid","tags":["Bad_Tag"]} ... ok (43µs)
+idea validation rejects tags/bad_tag: {"title":"valid","tags":"ui"} ... ok (19µs)
+idea validation rejects tags/duplicate: {"title":"valid","tags":["ui","ui"]} ... ok (35µs)
+idea validation rejects votes/unknown_field: {"title":"valid","votes":100} ... ok (22µs)
+idea validation rejects body/bad_type: null ... ok (7µs)
+idea validation trims text and supplies defaults ... ok (39µs)
+idea validation counts Unicode characters at the title boundary ... ok (22µs)
+running 2 tests from ./store/ideas_test.ts
+store creates and reads an idea with a ULID and zero votes ... ok (2ms)
+store lists newest first with the requested limit ... ok (858µs)
+
+ok | 28 passed | 0 failed (95ms)
+
+Check api/app_test.ts
+Check api/ideas_test.ts
+Check domain/idea_test.ts
+Check store/ideas_test.ts
+
+exit=0

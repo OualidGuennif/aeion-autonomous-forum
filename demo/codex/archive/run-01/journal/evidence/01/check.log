@@ -1,0 +1,13 @@
+$ deno check
+Check api/app.ts
+Check api/app_test.ts
+Check client.ts
+Check main.ts
+Check routes/_app.tsx
+Check routes/api/[...path].ts
+Check routes/index.tsx
+Check start.ts
+Check version.ts
+Check vite.config.ts
+
+exit=0

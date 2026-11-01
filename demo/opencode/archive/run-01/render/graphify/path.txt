@@ -1,0 +1,5 @@
+$ ../tools/architecture/ask --root opencode/workspace path "app/routes/api/[...path].ts" app/store/kv.ts
+app/routes/api/[...path].ts -> app/store/kv.ts  [imports at app/routes/api/[...path].ts:4]
+
+$ ../tools/architecture/ask --root opencode/workspace path "app/api/ideas.ts" app/store/ideas.ts
+app/api/ideas.ts -> app/store/ideas.ts  [imports at app/api/ideas.ts:6]

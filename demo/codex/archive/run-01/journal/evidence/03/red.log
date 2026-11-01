@@ -1,0 +1,16 @@
+Check domain/form_test.ts
+Check routes/index_test.tsx
+TS2307 [ERROR]: Cannot find module 'file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/domain/form.ts'.
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/domain/form_test.ts:3:27
+
+TS2614 [ERROR]: Module '"file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/routes/index.tsx"' has no exported member 'createHomeHandler'. Did you mean to use 'import createHomeHandler from "file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/routes/index.tsx"' instead?
+import { createHomeHandler } from "./index.tsx";
+         ~~~~~~~~~~~~~~~~~
+    at file:///Users/wallseven/Desktop/aeion-factory/demo/codex/workspace/app/routes/index_test.tsx:4:10
+
+Found 2 errors.
+
+error: Type checking failed.
+
+  [33minfo:[39m The program failed type-checking, but it still might work correctly.
+  [36mhint:[39m Re-run with [4m--no-check[24m to skip type-checking.

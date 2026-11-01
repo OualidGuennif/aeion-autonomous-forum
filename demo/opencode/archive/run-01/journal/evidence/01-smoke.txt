@@ -1,0 +1,9 @@
+[0m[32mTask[0m [0m[36mstart[0m deno serve -A _fresh/server.js
+deno serve: Listening on http://0.0.0.0:8000/
+{"status":"ok","version":"0.1.0"}
+404
+{"error":"method_not_allowed"}
+200
+<title>Idea Board</title>
+
+content-type: 

@@ -1,0 +1,5 @@
+GET /api/health: 200 {"status":"ok","version":"0.1.0"}
+GET /api/nope: 404 {"error":"not_found"}
+POST /api/health: 405 {"error":"method_not_allowed"}
+GET /: 200 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Idea Board</title></head><body><main><h1>Idea Board</h1><p>A place for your team&#39;s next idea.</p></main></body></html>
+SMOKE PASS

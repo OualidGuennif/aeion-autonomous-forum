@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Filter and search",
+    "output": "diagrams/filter-search.html",
+    "viewBox": [
+      1080,
+      580
+    ],
+    "column_fit": "spread",
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "person",
+      "type": "external",
+      "label": "Visitor",
+      "sublabel": "tag link or search box"
+    },
+    {
+      "id": "page",
+      "type": "frontend",
+      "label": "Page route",
+      "sublabel": "GET /"
+    },
+    {
+      "id": "rules",
+      "type": "backend",
+      "label": "parseFilters",
+      "sublabel": "tag + q rules"
+    },
+    {
+      "id": "store",
+      "type": "backend",
+      "label": "Idea store",
+      "sublabel": "list(50, sort, filter)"
+    },
+    {
+      "id": "kv",
+      "type": "database",
+      "label": "Deno KV",
+      "sublabel": "tag index + newest 500"
+    }
+  ],
+  "messages": [
+    {
+      "id": "open",
+      "from": "person",
+      "to": "page",
+      "y": 165,
+      "label": "GET /?tag=ui&q=dark",
+      "variant": "emphasis"
+    },
+    {
+      "id": "parse",
+      "from": "page",
+      "to": "rules",
+      "y": 195,
+      "label": "parseFilters(searchParams)",
+      "variant": "default"
+    },
+    {
+      "id": "verdict",
+      "from": "rules",
+      "to": "page",
+      "y": 225,
+      "label": "filter | bad_tag | too_long",
+      "variant": "return"
+    },
+    {
+      "id": "list",
+      "from": "page",
+      "to": "store",
+      "y": 265,
+      "label": "list(50, sort, filter)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "tag",
+      "from": "store",
+      "to": "kv",
+      "y": 295,
+      "label": "kv.list(ideas_by_tag, ui)",
+      "variant": "default"
+    },
+    {
+      "id": "scan",
+      "from": "store",
+      "to": "kv",
+      "y": 325,
+      "label": "scan newest 500 for q",
+      "variant": "dashed"
+    },
+    {
+      "id": "matched",
+      "from": "store",
+      "to": "page",
+      "y": 365,
+      "label": "Idea[]",
+      "variant": "return"
+    },
+    {
+      "id": "html",
+      "from": "page",
+      "to": "person",
+      "y": 405,
+      "label": "HTML + active filters",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "page",
+      "from": 160,
+      "to": 415,
+      "type": "frontend"
+    },
+    {
+      "participant": "rules",
+      "from": 190,
+      "to": 235,
+      "type": "backend"
+    },
+    {
+      "participant": "store",
+      "from": 260,
+      "to": 380,
+      "type": "backend"
+    },
+    {
+      "participant": "kv",
+      "from": 290,
+      "to": 340,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Index first",
+      "items": [
+        "A tag reads only ideas_by_tag",
+        "Text is a literal substring, not a pattern"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Stated bound",
+      "items": [
+        "q scans the newest 500 ideas",
+        "tag and q combine with AND"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Refused, not guessed",
+      "items": [
+        "bad_tag and too_long are 400 in the API",
+        "The page says why and lists nothing"
+      ]
+    }
+  ]
+}

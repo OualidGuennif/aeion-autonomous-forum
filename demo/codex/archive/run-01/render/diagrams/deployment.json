@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "One container, one durable volume",
+    "subtitle": "What survives a container restart?",
+    "output": "deployment.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "viewBox": [
+      1140,
+      500
+    ]
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "localhost:8000",
+      "pos": [
+        50,
+        210
+      ],
+      "size": [
+        172,
+        76
+      ]
+    },
+    {
+      "id": "port",
+      "type": "cloud",
+      "label": "Host port 8000",
+      "sublabel": "Compose port mapping",
+      "pos": [
+        330,
+        210
+      ],
+      "size": [
+        172,
+        76
+      ]
+    },
+    {
+      "id": "server",
+      "type": "backend",
+      "label": "Deno / Fresh",
+      "sublabel": "UID 1993; port 8000",
+      "pos": [
+        610,
+        210
+      ],
+      "size": [
+        172,
+        76
+      ]
+    },
+    {
+      "id": "volume",
+      "type": "database",
+      "label": "ideas volume",
+      "sublabel": "/data/ideas.sqlite3",
+      "pos": [
+        890,
+        210
+      ],
+      "size": [
+        172,
+        76
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "browser",
+      "to": "port",
+      "label": "HTTP"
+    },
+    {
+      "from": "port",
+      "to": "server",
+      "label": "8000:8000"
+    },
+    {
+      "from": "server",
+      "to": "volume",
+      "label": "KV_PATH"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Runtime container \u00b7 non-root deno",
+      "wraps": [
+        "server"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Locked build",
+      "items": [
+        "Multi-stage denoland/deno:2.9.8; deno install --frozen.",
+        "Only built output, cached runtime dependencies and start.ts reach the final image."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Recovery proof",
+      "items": [
+        "Fresh volume \u2192 create idea \u2192 down/up \u2192 identical record.",
+        "HTTP health check gates readiness; measured restart recovery: 5.47 seconds."
+      ]
+    }
+  ]
+}

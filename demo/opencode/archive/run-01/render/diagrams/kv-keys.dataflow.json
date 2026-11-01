@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "KV key model",
+    "subtitle": "one idea, three keys; writes are atomic, reads go through the index",
+    "output": "diagrams/kv-keys.html"
+  },
+  "stages": [
+    {
+      "label": "Write (atomic)"
+    },
+    {
+      "label": "Indexes"
+    },
+    {
+      "label": "Reads"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "idea",
+      "type": "database",
+      "label": "[\"ideas\", id]",
+      "sublabel": "Idea JSON",
+      "stage": 0,
+      "row": 0
+    },
+    {
+      "id": "votekey",
+      "type": "database",
+      "label": "votes index",
+      "sublabel": "[votes, id] -> id",
+      "stage": 1,
+      "row": 0
+    },
+    {
+      "id": "tagkey",
+      "type": "database",
+      "label": "tag index",
+      "sublabel": "[tag, id] -> id",
+      "stage": 1,
+      "row": 1
+    },
+    {
+      "id": "listread",
+      "type": "backend",
+      "label": "list / search",
+      "sublabel": "reverse scan",
+      "stage": 2,
+      "row": 0
+    },
+    {
+      "id": "voteread",
+      "type": "backend",
+      "label": "sort=votes",
+      "sublabel": "reverse index",
+      "stage": 2,
+      "row": 1
+    }
+  ],
+  "flows": [
+    {
+      "from": "idea",
+      "to": "votekey",
+      "label": "same atomic()"
+    },
+    {
+      "from": "idea",
+      "to": "tagkey",
+      "label": "same atomic()"
+    },
+    {
+      "from": "votekey",
+      "to": "voteread",
+      "label": "votes desc"
+    },
+    {
+      "from": "tagkey",
+      "to": "listread",
+      "label": "tag filter"
+    }
+  ]
+}

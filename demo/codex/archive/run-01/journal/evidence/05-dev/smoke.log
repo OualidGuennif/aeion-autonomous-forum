@@ -1,0 +1,76 @@
+GET /api/health: 200 {"status":"ok","version":"0.1.0"}
+GET /api/nope: 404 {"error":"not_found"}
+POST /api/health: 405 {"error":"method_not_allowed"}
+GET /: 200 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Idea Board</title><style type="text/css" vite-module-id="-828741956">/* Spec: knowledge/components/idea-board-page.md */
+:root {
+  --bg: #faf8f3;
+  --surface: #fff;
+  --text: #1c2c25;
+  --muted: #58645d;
+  --primary: #16563e;
+  --on-primary: #fff;
+  --line: #d9dfd9;
+  --tint: #edf3ed;
+  --error: #a52d20;
+  --s1: .25rem;
+  --s2: .5rem;
+  --s3: .75rem;
+  --s4: 1rem;
+  --s5: 1.5rem;
+  --s6: 2rem;
+  --s7: 3rem;
+  --radius: .85rem;
+  --small: .85rem;
+  --body: 1rem;
+  --title: clamp(2.4rem,6vw,4rem);
+  --section: 1.2rem;
+  --control: 2.75rem;
+  --width: 72rem;
+  color-scheme: light;
+}
+@media (prefers-color-scheme:dark) {
+  :root:not([data-theme="light"]) {
+    --
+POST /api/ideas: 201 {"idea":{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286VSA5TR55PD3SD74RH28","votes":0,"createdAt":"2026-10-28T21:56:08.618Z"}}
+POST /api/ideas: 400 {"error":"invalid","field":"title","reason":"too_short"}
+GET /api/ideas?limit=5: 200 {"ideas":[{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286VSA5TR55PD3SD74RH28","votes":0,"createdAt":"2026-10-28T21:56:08.618Z"},{"title":"Browser island idea","description":"Created by the enhanced form","tags":["ui"],"id":"01M6286SQA4Y1ZV2FVTWX4NMJ8","votes":1,"createdAt":"2026-10-28T21:56:06.506Z"},{"title":"Offline mode","description":"","tags":["ux"],"id":"01M6286PNPZSGRY1KDSX11X1DC","votes":0,"createdAt":"2026-10-28T21:56:03.382Z"},{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286PNM3KEF483RB172YK67","votes":3,"createdAt":"2026-10-28T21:56:03.380Z"},{"title":"Offline mode","description":"","tags":["ux"],"id":"01M62803KZZ7J5QJ7J1P4H0EWK","votes":0,"createdAt":"2026-10-28T21:52:27.263Z"}],"count":5}
+POST /: 303 
+POST /: 400 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Idea Board</title><style type="text/css" vite-module-id="-828741956">/* Spec: knowledge/components/idea-board-page.md */
+:root {
+  --bg: #faf8f3;
+  --surface: #fff;
+  --text: #1c2c25;
+  --muted: #58645d;
+  --primary: #16563e;
+  --on-primary: #fff;
+  --line: #d9dfd9;
+  --tint: #edf3ed;
+  --error: #a52d20;
+  --s1: .25rem;
+  --s2: .5rem;
+  --s3: .75rem;
+  --s4: 1rem;
+  --s5: 1.5rem;
+  --s6: 2rem;
+  --s7: 3rem;
+  --radius: .85rem;
+  --small: .85rem;
+  --body: 1rem;
+  --title: clamp(2.4rem,6vw,4rem);
+  --section: 1.2rem;
+  --control: 2.75rem;
+  --width: 72rem;
+  color-scheme: light;
+}
+@media (prefers-color-scheme:dark) {
+  :root:not([data-theme="light"]) {
+    --
+POST /api/ideas/01M6286VSA5TR55PD3SD74RH28/vote: 200 {"idea":{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286VSA5TR55PD3SD74RH28","votes":1,"createdAt":"2026-10-28T21:56:08.618Z"}}
+POST /api/ideas/01M6286VSA5TR55PD3SD74RH28/vote: 200 {"idea":{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286VSA5TR55PD3SD74RH28","votes":2,"createdAt":"2026-10-28T21:56:08.618Z"}}
+POST /api/ideas/01M6286VSA5TR55PD3SD74RH28/vote: 200 {"idea":{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286VSA5TR55PD3SD74RH28","votes":3,"createdAt":"2026-10-28T21:56:08.618Z"}}
+GET /api/ideas/01M6286VSA5TR55PD3SD74RH28: 200 {"idea":{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286VSA5TR55PD3SD74RH28","votes":3,"createdAt":"2026-10-28T21:56:08.618Z"}}
+GET /api/ideas?sort=votes: 200 {"ideas":[{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286VSA5TR55PD3SD74RH28","votes":3,"createdAt":"2026-10-28T21:56:08.618Z"},{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286PNM3KEF483RB172YK67","votes":3,"createdAt":"2026-10-28T21:56:03.380Z"},{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M62803KXEQ2E5KCHMFEHP755","votes":3,"createdAt":"2026-10-28T21:52:27.261Z"},{"title":"Browser island idea","description":"Created by the enhanced form","tags":["ui"],"id":"01M6286SQA4Y1ZV2FVTWX4NMJ8","votes":1,"createdAt":"2026-10-28T21:56:06.506Z"},{"title":"Offline mode","description":"","tags":["ux"],"id":"01M6286VSD8E5N5Z04KR1T4BJA","votes":0,"createdAt":"2026-10-28T21:56:08.621Z"},{"title":"Offline mode","description":"","tags":["u
+GET /api/ideas?tag=ui: 200 {"ideas":[{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286VSA5TR55PD3SD74RH28","votes":3,"createdAt":"2026-10-28T21:56:08.618Z"},{"title":"Browser island idea","description":"Created by the enhanced form","tags":["ui"],"id":"01M6286SQA4Y1ZV2FVTWX4NMJ8","votes":1,"createdAt":"2026-10-28T21:56:06.506Z"},{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286PNM3KEF483RB172YK67","votes":3,"createdAt":"2026-10-28T21:56:03.380Z"},{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M62803KXEQ2E5KCHMFEHP755","votes":3,"createdAt":"2026-10-28T21:52:27.261Z"},{"title":"Browser island idea","description":"Created by the enhanced form","tags":["ui"],"id":"01M627VDS1VXDY2Z7R11FHV7BB","votes":0,"createdAt":"2026-10-28T21:49:53.825Z"},{"title":"Dark m
+GET /api/ideas?q=DARK: 200 {"ideas":[{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286VSA5TR55PD3SD74RH28","votes":3,"createdAt":"2026-10-28T21:56:08.618Z"},{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M6286PNM3KEF483RB172YK67","votes":3,"createdAt":"2026-10-28T21:56:03.380Z"},{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M62803KXEQ2E5KCHMFEHP755","votes":3,"createdAt":"2026-10-28T21:52:27.261Z"},{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M627VAMQ92W07R4R5M6D2F1B","votes":0,"createdAt":"2026-10-28T21:49:50.615Z"},{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M627RDN440WYT2J120WXQPRE","votes":0,"createdAt":"2026-10-28T21:48:15.396Z"},{"title":"Dark mode smoke","description":"","tags":["ui"],"id":"01M627J6PWAGYZ51
+GET /api/ideas?tag=Bad_Tag: 400 {"error":"invalid","field":"tag","reason":"bad_tag"}
+SMOKE PASS

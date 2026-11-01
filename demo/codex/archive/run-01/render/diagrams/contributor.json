@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Contributor: create and vote",
+    "subtitle": "Which mutations does the application offer?",
+    "output": "contributor.html",
+    "quality_profile": "showcase",
+    "visual_preset": "editorial",
+    "animation": "none",
+    "viewBox": [
+      940,
+      650
+    ]
+  },
+  "components": [
+    {
+      "id": "actor",
+      "type": "external",
+      "label": "Contributor",
+      "sublabel": "External actor",
+      "pos": [
+        65,
+        250
+      ],
+      "size": [
+        200,
+        76
+      ]
+    },
+    {
+      "id": "create",
+      "type": "backend",
+      "label": "Create an idea",
+      "sublabel": "Title, description, tags",
+      "pos": [
+        520,
+        90
+      ],
+      "size": [
+        260,
+        76
+      ]
+    },
+    {
+      "id": "vote",
+      "type": "backend",
+      "label": "Vote on an idea",
+      "sublabel": "Atomic increment",
+      "pos": [
+        520,
+        270
+      ],
+      "size": [
+        260,
+        76
+      ]
+    },
+    {
+      "id": "recover",
+      "type": "backend",
+      "label": "Correct invalid input",
+      "sublabel": "Linked inline errors",
+      "pos": [
+        520,
+        450
+      ],
+      "size": [
+        260,
+        76
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "actor",
+      "to": "create",
+      "label": "",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "actor",
+      "to": "vote",
+      "label": "",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "actor",
+      "to": "recover",
+      "label": "",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Idea Board system",
+      "wraps": [
+        "create",
+        "vote",
+        "recover"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Use case notation",
+      "items": [
+        "Archify has no use-case type. Architecture IR represents the external actor and bounded use cases.",
+        "These are public demo actions; there is no login or per-user vote limit."
+      ]
+    }
+  ]
+}

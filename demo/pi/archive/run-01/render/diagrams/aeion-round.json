@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "The Æion round that built Idea Board",
+    "output": "diagrams/aeion-round.html",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    { "id": "brief", "label": "Brief" },
+    { "id": "spec", "label": "Spec" },
+    { "id": "tests", "label": "Tests" },
+    { "id": "code", "label": "Build" },
+    { "id": "checks", "label": "Checks" },
+    { "id": "record", "label": "Record" },
+    { "id": "ship", "label": "Ship" }
+  ],
+  "phases": [
+    { "id": "understand", "label": "Understand", "fromCol": 0, "toCol": 0 },
+    { "id": "agreetruth", "label": "Spec then tests", "fromCol": 1, "toCol": 2, "variant": "emphasis" },
+    { "id": "prove", "label": "Build and prove", "fromCol": 3, "toCol": 4, "variant": "emphasis" },
+    { "id": "keep", "label": "Keep the story", "fromCol": 5, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["read", "plan", "write-spec", "tests-first", "see-fail", "slices", "batteries", "factory", "journal", "commit"],
+  "nodes": [
+    { "id": "read", "lane": "brief", "col": 0, "type": "external", "label": "Read the round", "sublabel": "plan/0N-*.md" },
+    { "id": "plan", "lane": "brief", "col": 1, "type": "backend", "label": "Plan", "sublabel": "files + not done" },
+    { "id": "write-spec", "lane": "spec", "col": 1, "type": "database", "label": "Write the spec", "sublabel": "eight sections" },
+    { "id": "tests-first", "lane": "tests", "col": 2, "type": "security", "label": "Acceptance tests", "sublabel": "written first" },
+    { "id": "see-fail", "lane": "tests", "col": 3, "type": "security", "label": "See them fail", "sublabel": "red before green" },
+    { "id": "slices", "lane": "code", "col": 3, "type": "backend", "label": "Thin slices", "sublabel": "one behaviour each" },
+    { "id": "batteries", "lane": "checks", "col": 4, "type": "messagebus", "label": "Batteries", "sublabel": "fmt, lint, check, test" },
+    { "id": "factory", "lane": "checks", "col": 5, "type": "security", "label": "Factory checks", "sublabel": "knowledge, links, health" },
+    { "id": "journal", "lane": "record", "col": 5, "type": "frontend", "label": "Journal", "sublabel": "with the record block" },
+    { "id": "commit", "lane": "ship", "col": 5, "type": "cloud", "label": "Commit", "sublabel": "demo(pi): round NN" }
+  ],
+  "edges": [
+    { "from": "read", "to": "plan", "label": "scope", "variant": "emphasis", "route": "straight", "role": "main" },
+    { "from": "plan", "to": "write-spec", "label": "truth", "variant": "emphasis", "route": "drop", "fromSide": "bottom", "toSide": "top", "role": "main" },
+    { "from": "write-spec", "to": "tests-first", "label": "checks", "variant": "emphasis", "route": "drop", "fromSide": "bottom", "toSide": "top", "role": "main" },
+    { "from": "tests-first", "to": "see-fail", "label": "prove", "route": "straight", "role": "main" },
+    { "from": "see-fail", "to": "slices", "label": "green", "variant": "emphasis", "route": "drop", "fromSide": "bottom", "toSide": "top", "role": "main" },
+    { "from": "slices", "to": "batteries", "label": "run", "variant": "emphasis", "route": "drop", "fromSide": "bottom", "toSide": "top", "role": "main" },
+    { "from": "batteries", "to": "factory", "label": "pass", "variant": "emphasis", "route": "straight", "role": "main" },
+    { "from": "factory", "to": "journal", "label": "record", "variant": "dashed", "route": "drop", "fromSide": "bottom", "toSide": "top", "role": "branch" },
+    { "from": "journal", "to": "commit", "label": "story", "route": "drop", "fromSide": "bottom", "toSide": "top", "role": "main" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "The order is the rule", "items": ["A spec names the refusals and the test that proves each invariant", "The tests exist, and fail, before the code does"] },
+    { "dot": "emerald", "title": "Checks speak in public", "items": ["The app's batteries and the factory's three checks both run every round", "A refusal names the rule and the fix"] },
+    { "dot": "rose", "title": "What survives", "items": ["The journal keeps the real output, the stuck points and the guard refusals", "Durable facts go to knowledge/, never only to the journal"] }
+  ]
+}

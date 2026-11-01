@@ -1,0 +1,4 @@
+$ ../tools/architecture/ask --root codex/workspace spec app/deno.json
+no spec names app/deno.json, and it names none
+
+exit=0

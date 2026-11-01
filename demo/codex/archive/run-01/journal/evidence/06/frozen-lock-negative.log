@@ -1,0 +1,206 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 674B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/denoland/deno:2.9.8
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [build 1/6] FROM docker.io/denoland/deno:2.9.8@sha256:a0d88a7fcbd44f062cba2748e19df67d30290ad12aa203c7c1e0b12462c483f0
+#4 resolve docker.io/denoland/deno:2.9.8@sha256:a0d88a7fcbd44f062cba2748e19df67d30290ad12aa203c7c1e0b12462c483f0 done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 52.38kB done
+#5 DONE 0.0s
+
+#6 [build 2/6] WORKDIR /app
+#6 CACHED
+
+#7 [build 3/6] COPY deno.json deno.lock ./
+#7 DONE 0.0s
+
+#8 [build 4/6] RUN deno install --frozen
+#8 0.113 [0m[32mDownload[0m https://registry.npmjs.org/hono
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/rollup
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/esbuild
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/preact
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/@types%2fbabel__core
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/esbuild-wasm
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/vite
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/@remix-run%2fnode-fetch-server
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fcore
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/@preact%2fsignals
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/@opentelemetry%2fapi
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fpreset-react
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/preact-render-to-string
+#8 0.266 [0m[32mDownload[0m https://registry.npmjs.org/@prefresh%2fvite
+#8 0.298 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fparser
+#8 0.298 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2ftypes
+#8 0.298 [0m[32mDownload[0m https://registry.npmjs.org/@types%2fbabel__generator
+#8 0.298 [0m[32mDownload[0m https://registry.npmjs.org/@types%2fbabel__template
+#8 0.298 [0m[32mDownload[0m https://registry.npmjs.org/@types%2fbabel__traverse
+#8 0.304 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fhelper-plugin-utils
+#8 0.304 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fhelper-validator-option
+#8 0.304 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fplugin-transform-react-display-name
+#8 0.304 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fplugin-transform-react-jsx
+#8 0.304 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fplugin-transform-react-jsx-development
+#8 0.304 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fplugin-transform-react-pure-annotations
+#8 0.313 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fcode-frame
+#8 0.313 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fgenerator
+#8 0.313 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fhelper-compilation-targets
+#8 0.313 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fhelper-module-transforms
+#8 0.313 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fhelpers
+#8 0.314 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2ftemplate
+#8 0.314 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2ftraverse
+#8 0.314 [0m[32mDownload[0m https://registry.npmjs.org/@jridgewell%2fremapping
+#8 0.314 [0m[32mDownload[0m https://registry.npmjs.org/convert-source-map
+#8 0.315 [0m[32mDownload[0m https://registry.npmjs.org/debug
+#8 0.315 [0m[32mDownload[0m https://registry.npmjs.org/gensync
+#8 0.315 [0m[32mDownload[0m https://registry.npmjs.org/json5
+#8 0.315 [0m[32mDownload[0m https://registry.npmjs.org/semver
+#8 0.320 [0m[32mDownload[0m https://registry.npmjs.org/@prefresh%2fbabel-plugin
+#8 0.320 [0m[32mDownload[0m https://registry.npmjs.org/@prefresh%2fcore
+#8 0.320 [0m[32mDownload[0m https://registry.npmjs.org/@prefresh%2futils
+#8 0.320 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2fpluginutils
+#8 0.331 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2faix-ppc64
+#8 0.331 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fandroid-arm
+#8 0.331 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fandroid-arm64
+#8 0.331 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fandroid-x64
+#8 0.331 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fdarwin-arm64
+#8 0.331 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fdarwin-x64
+#8 0.331 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2ffreebsd-arm64
+#8 0.331 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2ffreebsd-x64
+#8 0.331 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2flinux-arm
+#8 0.331 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2flinux-arm64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2flinux-ia32
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2flinux-loong64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2flinux-mips64el
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2flinux-ppc64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2flinux-riscv64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2flinux-s390x
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2flinux-x64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fnetbsd-arm64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fnetbsd-x64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fopenbsd-arm64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fopenbsd-x64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fopenharmony-arm64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fsunos-x64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fwin32-arm64
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fwin32-ia32
+#8 0.332 [0m[32mDownload[0m https://registry.npmjs.org/@esbuild%2fwin32-x64
+#8 0.335 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fhelper-annotate-as-pure
+#8 0.338 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fhelper-string-parser
+#8 0.338 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fhelper-validator-identifier
+#8 0.338 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fhelper-module-imports
+#8 0.338 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fplugin-syntax-jsx
+#8 0.348 [0m[32mDownload[0m https://registry.npmjs.org/js-tokens
+#8 0.348 [0m[32mDownload[0m https://registry.npmjs.org/picocolors
+#8 0.348 [0m[32mDownload[0m https://registry.npmjs.org/ms
+#8 0.351 [0m[32mDownload[0m https://registry.npmjs.org/@jridgewell%2fgen-mapping
+#8 0.351 [0m[32mDownload[0m https://registry.npmjs.org/@jridgewell%2ftrace-mapping
+#8 0.352 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fcompat-data
+#8 0.352 [0m[32mDownload[0m https://registry.npmjs.org/browserslist
+#8 0.352 [0m[32mDownload[0m https://registry.npmjs.org/lru-cache
+#8 0.355 [0m[32mDownload[0m https://registry.npmjs.org/estree-walker
+#8 0.355 [0m[32mDownload[0m https://registry.npmjs.org/picomatch
+#8 0.357 [0m[32mDownload[0m https://registry.npmjs.org/jsesc
+#8 0.358 [0m[32mDownload[0m https://registry.npmjs.org/@babel%2fhelper-globals
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@napi-rs%2flzma-linux-x64-gnu
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-android-arm-eabi
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-android-arm64
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-darwin-arm64
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-darwin-x64
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-freebsd-arm64
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-freebsd-x64
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-arm-gnueabihf
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-arm-musleabihf
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-arm64-gnu
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-arm64-musl
+#8 0.373 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-loong64-gnu
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-loong64-musl
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-ppc64-gnu
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-ppc64-musl
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-riscv64-gnu
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-riscv64-musl
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-s390x-gnu
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-x64-gnu
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-linux-x64-musl
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-openbsd-x64
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-openharmony-arm64
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-win32-arm64-msvc
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-win32-ia32-msvc
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-win32-x64-gnu
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@rollup%2frollup-win32-x64-msvc
+#8 0.374 [0m[32mDownload[0m https://registry.npmjs.org/@types%2festree
+#8 0.375 [0m[32mDownload[0m https://registry.npmjs.org/fsevents
+#8 0.381 [0m[32mDownload[0m https://registry.npmjs.org/@jridgewell%2fsourcemap-codec
+#8 0.381 [0m[32mDownload[0m https://registry.npmjs.org/yallist
+#8 0.390 [0m[32mDownload[0m https://registry.npmjs.org/@jridgewell%2fresolve-uri
+#8 0.392 [0m[32mDownload[0m https://registry.npmjs.org/baseline-browser-mapping
+#8 0.392 [0m[32mDownload[0m https://registry.npmjs.org/caniuse-lite
+#8 0.392 [0m[32mDownload[0m https://registry.npmjs.org/electron-to-chromium
+#8 0.392 [0m[32mDownload[0m https://registry.npmjs.org/node-releases
+#8 0.392 [0m[32mDownload[0m https://registry.npmjs.org/update-browserslist-db
+#8 0.414 [0m[32mDownload[0m https://registry.npmjs.org/escalade
+#8 0.470 [0m[32mDownload[0m https://registry.npmjs.org/@preact%2fsignals-core
+#8 1.453 [0m[32mDownload[0m https://registry.npmjs.org/fdir
+#8 1.453 [0m[32mDownload[0m https://registry.npmjs.org/postcss
+#8 1.453 [0m[32mDownload[0m https://registry.npmjs.org/tinyglobby
+#8 1.487 [0m[32mDownload[0m https://registry.npmjs.org/nanoid
+#8 1.487 [0m[32mDownload[0m https://registry.npmjs.org/source-map-js
+#8 1.513 [0m[32mDownload[0m https://registry.npmjs.org/@types%2fnode
+#8 1.513 [0m[32mDownload[0m https://registry.npmjs.org/jiti
+#8 1.513 [0m[32mDownload[0m https://registry.npmjs.org/less
+#8 1.513 [0m[32mDownload[0m https://registry.npmjs.org/lightningcss
+#8 1.514 [0m[32mDownload[0m https://registry.npmjs.org/sass
+#8 1.514 [0m[32mDownload[0m https://registry.npmjs.org/sass-embedded
+#8 1.514 [0m[32mDownload[0m https://registry.npmjs.org/stylus
+#8 1.514 [0m[32mDownload[0m https://registry.npmjs.org/sugarss
+#8 1.514 [0m[32mDownload[0m https://registry.npmjs.org/terser
+#8 1.514 [0m[32mDownload[0m https://registry.npmjs.org/tsx
+#8 1.514 [0m[32mDownload[0m https://registry.npmjs.org/yaml
+#8 1.709 [0m[1m[31merror[0m: The lockfile is out of date. Run `deno install --frozen=false`, or rerun with `--frozen=false` to update it.
+#8 1.709 changes:
+#8 1.709   46[0m[38;5;245m |[0m [0m[1m[31m-[0m[0m[37m[41m    "npm:hono@4.13.14": "4.13.14",[0m
+#8 1.709   46[0m[38;5;245m |[0m [0m[1m[32m+[0m[0m[30m[42m    "npm:hono@4.13.13": "4.13.13",[0m
+#8 1.709     [0m[38;5;245m |[0m [0m[38;5;245m...[0m
+#8 1.709 1157[0m[38;5;245m |[0m [0m[1m[31m-[0m[0m[37m[41m    "hono@4.13.14": {[0m
+#8 1.709 1157[0m[38;5;245m |[0m [0m[1m[32m+[0m[0m[30m[42m    "hono@4.13.13": {[0m
+#8 1.709 1158[0m[38;5;245m |[0m [0m[1m[31m-[0m[0m[37m[41m      "integrity": "sha512-yhRLQ21U6qa9Hsu2N7Qcbh8tE+WKEcoErjIo56LeSGiGXGp9sA7UpE86Ui9uexb61KakiGwuHMn2QdV7w6i6kQ=="[0m
+#8 1.709 1158[0m[38;5;245m |[0m [0m[1m[32m+[0m[0m[30m[42m      "integrity": "sha512-CQ46U0ZkAGmbT/4UxdzzGJpacP2IeKgY4a5/tOI9AABbpOMfK739wfDXmv1usCk+3RkKj1hQy4/fjhiwa2xlrA=="[0m
+#8 1.709     [0m[38;5;245m |[0m [0m[38;5;245m...[0m
+#8 1.709 1303[0m[38;5;245m |[0m [0m[1m[31m-[0m[0m[37m[41m      "npm:hono@4.13.14",[0m
+#8 1.709 1303[0m[38;5;245m |[0m [0m[1m[32m+[0m[0m[30m[42m      "npm:hono@4.13.13",[0m
+#8 ERROR: process "/bin/sh -c deno install --frozen" did not complete successfully: exit code: 1
+------
+ > [build 4/6] RUN deno install --frozen:
+1.709   46[0m[38;5;245m |[0m [0m[1m[31m-[0m[0m[37m[41m    "npm:hono@4.13.14": "4.13.14",[0m
+1.709   46[0m[38;5;245m |[0m [0m[1m[32m+[0m[0m[30m[42m    "npm:hono@4.13.13": "4.13.13",[0m
+1.709     [0m[38;5;245m |[0m [0m[38;5;245m...[0m
+1.709 1157[0m[38;5;245m |[0m [0m[1m[31m-[0m[0m[37m[41m    "hono@4.13.14": {[0m
+1.709 1157[0m[38;5;245m |[0m [0m[1m[32m+[0m[0m[30m[42m    "hono@4.13.13": {[0m
+1.709 1158[0m[38;5;245m |[0m [0m[1m[31m-[0m[0m[37m[41m      "integrity": "sha512-yhRLQ21U6qa9Hsu2N7Qcbh8tE+WKEcoErjIo56LeSGiGXGp9sA7UpE86Ui9uexb61KakiGwuHMn2QdV7w6i6kQ=="[0m
+1.709 1158[0m[38;5;245m |[0m [0m[1m[32m+[0m[0m[30m[42m      "integrity": "sha512-CQ46U0ZkAGmbT/4UxdzzGJpacP2IeKgY4a5/tOI9AABbpOMfK739wfDXmv1usCk+3RkKj1hQy4/fjhiwa2xlrA=="[0m
+1.709     [0m[38;5;245m |[0m [0m[38;5;245m...[0m
+1.709 1303[0m[38;5;245m |[0m [0m[1m[31m-[0m[0m[37m[41m      "npm:hono@4.13.14",[0m
+1.709 1303[0m[38;5;245m |[0m [0m[1m[32m+[0m[0m[30m[42m      "npm:hono@4.13.13",[0m
+------
+Dockerfile:5
+--------------------
+   3 |     WORKDIR /app
+   4 |     COPY deno.json deno.lock ./
+   5 | >>> RUN deno install --frozen
+   6 |     COPY . .
+   7 |     RUN deno task build && deno cache --frozen _fresh/server.js
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c deno install --frozen" did not complete successfully: exit code: 1
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/twfb093awy0yxy82wlny7n0il
+
+exit=1
