@@ -28,7 +28,13 @@ jobs:
       - name: efficiency bundle is current
         run: ./tools/efficiency/bundle && git diff --exit-code efficiency/efficiency-bundle.md
 
-  # Add your build and test job here.
+  product-contract:
+    name: Product artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # The factory reviews its own output; this is the second, independent opinion on the PR.
+      - run: python3 .github/scripts/check_product.py
 
   secret-scan:
     runs-on: ubuntu-latest
