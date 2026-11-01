@@ -59,6 +59,7 @@ it and fails when the committed bundle differs.
 | Connector copies | `tools/agents/adapter-check` (`--root` for a project that adopted the factory) | the root |
 | Efficiency bundle | `tools/efficiency/bundle`, then `git diff --exit-code efficiency/efficiency-bundle.md` | the root |
 | Source analysis (CI on every main update; local run recommended) | `tools/architecture/refresh --target HEAD --base origin/main` after committing | pinned tools installed on the user's yes, Node and Chrome required |
+| Product artifacts | `python3 .github/scripts/check_product.py` | the root |
 | Your code | add your build, lint and test commands here, copied from CI | |
 
 `stale` and `orphans` reject a missing root or `knowledge/` directory with a nonzero exit;
@@ -68,7 +69,10 @@ A valid knowledge directory with no dated documents still passes `stale`.
 The pre-commit (`git config core.hooksPath tools/git-hooks`) runs `knowledge-check`, `doc-links`
 and `repo-health`. The pre-push refuses a push of `develop` without a recorded `Review: OK`
 and any direct push to `main`. CI runs those three checks, `factory-tests`, the efficiency-bundle
-check and security scans on pushes to `main` and pull requests targeting `main` or `develop`.
+check, the product-artifact contract and security scans on pushes to `main` and pull requests
+targeting `main` or `develop`. `check_product.py` is independent of the factory's own review: it
+re-enforces the artifact contract on the pull request, so a worker that approved its own output
+still faces a second opinion.
 `stale` and `orphans` remain manual checks; CI exercises their fixtures through `factory-tests`.
 
 Many people run Æion Factory in a plain folder, without git. The link and health checks, the context
