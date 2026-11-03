@@ -6,6 +6,9 @@ dates them at release time. Spec: knowledge/policies/engineering.md
 
 ## [Unreleased]
 
+- Import the existing Quarkus backend with required tests/package CI and product SAST coverage.
+  PostgreSQL/React cutover remains a separately checked product change.
+
 ## [1.8.6] - 2026-11-01
 
 - dsh web no longer stalls the 250k/300k gate as advisory: the plugin reaches the per-agent compaction
