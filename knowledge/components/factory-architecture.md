@@ -40,6 +40,13 @@ structural facts; fresh review establishes the verdict; GitHub records PR/merge/
 There is no application server, broker, production database or deployed Æion Factory control plane.
 Adopting projects keep their existing instructions and architecture.
 
+This adopting repository also owns the separate [Agora product baseline](agora-product.md):
+the committed Quarkus/Java API under `demo/forum-app/` and its required `Product artifacts` CI.
+The framework authority, review, context and source-analysis contracts below remain unchanged.
+The baseline uses SQLite; PostgreSQL migration/restore and React/browser acceptance are separate
+gates. Conditional React CI does not certify a missing web package, a cutover or a deployment.
+
+
 Claude Code retains its native hooks. Codex, OpenCode, Pi, dsh (DeepSeek Harness), Devin, Droid
 (factory.ai) and Google Antigravity load the same instructions and skills, with narrow adapters to
 the existing secret guards, edit checks and handover checkpoints (Devin and Antigravity have no

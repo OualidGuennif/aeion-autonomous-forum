@@ -59,7 +59,8 @@ it and fails when the committed bundle differs.
 | Connector copies | `tools/agents/adapter-check` (`--root` for a project that adopted the factory) | the root |
 | Efficiency bundle | `tools/efficiency/bundle`, then `git diff --exit-code efficiency/efficiency-bundle.md` | the root |
 | Source analysis (CI on every main update; local run recommended) | `tools/architecture/refresh --target HEAD --base origin/main` after committing | pinned tools installed on the user's yes, Node and Chrome required |
-| Your code | add your build, lint and test commands here, copied from CI | |
+| Quarkus product | `gradle -p demo/forum-app test quarkusBuild --no-daemon` | Java25, Gradle9.8.2; CI Product artifacts |
+| React web (once feature014 creates the package) | `npm ci --ignore-scripts --no-audit --no-fund`, typecheck, tests and build | demo/forum-web; absent package is not web qualification |
 
 `stale` and `orphans` reject a missing root or `knowledge/` directory with a nonzero exit;
 `orphans` also requires `knowledge/index.md`. An absent tree is not a successful empty check.

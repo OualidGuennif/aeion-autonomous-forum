@@ -5,6 +5,13 @@ Finished tasks are deleted: the commit message and knowledge/ keep what matters.
 Status: ACTIVE, WAITING-OWNER, MEASURING, BLOCKED, BACKLOG. An entry is `## <title> — <STATUS>`, then the
 lines `- Owner decision:`, `- State:`, `- Next:` (with who), `- Blocker:`, `- Evidence:`.
 
+## Product bootstrap — ACTIVE
+- Owner decision: retain the existing Quarkus backend in its separate protected repository.
+- State: committed source import with required product CI, isolated checks and two real reviews.
+- Next: qualify independent PostgreSQL migration/restore and React/browser acceptance (who: agent).
+- Blocker: the new architecture has not been qualified by this baseline import.
+- Evidence: knowledge/components/agora-product.md; required Product artifacts CI.
+
 ## Connector drift check across all harnesses — ACTIVE
 - Owner decision: 2026-11-01, "avoid such problems for all connectors": a stale or hand-edited copy must fail a check, not a session. Same day: the prompt-defense baseline and the three passes ship in 1.8.3 too. Later the same day: verification must accept `main`/`develop` for people who downloaded a branch, and an adopted project needs an update path that keeps its own content.
 - State: `tools/agents/adapter-check` compares the 27 connector files with the factory copy or with any git reference (`--ref v1.8.5`, `--ref main`, `--ref develop`), checks each config's script references, refuses a project's own copy of itself, and reports `UNIDENTIFIED` for a `steer` call with no id and `UNROLED` for a `steer`/`inject`/`followup` with no role. The dsh plugin's `say` helper steers every message with `role: "user"`, so a steered start context or warning no longer corrupts a session the harness refuses to reopen. `tools/agents/template-update` moves an adopted project to a reference: it writes the connector files and `VERSION` and only names `AGENTS.md`, merged settings, `knowledge/`, `work/` and `CHANGELOG.md` for a human to merge; skill `template-update` states the three file classes. `tools/agents/dsh-install` pins the desktop profile at a release tag; `--check` fails a hand-edited copy and today's working-tree link. `connectors.py` and `refs.py` hold the one file list and the one reference reader. The 250k/300k gate no longer waits for a human: the dsh web plugin reports the compaction service it cannot reach, so the rule is advisory there, and Pi lets its own window compaction run and owes the receipt after it.
