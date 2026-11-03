@@ -1,0 +1,22 @@
+name: aeion-autonomous-forum
+services:
+  forum:
+    build:
+      context: ../..
+      dockerfile: demo/forum-app/Dockerfile
+    image: aeion-autonomous-forum:local
+    ports:
+      - "127.0.0.1:8081:8081"
+    environment:
+      # Required: the app refuses to start without a real session secret. Supply it locally,
+      # for example AGORA_SESSION_SECRET=$(openssl rand -hex 32); never commit it.
+      AGORA_SESSION_SECRET: ${AGORA_SESSION_SECRET:?set AGORA_SESSION_SECRET}
+      AEION_RELEASE: local-docker
+      AEION_SQLITE_PATH: /data/agora.db
+      QUARKUS_HTTP_HOST: 0.0.0.0
+      QUARKUS_HTTP_PORT: "8081"
+    volumes:
+      - forum-data:/data
+    restart: "no"
+volumes:
+  forum-data:
