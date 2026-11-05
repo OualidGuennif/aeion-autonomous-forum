@@ -53,3 +53,9 @@ Migration/restore, least-privilege PostgreSQL and React/browser acceptance are s
 
 Database cutover, changing/deleting existing operator data, deployment, a mobile client and
 claiming that the rewritten 100-feature catalog has already been implemented.
+
+PostgreSQL/React CI uses a disposable PostgreSQL17 fixture and fixed programs under
+`tools/product-web/`, outside the feature worker write scopes. React dependencies install
+with scripts disabled before typecheck, Vitest and production assets; assets are packaged
+by Quarkus. A missing web package is not a frontend qualification. The isolated Factory
+checker remains the acceptance authority; CI fixture credentials are not product secrets.

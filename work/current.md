@@ -54,3 +54,11 @@ lines `- Owner decision:`, `- State:`, `- Next:` (with who), `- Blocker:`, `- Ev
 - Next: write the project's paragraph and build commands in AGENTS.md; walk efficiency/ phases 1 to 7 (who: agent, with the owner's yes per phase).
 - Blocker: none.
 - Evidence: efficiency/00-EFFICIENCY.md
+
+## PostgreSQL/React CI adapters — ACTIVE
+
+- Owner decision: prepare the required CI for the approved PostgreSQL/React product.
+- State: maintainer-owned CI provides a disposable PostgreSQL test fixture and fixed React tools before packaging.
+- Next: implement migration and browser features through isolated workers (who: agent).
+- Blocker: no product migration, browser implementation or live cutover is certified by this infrastructure change.
+- Evidence: knowledge/operations/build-and-test.md; required Product artifacts CI.
