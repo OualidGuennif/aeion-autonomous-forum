@@ -8,6 +8,12 @@ generated:
   by: aeion-factory/1.0
   at: 2026-10-20T00:00:00Z
 sources:
+  - resource: ../../tools/product-web/build.mjs
+    title: "Frozen React check program"
+  - resource: ../../tools/product-web/tsconfig.web.json
+    title: "Frozen React check program"
+  - resource: ../../tools/product-web/vitest.config.mjs
+    title: "Frozen React check program"
   - id: ci
     resource: ../../.github/workflows/ci.yml
     title: "CI"
@@ -142,3 +148,9 @@ The root `skills/` data preserves upstream formatting; authored-source size/comm
 exclude this identified pool and report the excluded count. Native code under `tools/skills/`
 remains checked. This is not a security-scan exemption. Source refresh is an explicit maintenance
 action; normal CI/search/integrity checks need no external source repository.
+
+PostgreSQL/React CI uses a disposable PostgreSQL17 fixture and fixed programs under
+`tools/product-web/`, outside the feature worker write scopes. React dependencies install
+with scripts disabled before typecheck, Vitest and production assets; assets are packaged
+by Quarkus. A missing web package is not a frontend qualification. The isolated Factory
+checker remains the acceptance authority; CI fixture credentials are not product secrets.

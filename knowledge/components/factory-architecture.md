@@ -278,3 +278,9 @@ The materializer applies three reviewed comment-only SAST annotations from
 `tools/skills/annotations.json`, each bound to an exact original file hash. Source
 changes require renewed review. Original/materialized hashes are both retained;
 search and checking remain offline and no source execution or broad scan exemption is added.
+
+PostgreSQL/React CI uses a disposable PostgreSQL17 fixture and fixed programs under
+`tools/product-web/`, outside the feature worker write scopes. React dependencies install
+with scripts disabled before typecheck, Vitest and production assets; assets are packaged
+by Quarkus. A missing web package is not a frontend qualification. The isolated Factory
+checker remains the acceptance authority; CI fixture credentials are not product secrets.

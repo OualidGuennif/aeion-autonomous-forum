@@ -6,6 +6,8 @@ dates them at release time. Spec: knowledge/policies/engineering.md
 
 ## [Unreleased]
 
+- Prepare isolated PostgreSQL unit fixtures and frozen React build/check tools in required CI.
+
 - Import the existing Quarkus backend with required tests/package CI and product SAST coverage.
   PostgreSQL/React cutover remains a separately checked product change.
 
