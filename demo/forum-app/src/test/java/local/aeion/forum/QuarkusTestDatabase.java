@@ -21,6 +21,8 @@ public class QuarkusTestDatabase implements QuarkusTestResourceLifecycleManager 
         return Map.of(
                 "AEION_SQLITE_PATH", database.file().toString(),
                 "AEION_RELEASE", "test-ephemeral",
+                // Database-backed tests opt in; the production default is a database-less boot.
+                "AGORA_DATABASE_ENABLED", "true",
                 // The application refuses to start without a real secret; a test gets a fixed one.
                 "AGORA_SESSION_SECRET", "ephemeral-suite-secret-0123456789abcdef");
     }

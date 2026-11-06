@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -23,7 +24,9 @@ import java.util.TreeSet;
 @Provider
 @Priority(Priorities.AUTHENTICATION - 1)
 public class RequestValidationFilter implements ContainerRequestFilter {
-    static final int MAX_BODY_BYTES = 16384;
+    @Inject
+    AgoraSettings settings;
+
     private static final Map<String, Set<String>> FIELDS = Map.of(
             "api/auth/register", Set.of("username", "password"),
             "api/auth/login", Set.of("username", "password"),
@@ -35,8 +38,9 @@ public class RequestValidationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         boolean hasBody = request.hasEntity();
-        byte[] body = hasBody ? request.getEntityStream().readNBytes(MAX_BODY_BYTES + 1) : new byte[0];
-        if (body.length > MAX_BODY_BYTES) {
+        int maxBodyBytes = settings.requestMaxBytes();
+        byte[] body = hasBody ? request.getEntityStream().readNBytes(maxBodyBytes + 1) : new byte[0];
+        if (body.length > maxBodyBytes) {
             request.abortWith(Response.status(413).type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(Map.of("error", "request_too_large")).build());
             return;

@@ -11,8 +11,8 @@ import org.jboss.logging.Logger;
  *
  * A required setting that is validated lazily refuses the first request instead of the start, which
  * is the wrong moment: a half-configured deployment would be reachable, and a probe would call it
- * alive. This observer builds the validated beans during startup, so a placeholder secret or a
- * missing key stops the process, and the refusal names only the key.
+ * alive. This observer builds the validated beans during startup, so a placeholder secret, a
+ * missing key or an out-of-range bound stops the process, and the refusal names only the key.
  */
 @ApplicationScoped
 public class StartupChecks {
@@ -21,10 +21,15 @@ public class StartupChecks {
     SessionSecret secret;
 
     @Inject
+    AgoraSettings settings;
+
+    @Inject
     Logger log;
 
     void onStart(@Observes StartupEvent event) {
         secret.selfCheck();
-        log.info("settings validated: session secret present and usable");
+        settings.selfCheck();
+        // Never log the values: only the fact that every allowlisted setting passed its check.
+        log.info("settings validated");
     }
 }

@@ -28,6 +28,9 @@ public class ThreadPublisher {
     KafkaEventSender sender;
 
     @Inject
+    AgoraSettings settings;
+
+    @Inject
     Logger log;
 
     private volatile boolean announcedDisabled;
@@ -35,11 +38,15 @@ public class ThreadPublisher {
     /** Run every two seconds; a paused application does nothing rather than piling up work. */
     @Scheduled(every = "2s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     void drainOnSchedule() {
-        drain();
+        if (settings.databaseEnabled()) {
+            drain();
+        }
     }
 
     void onStart(@Observes StartupEvent event) {
-        drain();
+        if (settings.databaseEnabled()) {
+            drain();
+        }
     }
 
     void onStop(@Observes ShutdownEvent event) {
@@ -48,6 +55,10 @@ public class ThreadPublisher {
 
     /** Returns how many events were published now; a test calls this directly. */
     public int drain() {
+        if (!settings.databaseEnabled()) {
+            // Feature 001: no outbox exists in a database-less deployment, so there is nothing to drain.
+            return 0;
+        }
         if (!sender.enabled()) {
             if (!announcedDisabled) {
                 log.infof("kafka disabled: %d event(s) stay in the outbox", threads.pendingCount());
