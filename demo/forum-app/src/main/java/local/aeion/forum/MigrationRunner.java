@@ -33,6 +33,9 @@ public class MigrationRunner {
     @Inject
     ForumClock clock;
 
+    @Inject
+    AgoraSettings settings;
+
     @ConfigProperty(name = "aeion.migrations.location", defaultValue = "db/migration")
     String location;
 
@@ -40,6 +43,11 @@ public class MigrationRunner {
     Logger log;
 
     void onStart(@Observes StartupEvent event) {
+        if (!settings.databaseEnabled()) {
+            // Feature 001: a database-less boot must not open a connection, so the ledger is not read.
+            log.info("database disabled: migrations not applied");
+            return;
+        }
         List<String> appliedNow = migrate();
         if (!appliedNow.isEmpty()) {
             log.infof("applied migrations %s", appliedNow);

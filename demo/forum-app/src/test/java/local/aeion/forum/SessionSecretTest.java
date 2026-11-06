@@ -27,10 +27,11 @@ class SessionSecretTest {
     }
 
     @Test
-    void refusesAShortSecretAndSaysHowShort() {
+    void refusesAShortSecretAndNamesTheMinimum() {
         IllegalStateException refusal = assertThrows(IllegalStateException.class, () -> SessionSecret.of("too-short"));
         assertTrue(refusal.getMessage().startsWith("session_secret_too_short"), refusal.getMessage());
         assertTrue(refusal.getMessage().contains("32"), refusal.getMessage());
+        assertFalse(refusal.getMessage().contains("too-short"), "the refusal must not echo the value");
     }
 
     @Test

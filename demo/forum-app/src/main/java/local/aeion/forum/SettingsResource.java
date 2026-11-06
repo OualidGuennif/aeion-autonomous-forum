@@ -1,5 +1,6 @@
 package local.aeion.forum;
 
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -28,17 +29,20 @@ import java.util.Map;
 public class SettingsResource {
 
     private static final int MAX_NAME = 120;
-    private static final int MAX_VALUE = 4000;
+
+    /** Lazy so a database-less deployment can start with Hibernate ORM inactive. */
+    @Inject
+    Instance<EntityManager> entityManagers;
 
     @Inject
-    EntityManager entityManager;
+    AgoraSettings settings;
 
     @Inject
     ForumClock clock;
 
     @GET
     public List<Map<String, Object>> list() {
-        return entityManager.createQuery("select s from Setting s order by s.name", Setting.class)
+        return entityManagers.get().createQuery("select s from Setting s order by s.name", Setting.class)
                 .getResultList()
                 .stream()
                 .map(SettingsResource::view)
@@ -48,7 +52,7 @@ public class SettingsResource {
     @GET
     @Path("{name}")
     public Response read(@PathParam("name") String name) {
-        Setting setting = entityManager.find(Setting.class, name);
+        Setting setting = entityManagers.get().find(Setting.class, name);
         if (setting == null) {
             return Response.status(404).entity(Map.of("error", "unknown_setting")).build();
         }
@@ -63,14 +67,17 @@ public class SettingsResource {
         if (name == null || name.isBlank() || name.length() > MAX_NAME) {
             return Response.status(400).entity(Map.of("error", "invalid_name")).build();
         }
-        if (value == null || value.isBlank() || value.length() > MAX_VALUE) {
+        if (value == null || value.isBlank()) {
+            return Response.status(400).entity(Map.of("error", "invalid_value")).build();
+        }
+        if (value.codePointCount(0, value.length()) > settings.textMaxCodepoints()) {
             return Response.status(400).entity(Map.of("error", "invalid_value")).build();
         }
         long now = clock.nowNs();
-        Setting setting = entityManager.find(Setting.class, name);
+        Setting setting = entityManagers.get().find(Setting.class, name);
         if (setting == null) {
             setting = new Setting(name, value, now);
-            entityManager.persist(setting);
+            entityManagers.get().persist(setting);
         } else {
             setting.value = value;
             setting.updatedNs = now;

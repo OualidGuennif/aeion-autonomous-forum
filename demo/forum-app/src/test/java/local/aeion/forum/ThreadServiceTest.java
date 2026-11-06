@@ -87,6 +87,23 @@ class ThreadServiceTest {
     }
 
     @Test
+    void aLowerTextCapIsEnforced() {
+        ThreadService configured = new ThreadService();
+        configured.settings = AgoraSettings.of(true, 16384, 10, 32768);
+        assertEquals("invalid_body", assertThrows(ThreadService.ThreadException.class,
+                () -> configured.create(AUTHOR, "t", "A title", "x".repeat(11))).code());
+    }
+
+    @Test
+    void countsTextInCodepointsNotUtf16Units() {
+        String atCap = "\uD83D\uDE00".repeat(4000);
+        ThreadService.ThreadView thread = threads.create(AUTHOR, "agora.threads", "Emoji thread", atCap);
+        assertEquals(atCap, thread.body(), "4000 code points are within the cap even though they are 8000 UTF-16 units");
+        assertEquals("invalid_body", assertThrows(ThreadService.ThreadException.class,
+                () -> threads.create(AUTHOR, "agora.threads", "Emoji thread", "\uD83D\uDE00".repeat(4001))).code());
+    }
+
+    @Test
     void refusesAnEmptyTitleOrBody() {
         assertEquals("invalid_title", assertThrows(ThreadService.ThreadException.class,
                 () -> threads.create(AUTHOR, "t", "ab", "body")).code());
