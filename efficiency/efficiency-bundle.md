@@ -829,6 +829,9 @@ service that was turned on has its cost, its data scope and its off switch writt
 - **Mert Koseoğlu, context-mode** (Elastic-2.0) — bounded output and pre-compaction recovery
   informed the context design. No context-mode code or MCP runtime is bundled.
   https://github.com/mksglu/context-mode
+- **Robert C. Martin, ub-mode** — the three passes and the build principles (the data's shape first,
+  a design fitted to the change, idempotent operations, one writer for shared state) are adapted in
+  our own words; no ub-mode text is copied. https://github.com/unclebob/ub-mode
 - **Graphify Labs, Graphify** (Apache-2.0 with upstream notices) — pinned native code and Markdown
   structural extraction. https://github.com/Graphify-Labs/graphify
 - **tt-a1i, Archify** (upstream Apache-2.0 / MIT notices) — pinned source-backed diagrams,
@@ -861,6 +864,10 @@ Mistakes in how these ideas are combined here are ours, not theirs.
 The versioned skills/catalog.json records exact source commits, entrypoint fingerprints and license
 files. Native Factory text is selectively adapted, not a wholesale copy of upstream prompts. The separate passive pool contains upstream skill/agent files and supporting resources,
 with three source-hash-bound scanner annotation comments recorded in tools/skills/annotations.json, with license texts under skills/licenses/.
+Three of those files are modified by source-hash-bound security patches recorded in tools/skills/patches.json: the
+skill-creator eval-viewer/generate_review.py and eval-viewer/viewer.html (Apache-2.0) and the continuous-learning-v2
+scripts/instinct-cli.py (MIT);
+each changed line is marked "Æion Factory security patch".
 No upstream agent-launch mandate, model setting or generic threshold is adopted.
 
 ## Superpowers license notice

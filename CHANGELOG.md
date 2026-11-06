@@ -6,6 +6,10 @@ dates them at release time. Spec: knowledge/policies/engineering.md
 
 ## [Unreleased]
 
+- Update the Æion Factory template from v1.8.6 to v2.1.0 (connectors, hooks, tools and factory
+  knowledge; the product CI workflow is kept as is). The git lifecycle is now off unless a clone
+  sets `git config aeion.mode team`.
+
 - Prepare isolated PostgreSQL unit fixtures and frozen React build/check tools in required CI.
 
 - Import the existing Quarkus backend with required tests/package CI and product SAST coverage.

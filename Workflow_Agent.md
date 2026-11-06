@@ -24,8 +24,9 @@ invariants and their tests, acceptance checks). The spec is the source of truth.
 
 ## 3. Branch
 
-Work on `develop` (`git switch develop`); a parallel session uses a worktree on `task/<slug>` cut from
-`develop` and merges back locally. Without git, skip sections 3, 6 and 7.
+Team flow (`git config aeion.mode team`, set by the owner): work on `develop` (`git switch develop`); a
+parallel session uses a worktree on `task/<slug>` cut from `develop` and merges back locally. In local
+mode, the default, commit on the current branch and skip sections 3, 6 and 7, as without git.
 
 ## 4. Build in thin slices (skills `build`, `test`)
 

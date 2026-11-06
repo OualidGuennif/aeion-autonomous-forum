@@ -1,7 +1,7 @@
 # Agent instructions
 
 **Self-check before touching anything:**
-1. Which mode is this session in, and am I on `develop`?
+1. Which mode is this session in (local by default; team means `develop`)?
 2. What did the owner actually ask for, and what is explicitly out of scope?
 3. Which document or spec owns this area, and have I read it?
 4. Which check proves the change works, and have I run it?
@@ -95,11 +95,11 @@ history; no abstraction without two real users; a spec before the code: `knowled
 The session start names the mode. Without git (a plain folder), done means the tests for what
 changed pass and `CHANGELOG.md` gets its line; there is no branch, review, CI or tag.
 
-- **Team (default).** Work and commit on `develop`; `task/<slug>` worktrees merge into it locally.
-  Before each `develop` push, the skill `pr-review` reviews `origin/develop..HEAD` and records
-  `Review: OK`; `tools/git-hooks/pre-push` refuses a push without it. A release is a reviewed pull
-  request `develop → main`, merged with a merge commit after a green CI, then tagged (skill `ship`).
-- **Local** (`git config aeion.mode local`, user only): local commits, no review/CI/task entry.
+- **Local (default).** Commit on the current branch; no review, CI or task entry; the owner pushes.
+- **Team** (`git config aeion.mode team`, user only). Work on `develop`; `task/<slug>` worktrees
+  merge into it locally. Before each `develop` push, skill `pr-review` records `Review: OK` for
+  `origin/develop..HEAD`; `tools/git-hooks/pre-push` refuses a push without it. A release is a reviewed
+  pull request `develop → main`, merged with a merge commit after a green CI, then tagged (skill `ship`).
 
 ## Feedback you get
 
@@ -111,7 +111,7 @@ and CI do the same, and an `exit 2` names the rule and its fix.
 - The project's tests for what changed pass; `CHANGELOG.md` has its `Unreleased` line.
 - Touched docs are updated with their links (`tools/knowledge/doc-links --diff origin/develop`
   passes); `work/current.md` is updated or its entry deleted (skill `sign-off`).
-- Under git: `develop` pushed with `Review: OK`; a release PR reviewed and green in CI; the merged
+- Team flow: `develop` pushed with `Review: OK`; a release PR reviewed and green in CI; the merged
   main SHA a passing Graphify/Archify round with a current spec.
 
 ## What not to do

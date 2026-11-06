@@ -157,6 +157,40 @@ class HookTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.call(tool_name='apply_patch',tool_input={'command':patch_text})
 
+    def test_padded_patch_headers_are_guarded_as_the_harness_reads_them(self):
+        # Harness parsers trim the header line and its path, so the guard does too.
+        for header in ('*** Update File: .env ','  *** Delete File: .env','***Add File:.npmrc','*** update file: .env',
+                       '*** Add File:\tid_rsa\t','*** Update File: a.py\n*** Move to:  .env '):
+            with self.assertRaisesRegex(hook.GuardRefusal,'secret',msg=header):
+                self.call(tool_name='apply_patch',tool_input={'command':f'*** Begin Patch\n{header}\n+x\n*** End Patch\n'})
+        self.assertEqual(hook.edit_paths({'tool_name':'apply_patch','tool_input':{'patch':'*** Update File: a.py \n*** Move to:b.py'}}),
+                         ['a.py','b.py'])
+        # A header the guard cannot place, an empty or colon-split path, or two patch texts are refused.
+        for data in ({'command':'*** Rename File: .env\n'},{'command':'*** Add File: \n+x'},
+                     {'command':'*** Update File: .env:notes.md\n'},
+                     {'command':'*** Add File: a.md\n+x','input':'*** Add File: .env\n+x'}):
+            with self.assertRaises(ValueError,msg=str(data)):
+                self.call(tool_name='apply_patch',tool_input=data)
+        # Hunk lines and the end markers are not headers, whatever they hold.
+        patch_text=('*** Begin Patch\n*** Update File: notes.md\n@@\n ***\n-***Note: a\n+***Note: b\n'
+                    '*** End of File\n*** End Patch\n')
+        self.assertEqual(self.call(tool_name='apply_patch',tool_input={'command':patch_text}),{})
+
+    def test_every_harness_checks_a_grep_file_filter(self):
+        # Each harness names its grep filter its own way; every one picks the files the search reads.
+        for provider,tool,data in (('opencode','Grep',{'pattern':'.','path':'.','include':'.env'}),
+                                   ('pi','Grep',{'pattern':'x','path':'.','glob':'*.pem'}),
+                                   ('devin','grep',{'pattern':'x','path':'.','include':'.env'}),
+                                   ('droid','Grep',{'pattern':'x','include':'id_rsa'}),
+                                   ('dsh','grep',{'pattern':'x','includePattern':'auth.json'}),
+                                   ('codex','mcp_search',{'query':'x','options':{'file_pattern':['*.md','.env']}})):
+            with self.assertRaisesRegex(hook.GuardRefusal,'secret',msg=provider):
+                self.call(provider,session_id=f'filter-{provider}',tool_name=tool,tool_input=data)
+        # The search pattern is a regex, never a file filter; an ordinary filter passes.
+        self.assertEqual(self.call('opencode',tool_name='Grep',tool_input={'pattern':'.env','path':'.','include':'*.md'}),{})
+        with self.assertRaises(ValueError):
+            self.call('opencode',tool_name='Grep',tool_input={'pattern':'x','path':'.','include':1})
+
     def test_before_compaction_refuses_missing_and_changed_checkpoint(self):
         # Codex instead compacts and owes the closure after it (owner decision, tested below).
         for provider in ('opencode','pi'):
@@ -175,6 +209,34 @@ class HookTests(unittest.TestCase):
             (self.root/'changed.py').write_text('changed\n')
             self.assertFalse(self.call(provider,hook_event_name='PreCompact')['continue'])
             (self.root/'changed.py').unlink()
+
+    def test_a_stale_verified_handover_compacts_through_the_native_adapter(self):
+        # The shared rule lets a verified handover compact after an edit moved the tree, because the gate admits
+        # only the checkpoint command that could refresh the receipt. The native PreCompact must make the same
+        # decision for the harnesses that reach it, or a routine edit leaves scheduled compaction blocked.
+        for provider in ('dsh','pi','opencode'):
+            session=hook.key(provider,{'session_id':f'context-{provider}'})
+            self.measure(provider,260_000)
+            handover=hook.budget.handover_path(self.root,session)
+            handover.write_text(''.join(f'## {heading}\nEvidence\n' for heading in hook.budget.HEADINGS))
+            state_file=self.root/'.aeion/context'/f'{session}.json'
+            state=json.loads(state_file.read_text())
+            state['checkpoint']={'tree':hook.budget.fingerprint(self.root),
+                                 'handover':hook.budget.hashlib.sha256(handover.read_bytes()).hexdigest()}
+            hook.budget.atomic(state_file,json.dumps(state))
+            self.assertTrue(hook.budget.ready(self.root,session,state),provider)
+            (self.root/'new.py').write_text(f'print("{provider} moved the tree")\n')
+            result=self.call(provider,session_id=f'context-{provider}',hook_event_name='PreCompact')
+            self.assertNotIn('continue',result,provider)
+            self.assertIn('compacting now',result.get('systemMessage',''),provider)
+            state=json.loads(state_file.read_text())
+            self.assertEqual(state.get('closure_owed'),'due',provider)
+            # OpenCode sends no compact SessionStart, so the allowed compaction starts its new epoch itself.
+            if provider=='opencode':
+                self.assertEqual(state['state'],'RECOVERING',provider)
+            # The debt survives compaction: Stop still requires a fresh verified receipt.
+            self.assertFalse(self.call(provider,session_id=f'context-{provider}',
+                                       hook_event_name='Stop')['continue'],provider)
 
     def test_pi_native_compaction_runs_and_owes_the_closure_after_it(self):
         # Pi cancels a compaction the hook refuses; at its own window that traps the session, so a native
@@ -278,6 +340,68 @@ class HookTests(unittest.TestCase):
             self.assertFalse(denied(self.measure(provider, 1_000, **edit)), provider)
             self.assertEqual(json.loads(state_file.read_text())['state'], 'RUNNING')
 
+    def test_a_verified_handover_releases_the_hard_gate(self):
+        # The regression: a hard gate that kept denying after the receipt verified held every dsh session at 250k
+        # until a compaction the plugin cannot guarantee actually landed. The gate owes one verified handover, so
+        # once it exists the session works while the compaction is on its way.
+        session = hook.key('dsh', {'session_id': 'context-dsh'})
+        state_file = self.root / '.aeion/context' / f'{session}.json'
+        handover = hook.budget.handover_path(self.root, session)
+        edit = {'tool_name': 'Edit', 'tool_input': {'file_path': str(self.root / 'src.py')}}
+        denied = lambda result: result.get('hookSpecificOutput', {}).get('permissionDecision') == 'deny'
+        # The exit command is admitted whatever session token it carries: the CLI refuses a key that names no
+        # session, and `ready` alone opens the gate, so a raw identifier cannot lock a session out of its own exit.
+        exit_call = {'tool_name': 'Bash', 'tool_input': {'command': 'python3 tools/context/budget.py checkpoint '
+                                                                    '--session raw-id --base origin/develop --verify'}}
+        for tokens in (250_000, 300_000):
+            self.assertTrue(denied(self.measure('dsh', tokens, **edit)), tokens)
+            self.assertFalse(denied(self.measure('dsh', tokens, **exit_call)), tokens)
+            state = json.loads(state_file.read_text())
+            state['checkpoint'] = {'tree': hook.budget.fingerprint(self.root),
+                                   'handover': hook.budget.hashlib.sha256(handover.read_bytes()).hexdigest()}
+            hook.budget.atomic(state_file, json.dumps(state))
+            self.assertFalse(denied(self.measure('dsh', tokens, **edit)), tokens)
+            # The next level starts from a closed gate again.
+            state = json.loads(state_file.read_text())
+            state.pop('checkpoint', None)
+            hook.budget.atomic(state_file, json.dumps(state))
+
+    def test_a_compaction_the_adapter_never_saw_releases_the_latch(self):
+        # dsh compacts on its own, so no compact SessionStart reaches the adapter and the 250k latch survived:
+        # a session back at 127k stayed gated forever. Falling under the threshold ends the closure.
+        session = hook.key('dsh', {'session_id': 'context-dsh'})
+        state_file = self.root / '.aeion/context' / f'{session}.json'
+        edit = {'tool_name': 'Edit', 'tool_input': {'file_path': str(self.root / 'src.py')}}
+        denied = lambda result: result.get('hookSpecificOutput', {}).get('permissionDecision') == 'deny'
+        self.assertTrue(denied(self.measure('dsh', 250_000, **edit)))
+        self.assertEqual(json.loads(state_file.read_text())['state'], 'HANDOVER_REQUIRED')
+        self.assertFalse(denied(self.measure('dsh', 127_416, **edit)))
+        self.assertEqual(json.loads(state_file.read_text())['state'], 'RUNNING')
+
+    def test_dsh_tells_the_user_to_stop_after_a_verified_handover_when_compaction_does_not_start(self):
+        # dsh compaction is not dependable in every profile. Once the handover, work/current.md and checkpoint are
+        # verified, the safe recovery is to end the session, not to keep working against a gate that never opens.
+        edit={'tool_name':'Edit','tool_input':{'file_path':str(self.root/'src.py')}}
+        denied=self.measure('dsh',250_000,**edit)
+        self.assertIn('stop this dsh session',denied['hookSpecificOutput']['permissionDecisionReason'])
+        start=self.measure('dsh',0,hook_event_name='SessionStart',source='startup')
+        self.assertIn('stop this dsh session',start['hookSpecificOutput']['additionalContext'])
+        # The instruction is dsh's recovery path, not a change to every harness's gate message.
+        codex=self.measure('codex',250_000,**edit)
+        self.assertNotIn('stop this dsh session',json.dumps(codex))
+
+    def test_dsh_a_refused_compaction_also_says_to_stop_after_the_handover(self):
+        # The refusal is the dead end: nothing retries the compaction and the gate admits only the checkpoint, so a
+        # user told just to fill the handover keeps working past the threshold. The refusal must carry the stop step.
+        refused=self.call('dsh',session_id='refused-dsh',hook_event_name='PreCompact')
+        self.assertFalse(refused['continue'])
+        self.assertIn('Fill work/handovers/dsh-',refused['stopReason'])
+        self.assertIn('stop this dsh session',refused['stopReason'])
+        self.assertIn('stop this dsh session',refused['systemMessage'])
+        # One harness's recovery path stays out of another harness's refusal.
+        codex=self.call('codex',session_id='refused-codex',hook_event_name='PreCompact')
+        self.assertNotIn('stop this dsh session',json.dumps(codex))
+
     def test_300k_stopgap_compacts_and_keeps_the_closure_owed(self):
         # The incident: a check that failed before the session froze code at 300k, and the checkpoint that would
         # release it failed on that same check. The compaction runs, the epoch stays editable, the debt stays owed.
@@ -356,6 +480,30 @@ class HookTests(unittest.TestCase):
         self.assertEqual(json.loads(state_file.read_text())['state'], 'RUNNING')
         # Every other harness still refuses a compaction without a verified handover.
         self.assertFalse(self.measure('opencode', 231_000, hook_event_name='PreCompact')['continue'])
+
+    def test_a_verified_handover_above_250k_keeps_its_receipt_for_the_compaction(self):
+        session = hook.key('dsh', {'session_id': 'context-dsh'})
+        handover = hook.budget.handover_path(self.root, session)
+        state_file = self.root / '.aeion/context' / f'{session}.json'
+        edit = {'tool_name': 'Edit', 'tool_input': {'file_path': str(self.root / 'src.py')}}
+        denied = lambda result: result.get('hookSpecificOutput', {}).get('permissionDecision') == 'deny'
+        # Latch, compact unseen (dsh does), climb again: the debt is owed and the alert is back.
+        self.measure('dsh', 260_000, **edit)
+        self.measure('dsh', 100, **edit)
+        self.assertTrue(denied(self.measure('dsh', 260_000, **edit)))
+        handover.write_text('## Scope\nx\n## Completed\nx\n## Remaining\nx\n## Constraints\nx\n## Evidence\nx\n')
+        state = json.loads(state_file.read_text())
+        state['checkpoint'] = {'tree': hook.budget.fingerprint(self.root),
+                               'handover': hook.budget.hashlib.sha256(handover.read_bytes()).hexdigest()}
+        hook.budget.atomic(state_file, json.dumps(state))
+        # Settling the debt above the threshold must leave the receipt: dropping it would close the gate on
+        # the same event that re-latches the alert, with the compaction still owed.
+        self.assertFalse(denied(self.measure('dsh', 260_000, **edit)))
+        state = json.loads(state_file.read_text())
+        self.assertNotIn('closure_owed', state)
+        self.assertIn('checkpoint', state)
+        self.assertTrue(hook.budget.ready(self.root, session, state))
+        self.assertEqual(state['state'], 'HANDOVER_REQUIRED')
 
     def test_codex_usage_restarts_at_compaction_and_refuses_a_foreign_rollout(self):
         rollout = self.root / 'rollout-2026-10-28T00-00-00-native-fixture.jsonl'
@@ -440,6 +588,19 @@ class HookTests(unittest.TestCase):
         result=subprocess.run([hook.sys.executable,str(launcher),'pi'],cwd=caller,
                               env={'PATH':str(native.parent)+os.pathsep+os.defpath,'PWD':str(caller)},capture_output=True,text=True)
         self.assertIn('requires Pi 1.4.0+',result.stderr)
+
+    def test_missing_agent_binary_is_one_line_not_a_traceback(self):
+        launcher=self.root/'tools/agents/run';launcher.parent.mkdir(parents=True)
+        shutil.copy2(ROOT/'tools/agents/run',launcher)
+        gate=self.root/'tools/architecture/refresh';gate.parent.mkdir(parents=True)
+        gate.write_text('#!/bin/sh\nexit 0\n');gate.chmod(0o755)
+        empty=self.root/'empty-bin';empty.mkdir()
+        for agent in ['droid','devin','antigravity','codex','dsh']:
+            result=subprocess.run([hook.sys.executable,str(launcher),agent],cwd=self.root,
+                                  env={'PATH':str(empty)},capture_output=True,text=True)
+            self.assertEqual(result.returncode,1,agent)
+            self.assertIn('is not installed',result.stderr)
+            self.assertNotIn('Traceback',result.stderr)
 
     def test_devin_native_tool_names_reach_the_shared_guards(self):
         with self.assertRaises(ValueError):
@@ -677,6 +838,28 @@ class HookTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.call('antigravity',session_id=None,toolCall={'name':'run_command','args':'cat'})
 
+    def test_antigravity_2_shell_summary_and_file_tools(self):
+        # AGY 2.0's run_command requires toolSummary, the line shown to the user; it is never run.
+        call={'CommandLine':'git status --short','toolSummary':'Check the tree','WaitMsBeforeAsync':0}
+        self.assertEqual(self.agy('run_command',call),{})
+        with self.assertRaisesRegex(hook.GuardRefusal,'secret'):
+            self.agy('run_command',{**call,'CommandLine':'cat .env'})
+        for summary in ({'text':'x'},['x'],None):
+            with self.assertRaises(ValueError,msg=str(summary)):
+                self.agy('run_command',{**call,'toolSummary':summary})
+        # Its file tools are read_file, write_file and edit_file.
+        path=str(self.root/'.env')
+        for name in ('read_file','write_file','edit_file'):
+            with self.assertRaisesRegex(hook.GuardRefusal,'secret',msg=name):
+                self.agy(name,{'AbsolutePath':path})
+            with self.assertRaises(ValueError,msg=name):
+                self.agy(name,{'Location':path})
+        long=self.root/'long.md'
+        long.write_text('x\n'*500)
+        with self.assertRaisesRegex(hook.GuardRefusal,'intake|Bounded'):
+            self.agy('read_file',{'AbsolutePath':str(long)})
+        self.assertEqual(self.agy('write_file',{'TargetFile':str(self.root/'notes.md'),'CodeContent':'x'}),{})
+
     def test_antigravity_decisions_are_explicit(self):
         def run(payload,event='PreToolUse'):
             result=subprocess.run(['python3',str(ROOT/'tools/agents/hook.py'),'antigravity',event],
@@ -687,6 +870,8 @@ class HookTests(unittest.TestCase):
         self.assertEqual(denied['decision'],'deny')
         self.assertIn('secret',denied['reason'])
         self.assertEqual(run({'toolCall':{'name':'run_command','args':{'CommandLine':'git status --short'}}}),{'decision':'allow'})
+        summarized={'CommandLine':'git status --short','toolSummary':'Check the tree','WaitMsBeforeAsync':500}
+        self.assertEqual(run({'toolCall':{'name':'run_command','args':summarized}}),{'decision':'allow'})
         self.assertEqual(run({'toolCall':{'name':'view_file','args':{}}})['decision'],'deny')
         # A pre-tool payload in any other shape is refused, never allowed unguarded.
         self.assertEqual(run({'tool_call':{'name':'view_file','args':{'AbsolutePath':'/x/.env'}}})['decision'],'deny')
@@ -699,8 +884,12 @@ class HookTests(unittest.TestCase):
         log.unlink(missing_ok=True)
         self.addCleanup(log.unlink,missing_ok=True)
         (self.root/'notes.md').write_text('x\n')
+        (self.root/'plan.md').write_text('x\n')
+        (self.root/'todo.md').write_text('x\n')
         self.agy('replace_file_content',{'TargetFile':str(self.root/'notes.md')},event='PostToolUse')
-        self.assertEqual(set(log.read_text().splitlines()),{'notes.md'})
+        self.agy('write_file',{'TargetFile':str(self.root/'plan.md')},event='PostToolUse')
+        self.agy('edit_file',{'TargetFile':str(self.root/'todo.md')},event='PostToolUse')
+        self.assertEqual(set(log.read_text().splitlines()),{'notes.md','plan.md','todo.md'})
 
     def test_antigravity_hooks_route_every_event_to_the_adapter(self):
         groups=json.loads((ROOT/'.agents/hooks.json').read_text())
