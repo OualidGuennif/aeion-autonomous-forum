@@ -218,11 +218,17 @@ def _validate_import_url(source: str) -> str:
     return urllib.parse.urlunparse(parsed)
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    # Æion Factory security patch: a redirect would reach a host the address check above never saw.
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise ValueError(f"remote import redirects are refused: {newurl}")
+
+
 def _fetch_import_url(source: str, *, max_bytes: int = 2 * 1024 * 1024) -> str:
     """Fetch a validated remote instinct file with bounded size and timeout."""
     url = _validate_import_url(source)
     req = urllib.request.Request(url, headers={"User-Agent": "ECC-instinct-import/2"})
-    with urllib.request.urlopen(req, timeout=15) as response:
+    with urllib.request.build_opener(_NoRedirect).open(req, timeout=15) as response:
         content_type = response.headers.get("Content-Type", "")
         if content_type and not any(
             allowed in content_type.lower()

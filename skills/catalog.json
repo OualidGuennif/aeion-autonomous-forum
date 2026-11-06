@@ -2575,12 +2575,12 @@
         },
         "eval-viewer/generate_review.py": {
           "executable": false,
-          "sha256": "fc9d1b9243fe5ab6012ebd579bd76d0035de1b79fd3b969de114defab26478fb",
+          "sha256": "46f3e71a6d8811c0404d8042a4a2df2d14f3df973d031b6e972f261be5aaf574",
           "source_sha256": "fc9d1b9243fe5ab6012ebd579bd76d0035de1b79fd3b969de114defab26478fb"
         },
         "eval-viewer/viewer.html": {
           "executable": false,
-          "sha256": "a53213426ee1100441d701a3a0d49cda7a842f992d2c36463f4d3cc0258575fa",
+          "sha256": "19008a31664a007a3404519d107f47680d2de8b6e802cb681fe3d9e0ce3a1fa0",
           "source_sha256": "a53213426ee1100441d701a3a0d49cda7a842f992d2c36463f4d3cc0258575fa"
         },
         "references/schemas.md": {
@@ -5781,7 +5781,7 @@
         },
         "scripts/instinct-cli.py": {
           "executable": true,
-          "sha256": "a2e90e34ee589827592248dbc801bee90f1d5db6d2330e2d5004e4694b8e06f9",
+          "sha256": "4769a3a52ea66ed961dd711f49ebddd01e71f30b49c491eb24ebcaa668d3df40",
           "source_sha256": "a2e90e34ee589827592248dbc801bee90f1d5db6d2330e2d5004e4694b8e06f9"
         },
         "scripts/lib/homunculus-dir.sh": {

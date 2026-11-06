@@ -22,6 +22,8 @@ class BudgetTests(unittest.TestCase):
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
         subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Test", "-c", "user.email=test@example.invalid",
                         "commit", "-qm", "initial", "--allow-empty"], check=True)
+        # The team flow owes a work/current.md entry; the default local mode does not.
+        subprocess.run(["git", "-C", str(self.root), "config", "aeion.mode", "team"], check=True)
         self.transcript = self.root / "test-session.jsonl"
         self.event = {"session_id": "test-session", "hook_event_name": "PreToolUse", "tool_name": "Edit",
                       "tool_input": {"file_path": str(self.root / "src.py")}, "transcript_path": str(self.transcript)}
@@ -45,7 +47,26 @@ class BudgetTests(unittest.TestCase):
         again = self.call()
         self.assertNotIn("systemMessage", again)
         self.observe(100)
-        self.assertEqual(self.call()["hookSpecificOutput"]["permissionDecision"], "deny")
+        # A compaction the adapter never saw ends the latch instead of gating a 100-token session forever; the
+        # closure it owed survives as a debt the settlement enforces.
+        self.assertEqual(self.call(), {})
+        self.assertIn("closure is still owed", self.call(hook_event_name="Stop")["stopReason"])
+
+    def test_a_second_fall_clears_the_latch_while_the_debt_survives(self):
+        # The first fall sets closure_owed; climbing back over 250k re-latches. A harness that compacts again
+        # without a SessionStart must still be released, or the debt turns the latch into a permanent gate:
+        # the debt is enforced by Stop, never by keeping the session latched.
+        self.observe(260000)
+        self.assertIn("250k", self.call()["systemMessage"])
+        self.observe(100)
+        self.assertEqual(self.call(), {})
+        self.observe(260000)
+        self.assertIn("250k", self.call()["systemMessage"])
+        self.observe(100)
+        self.assertEqual(self.call(), {})
+        state = json.loads((self.root / ".aeion/context/test-session.json").read_text())
+        self.assertEqual(state["state"], "RUNNING")
+        self.assertEqual(state["closure_owed"], "due")
 
     def test_handover_is_created_only_when_closure_needs_it(self):
         handover = budget.handover_path(self.root, "test-session")
@@ -173,6 +194,8 @@ class BudgetTests(unittest.TestCase):
             budget.git(self.root, 'config', 'aeion.mode', 'local')
             budget.checkpoint(self.root, 'test-session', 'HEAD')
             budget.git(self.root, 'config', '--unset', 'aeion.mode')
+            budget.checkpoint(self.root, 'test-session', 'HEAD')
+            budget.git(self.root, 'config', 'aeion.mode', 'team')
             # An included file cannot switch the mode: only the repository's own config counts.
             outside = tempfile.TemporaryDirectory()
             self.addCleanup(outside.cleanup)
@@ -297,6 +320,24 @@ class BudgetTests(unittest.TestCase):
         (self.root / "new.py").write_text("print('change')\n")
         self.assertEqual(self.call(hook_event_name="PreCompact")["decision"], "block")
 
+    def test_precompact_compacts_a_verified_handover_that_went_stale(self):
+        # A receipt that verified this handover and then went stale must not make the compaction impossible: the
+        # only work the gate admits is the checkpoint, so a session that edited once could never compact again.
+        handover = budget.ensure_handover(self.root, "test-session")
+        handover.write_text("".join(f"## {h}\nEvidence\n" for h in budget.HEADINGS))
+        self.observe(260000)
+        self.call()
+        state_file = self.root / ".aeion/context/test-session.json"
+        state = json.loads(state_file.read_text())
+        state["checkpoint"] = {"tree": budget.fingerprint(self.root),
+                               "handover": budget.hashlib.sha256(handover.read_bytes()).hexdigest()}
+        budget.atomic(state_file, json.dumps(state))
+        (self.root / "new.py").write_text("print('change')\n")
+        result = self.call(hook_event_name="PreCompact")
+        self.assertNotIn("decision", result)
+        self.assertIn("compacting now", result["systemMessage"])
+        self.assertEqual(json.loads(state_file.read_text())["closure_owed"], "due")
+
     def test_300k_stopgap_compacts_and_keeps_the_closure_owed(self):
         # The 300k profile freezes code, so a check that failed before this session would leave no verified
         # checkpoint and no way to repair it. The compaction runs; the closure stays owed.
@@ -370,6 +411,8 @@ class BudgetTests(unittest.TestCase):
                    (f"cd {root} && python3 tools/context/budget.py {tail}", root / "demo/copy"),
                    (f"cd ../.. && python3 tools/context/budget.py {tail}", root / "demo/copy"),
                    ("python3 tools/context/budget.py checkpoint --session test-session --verify", root),
+                   # The token is not compared to this session: `ready` opens the gate, never the spelling.
+                   ("python3 tools/context/budget.py checkpoint --session other-session --verify", root),
                    (f"cd {root}", root / "demo/copy")]
         for command, cwd in allowed:
             self.assertEqual(self.call(tool_name="Bash", tool_input={"command": command}, cwd=str(cwd)), {}, command)
@@ -377,7 +420,7 @@ class BudgetTests(unittest.TestCase):
                    (f"cd /tmp && python3 {root}/tools/context/budget.py {tail}", root),
                    (f"cd {root} && python3 tools/context/budget.py {tail} && rm -rf x", root),
                    (f"cd {root}; python3 tools/context/budget.py {tail}", root),
-                   (f"python3 tools/context/budget.py checkpoint --session other-session --verify", root),
+                   (f"python3 tools/context/budget.py checkpoint --session a/b --verify", root),
                    (f"python3 tools/context/budget.py checkpoint --session test-session --base 'a;b' --verify", root),
                    ("cd /tmp", root)]
         for command, cwd in refused:

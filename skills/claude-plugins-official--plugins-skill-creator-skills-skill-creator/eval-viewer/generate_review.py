@@ -276,7 +276,8 @@ def generate_html(
     if benchmark:
         embedded["benchmark"] = benchmark
 
-    data_json = json.dumps(embedded)
+    # Æion Factory security patch: escaped so an eval output holding "</script>" cannot close the script element and run its own.
+    data_json = json.dumps(embedded).replace("&", "\\u0026").replace("<", "\\u003c").replace(">", "\\u003e")
 
     return template.replace("/*__EMBEDDED_DATA__*/", f"const EMBEDDED_DATA = {data_json};")
 
@@ -329,8 +330,17 @@ class ReviewHandler(BaseHTTPRequestHandler):
         self.benchmark_path = benchmark_path
         super().__init__(*args, **kwargs)
 
+    def _same_origin(self) -> bool:
+        # Æion Factory security patch: a page from another site, or a hostname rebound to 127.0.0.1, must not read or write feedback.
+        port = self.server.server_address[1]
+        hosts = {f"localhost:{port}", f"127.0.0.1:{port}"}
+        origin = self.headers.get("Origin")
+        return self.headers.get("Host") in hosts and (origin is None or origin in {f"http://{host}" for host in hosts})
+
     def do_GET(self) -> None:
-        if self.path == "/" or self.path == "/index.html":
+        if not self._same_origin():
+            self.send_error(403)
+        elif self.path == "/" or self.path == "/index.html":
             # Regenerate HTML on each request (re-scans workspace for new outputs)
             runs = find_runs(self.workspace)
             benchmark = None
@@ -359,7 +369,10 @@ class ReviewHandler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_POST(self) -> None:
-        if self.path == "/api/feedback":
+        # Æion Factory security patch: a JSON body cannot come cross-site without a preflight, which this server never answers.
+        if not self._same_origin() or self.headers.get_content_type() != "application/json":
+            self.send_error(403)
+        elif self.path == "/api/feedback":
             length = int(self.headers.get("Content-Length", 0))
             body = self.rfile.read(length)
             try:

@@ -49,8 +49,8 @@ tools/agents/run pi                                 # Pi 1.4.0+, project extensi
 tools/agents/run devin                              # Devin CLI: .devin/ hooks, shared skills
 tools/agents/run droid                              # Droid (factory.ai): .factory/ hooks, shared skills
 tools/agents/run antigravity                        # Google Antigravity CLI (agy): .agents/hooks.json
-git config aeion.mode local                         # local play: commits on main, no PR/CI ritual
-git config --unset aeion.mode                       # back to the team flow
+git config aeion.mode team                          # team flow: develop, review before push, release PR
+git config --unset aeion.mode                       # back to local mode, the default
 python3 tools/agents/tests/test_hooks.py
 node --test tools/agents/tests/test_opencode.mjs
 node --test tools/agents/tests/test_pi.mjs
@@ -91,9 +91,9 @@ claude plugin install native-lsp@aeion-local --scope project
 
 ## Git flow
 
-The team flow below is the default. In local mode (`git config aeion.mode local`), commit on
-`main` locally; pushing is the user's call (pre-push lets it through), and the safety guards still
-apply. Only the user switches the mode.
+The team flow below runs once the user sets `git config aeion.mode team` (README "Team git flow").
+In local mode, the default, commit on the current branch; pushing is the user's call (pre-push lets
+it through), and the safety guards still apply. Only the user switches the mode.
 
 ```bash
 git switch develop

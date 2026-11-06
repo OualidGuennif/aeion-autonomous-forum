@@ -1,7 +1,7 @@
 // Spec: knowledge/operations/agent-compatibility.md
 import { spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const UNAVAILABLE = 'Æion Factory hook unavailable; action refused.';
 const RESUME = 'Æion Factory: context compacted. Read your handover in work/handovers/ and continue the task.';
@@ -15,17 +15,13 @@ const SETTLE_LIMIT = 3;
 // Pi's built-in tools under the names the shared guards know; find and ls only list paths.
 const TOOLS = { bash: 'Bash', powershell: 'Bash', read: 'Read', edit: 'Edit', write: 'Write', grep: 'Grep', find: 'Glob', ls: 'LS' };
 
-// Pi may start in a subfolder (demo/), so the hooks live in the nearest folder above that has them.
-function projectRoot(directory) {
-  for (let folder = resolve(directory); ; folder = dirname(folder)) {
-    if (existsSync(resolve(folder, 'tools/agents/hook.py'))) return folder;
-    if (dirname(folder) === folder) return directory;
-  }
-}
+// The hooks are the ones shipped with this extension, three folders up, wherever Pi starts (demo/ too): a
+// tools/agents/hook.py above the folder a session opens may be planted, and would run as the user.
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 
-function invoke(root, event) {
-  const result = spawnSync('python3', [resolve(root, 'tools/agents/hook.py'), 'pi'], {
-    cwd: root, input: JSON.stringify(event), encoding: 'utf8', timeout: 15000, maxBuffer: 128 * 1024,
+function invoke(event) {
+  const result = spawnSync('python3', [resolve(ROOT, 'tools/agents/hook.py'), 'pi'], {
+    cwd: ROOT, input: JSON.stringify(event), encoding: 'utf8', timeout: 15000, maxBuffer: 128 * 1024,
   });
   if (result.error || result.status !== 0) throw new Error(UNAVAILABLE);
   const output = JSON.parse(result.stdout);
@@ -63,7 +59,7 @@ export default function (pi) {
     const session = ctx.sessionManager.getSessionId();
     if (started.has(session)) return undefined;
     const source = compacted.has(session) ? 'compact' : 'startup';
-    const { output, reason } = invoke(projectRoot(ctx.cwd), { session_id: session, hook_event_name: 'SessionStart', source });
+    const { output, reason } = invoke({ session_id: session, hook_event_name: 'SessionStart', source });
     if (reason) throw new Error(reason);
     started.add(session);
     compacted.delete(session);
@@ -73,7 +69,7 @@ export default function (pi) {
 
   pi.on('tool_call', async (event, ctx) => {
     try {
-      const { reason } = invoke(projectRoot(ctx.cwd), toolEvent(event, ctx, 'PreToolUse'));
+      const { reason } = invoke(toolEvent(event, ctx, 'PreToolUse'));
       return reason ? { block: true, reason } : undefined;
     } catch (error) {
       return { block: true, reason: error.message || UNAVAILABLE };
@@ -82,15 +78,10 @@ export default function (pi) {
 
   pi.on('tool_result', async (event, ctx) => {
     if (event.isError) return undefined;
-    const { reason, output } = invoke(projectRoot(ctx.cwd), toolEvent(event, ctx, 'PostToolUse', { content: event.content }));
-    // A verified handover past 250k compacts now, not at Pi's own threshold near the model window.
-    // Compacting aborts the running turn, so the session is told to resume from its handover once it is done.
-    if (output.aeion?.compact) {
-      ctx.compact({
-        onComplete: () => pi.sendUserMessage(RESUME),
-        onError: (error) => ctx.ui.notify(error.message || UNAVAILABLE, 'error'),
-      });
-    }
+    const { reason, output } = invoke(toolEvent(event, ctx, 'PostToolUse', { content: event.content }));
+    // Compaction is never started from a tool result: Pi's manual compaction aborts the running turn,
+    // and print mode exits on that abort before the summary is written. The settlement boundary is the
+    // safe place, and the Stop payload now carries the context measure that asks for it.
     const message = reason || output.hookSpecificOutput?.additionalContext;
     if (!message) return undefined;
     return { content: [...event.content, { type: 'text', text: `Æion Factory feedback: ${message}` }], structuredContent: event.structuredContent };
@@ -102,13 +93,27 @@ export default function (pi) {
   pi.on('agent_before_settle', async (event, ctx) => {
     const session = ctx.sessionManager.getSessionId();
     try {
-      const { output, reason } = invoke(projectRoot(ctx.cwd), { session_id: session, hook_event_name: 'Stop' });
+      const { output, reason } = invoke({
+        session_id: session, hook_event_name: 'Stop',
+        // Settlement is where the 250k decision is made now; without this measure Stop falls back to a stale count.
+        observed_tokens: ctx.getContextUsage?.()?.tokens ?? null,
+      });
       // A verified checkpoint past 250k compacts at settlement instead of spinning on continuation.
       if (output.aeion?.compact) {
         settles.delete(session);
+        // A one-shot print/json run ends at this settlement, so a compaction started here is disposed
+        // before the summary is written. End cleanly and send the user to the verified handover instead.
+        if (!ctx.hasUI) {
+          console.error('Æion Factory: the 250k gate is reached and the handover is verified. This one-shot run '
+            + 'cannot finish a compaction; start a new session from work/handovers/ to continue.');
+          return undefined;
+        }
+        // Compaction replaces the extension context; read the mode now and never touch ctx from a callback.
         ctx.compact({
+          // An interactive run stays alive to take the resume message itself.
           onComplete: () => pi.sendUserMessage(RESUME),
-          onError: (error) => ctx.ui.notify(error.message || UNAVAILABLE, 'error'),
+          // A stale ctx after replacement must not turn a compaction error into a process crash.
+          onError: (error) => { try { ctx.ui.notify(error.message || UNAVAILABLE, 'error'); } catch { /* stale ctx */ } },
         });
         return undefined;
       }
@@ -147,7 +152,7 @@ export default function (pi) {
     try {
       // `native` tells the shared rule this is Pi's own compaction at its window, not one the factory asked for:
       // refusing it would trap the session past the window, so it runs and the closure is owed after it.
-      ({ reason } = invoke(projectRoot(ctx.cwd), { session_id: session, hook_event_name: 'PreCompact', native: true }));
+      ({ reason } = invoke({ session_id: session, hook_event_name: 'PreCompact', native: true }));
     } catch (error) {
       // An unavailable hook is a broken guard, not a policy refusal: closing the only exit would lose the session.
       ctx.ui.notify(error.message || UNAVAILABLE, 'error');

@@ -25,15 +25,33 @@ sources:
 A change is made in one order, and each pass keeps its result:
 
 1. **Make it work.** The smallest edit that solves the problem; one decision in one place; a test
-   written first, and seen failing for the expected reason, when an honest test is practical.
+   written first, and seen failing for the expected reason, when an honest test is practical. The
+   shape of the data is settled before the logic that uses it.
 2. **Make it right.** The root cause, not the symptom; the structure that makes the illegal state
-   unrepresentable and checks data once, where it enters.
+   unrepresentable and checks data once, where it enters. A restructuring first pins today's
+   behaviour with a test, then proves it unchanged.
 3. **Follow practice.** The project's rules for naming, tests, docs, review and release.
 
 Before the passes: write the premise in one sentence. When two fixes that share a premise fail the
 same check, attack the premise instead of trying a third fix, and subtract what the change no longer
 needs. When the work is not obvious at a glance, build the small tool that does one unit, then let
 it do the rest.
+
+## Fit the design to the change
+
+New code with no running users yet (a feature, a service, a module) is designed as if the
+requirement had been there from the start, not bolted onto a design built for something else.
+Inside an existing system, above all one in production, the smallest change that fits wins: a
+redesign is proposed only when its gain is concrete and larger than its risk, and it waits for the
+owner's yes. The owner's stated design preference comes before both. A requirement that does not
+fit the current design is said in the plan, never bolted on or rewritten silently.
+
+## State that survives retries and concurrency
+
+- An operation that can be retried or interrupted (a migration, a deploy step, a loop or hook
+  action, a file write) ends in the same state when run twice or after a crash halfway.
+- Two writers never share mutable state they do not both need. When they must, one writer owns it,
+  and the structure enforces that (a lock, an owning process, a separate worktree), not a convention.
 
 ## Code reads top to bottom
 
@@ -70,9 +88,9 @@ structural scorecard; each project's build, linter and tests provide language-sp
 
 ## Branch, review, release
 
-This is the team flow, under git only. In a plain folder there is no branch, review, CI or tag: the
-tests for what changed and the `CHANGELOG.md` line are the whole ritual. In local mode
-(`git config aeion.mode local`, see [build and test](../operations/build-and-test.md)) commits stay
+This is the team flow (`git config aeion.mode team`), under git only. In a plain folder there is no
+branch, review, CI or tag: the tests for what changed and the `CHANGELOG.md` line are the whole
+ritual. In local mode, the default (see [build and test](../operations/build-and-test.md)), commits stay
 local, without review, CI or a `work/current.md` entry, and pre-push lets the user's own push through;
 tests for what changed still run.
 
@@ -86,11 +104,14 @@ tests for what changed still run.
   green CI; then the local `develop` pulls it before new commits.
 - A release (skill `ship`): `tools/release/release <part>` bumps `VERSION` (SemVer) and dates the
   changelog; a pull request `develop → main` is reviewed again and merged with a merge commit after a
-  green CI; the merged commit is tagged `vX.Y.Z` with its changelog section as release notes.
+  green CI; the merged commit is tagged `vX.Y.Z` with its changelog section as release notes. The GitHub
+  release is named exactly `vX.Y.Z` — never a sentence, never a summary — and its body is that section,
+  unedited: the same simple bullet list as the first releases.
 - A new project or a demo copy starts with `tools/release/release --new-project`: `VERSION` 0.1.0, an
   empty `Unreleased`, and `work/current.md` holding only the "Adapt Æion Factory to this project" entry,
-  dated today. It refuses in Æion Factory's own clone (origin `OualidGuennif/aeion-factory`), and running
-  it twice changes nothing.
+  dated today; the factory's `demo/` is removed; `.aeion-factory` records the factory release copied
+  (`v<VERSION>`), which `tools/agents/template-update` reads as the update baseline. It refuses in
+  Æion Factory's own clone (origin `OualidGuennif/aeion-factory`), and running it twice changes nothing.
 - Independent review requires an authorized independent pass. Reading a pool agent profile does
   not authorize creating an agent; local self-assessment cannot issue the independent push-gate receipt.
 - A deploy or a human decision waits for that human. The owner's comments become preferences
