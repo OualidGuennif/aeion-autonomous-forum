@@ -10,7 +10,9 @@ import java.util.List;
 import org.jboss.logging.Logger;
 
 /**
- * Feature 011: the outbox drain. Nothing here runs inside a request.
+ * Feature 011: the outbox drain. Nothing here runs inside a request, and with the
+ * database-backed gate off (feature 001) nothing runs at all: the outbox table is never asked
+ * for a connection and the events a database-backed plane would queue do not exist yet.
  *
  * Each tick takes the oldest unpublished events and hands them to the broker one at a time. A
  * confirmed send marks the row published; a failure records why, leaves the row pending, and ends
@@ -28,6 +30,9 @@ public class ThreadPublisher {
     KafkaEventSender sender;
 
     @Inject
+    DatabaseMode database;
+
+    @Inject
     Logger log;
 
     private volatile boolean announcedDisabled;
@@ -35,10 +40,18 @@ public class ThreadPublisher {
     /** Run every two seconds; a paused application does nothing rather than piling up work. */
     @Scheduled(every = "2s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     void drainOnSchedule() {
+        if (!database.enabled()) {
+            // Database-less boot: the outbox table is never asked for a connection.
+            return;
+        }
         drain();
     }
 
     void onStart(@Observes StartupEvent event) {
+        if (!database.enabled()) {
+            log.info("database disabled: the outbox drain waits for the database-backed mode");
+            return;
+        }
         drain();
     }
 
@@ -48,6 +61,9 @@ public class ThreadPublisher {
 
     /** Returns how many events were published now; a test calls this directly. */
     public int drain() {
+        if (!database.enabled()) {
+            return 0;
+        }
         if (!sender.enabled()) {
             if (!announcedDisabled) {
                 log.infof("kafka disabled: %d event(s) stay in the outbox", threads.pendingCount());
