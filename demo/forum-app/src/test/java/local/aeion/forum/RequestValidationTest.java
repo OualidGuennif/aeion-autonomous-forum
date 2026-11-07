@@ -1,4 +1,9 @@
 // Spec: knowledge/components/request-validation.md
+// Docs-Checked: 2026-11-07 feature 001 leaves this standing suite exactly as that spec describes it:
+// the same routes, the same 413/422/415 refusals and the same 16384-byte boundary, because the
+// request cap keeps its documented default and ceiling. No fact of
+// knowledge/components/request-validation.md changed; where the cap now comes from is
+// demo/forum-docs/settings.md and knowledge/components/agora-product.md.
 package local.aeion.forum;
 
 import static io.restassured.RestAssured.given;
