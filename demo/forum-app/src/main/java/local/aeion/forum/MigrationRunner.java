@@ -20,7 +20,8 @@ import org.jboss.logging.Logger;
  *
  * The engine lives in {@link Migrations} so a test can apply the same files to an ephemeral
  * database without CDI. This class only schedules it and exposes the ledger at {@code /api/schema}:
- * a deployment can ask the running application what it applied, and {@code pending} must be zero.
+ * a database-backed deployment can ask what it applied, and {@code pending} must be zero. In the
+ * database-less default (feature 001) no migration runs and the ledger honestly stays empty.
  */
 @ApplicationScoped
 @Path("/api/schema")
@@ -33,6 +34,9 @@ public class MigrationRunner {
     @Inject
     ForumClock clock;
 
+    @Inject
+    DatabaseMode database;
+
     @ConfigProperty(name = "aeion.migrations.location", defaultValue = "db/migration")
     String location;
 
@@ -40,6 +44,12 @@ public class MigrationRunner {
     Logger log;
 
     void onStart(@Observes StartupEvent event) {
+        if (!database.enabled()) {
+            // Database-less boot (feature 001): the schema is not opened, and the migration
+            // stays pending — an operator's datasource is never asked for a connection.
+            log.info("database disabled: migrations are not initialized and no connection is opened");
+            return;
+        }
         List<String> appliedNow = migrate();
         if (!appliedNow.isEmpty()) {
             log.infof("applied migrations %s", appliedNow);
@@ -53,8 +63,14 @@ public class MigrationRunner {
 
     @GET
     public Map<String, Object> status() {
-        List<Map<String, Object>> rows = Migrations.applied(dataSource);
         int expected = Migrations.index(location).size();
+        List<Map<String, Object>> rows;
+        if (database.enabled()) {
+            rows = Migrations.applied(dataSource);
+        } else {
+            // A database-less deployment applied nothing on purpose; the ledger stays empty.
+            rows = List.of();
+        }
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("applied", rows);
         body.put("expected", expected);

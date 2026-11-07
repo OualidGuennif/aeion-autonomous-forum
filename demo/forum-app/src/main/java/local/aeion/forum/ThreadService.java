@@ -27,7 +27,8 @@ import java.util.UUID;
 public class ThreadService {
 
     static final int MAX_TITLE = 200;
-    static final int MAX_BODY = 4000;
+    /** The historical text cap, now the configured default (feature 001: ForumBounds). */
+    static final int MAX_BODY = ForumBounds.DEFAULT_TEXT_CODEPOINTS;
     static final int MIN_TITLE = 3;
 
     @Inject
@@ -35,6 +36,9 @@ public class ThreadService {
 
     @Inject
     ForumClock clock;
+
+    @Inject
+    ForumBounds bounds;
 
     @Inject
     ObjectMapper json;
@@ -53,7 +57,9 @@ public class ThreadService {
         if (cleanTitle.length() < MIN_TITLE || cleanTitle.length() > MAX_TITLE) {
             throw new ThreadException("invalid_title");
         }
-        if (body.isEmpty() || body.length() > MAX_BODY) {
+        // Feature 001: the normalized-text cap is configured (AGORA_TEXT_MAX_CODEPOINTS, default
+        // 4000) and counts codepoints, not UTF-16 units, so a cap is a cap for any text.
+        if (body.isEmpty() || body.codePointCount(0, body.length()) > bounds.textMaxCodepoints()) {
             throw new ThreadException("invalid_body");
         }
         long now = clock.nowNs();

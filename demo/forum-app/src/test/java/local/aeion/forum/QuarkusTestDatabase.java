@@ -22,7 +22,16 @@ public class QuarkusTestDatabase implements QuarkusTestResourceLifecycleManager 
                 "AEION_SQLITE_PATH", database.file().toString(),
                 "AEION_RELEASE", "test-ephemeral",
                 // The application refuses to start without a real secret; a test gets a fixed one.
-                "AGORA_SESSION_SECRET", "ephemeral-suite-secret-0123456789abcdef");
+                "AGORA_SESSION_SECRET", "ephemeral-suite-secret-0123456789abcdef",
+                // These suites open their own database-backed plane, so the gate says so explicitly
+                // (feature 001): the same-fact deployment without the key would boot database-less.
+                "AGORA_DATABASE_ENABLED", "true",
+                // A database-backed deployment must name its PostgreSQL connection settings (they
+                // are validated as present and carried for the cutover; this suite keeps the
+                // committed SQLite plane through AEION_SQLITE_PATH, so the settings are never dialed).
+                "AGORA_DATABASE_URL", "jdbc:postgresql://disposable-test.invalid:5432/agora_test",
+                "AGORA_DATABASE_USER", "agora_test",
+                "AGORA_DATABASE_PASSWORD", "disposable-test-password");
     }
 
     @Override

@@ -1,4 +1,5 @@
 // Spec: knowledge/components/request-validation.md
+// Docs-Checked: 2026-11-07 feature 001 changes only where the <=16KiB body cap value comes from (AGORA_REQUEST_MAX_BYTES, default 16384, ceiling unchanged); no fact of knowledge/components/request-validation.md changed and the cap's configuration is demo/forum-docs/settings.md.
 package local.aeion.forum;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -6,6 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -23,7 +25,6 @@ import java.util.TreeSet;
 @Provider
 @Priority(Priorities.AUTHENTICATION - 1)
 public class RequestValidationFilter implements ContainerRequestFilter {
-    static final int MAX_BODY_BYTES = 16384;
     private static final Map<String, Set<String>> FIELDS = Map.of(
             "api/auth/register", Set.of("username", "password"),
             "api/auth/login", Set.of("username", "password"),
@@ -32,11 +33,15 @@ public class RequestValidationFilter implements ContainerRequestFilter {
             .enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
 
+    @Inject
+    ForumBounds bounds;
+
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         boolean hasBody = request.hasEntity();
-        byte[] body = hasBody ? request.getEntityStream().readNBytes(MAX_BODY_BYTES + 1) : new byte[0];
-        if (body.length > MAX_BODY_BYTES) {
+        int cap = bounds.requestMaxBytes();
+        byte[] body = hasBody ? request.getEntityStream().readNBytes(cap + 1) : new byte[0];
+        if (body.length > cap) {
             request.abortWith(Response.status(413).type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(Map.of("error", "request_too_large")).build());
             return;

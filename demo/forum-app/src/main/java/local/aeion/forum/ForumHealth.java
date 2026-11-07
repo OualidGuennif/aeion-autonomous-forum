@@ -6,15 +6,18 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-/** Feature 001: the service answers, and it says which release is answering. */
+/**
+ * Feature 001: the health endpoint is liveness and nothing else.
+ *
+ * {@code GET /healthz} answers one fixed body, {@code {"status":"ok"}}, once the process can serve.
+ * It does not touch the database in any mode, and it carries no release, runtime or configuration
+ * detail: a probe is asked whether to leave the pod alone, not what the pod looks like. Settings
+ * and environment stay out of every response for the same reason they stay out of the logs.
+ */
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public class ForumHealth {
-
-    @ConfigProperty(name = "aeion.release", defaultValue = "unreleased")
-    String release;
 
     @GET
     @Path("healthz")
@@ -28,11 +31,10 @@ public class ForumHealth {
         return payload("serving");
     }
 
-    private Map<String, Object> payload(String status) {
+    /** The one reply shape of this resource: a status and nothing else. */
+    private static Map<String, Object> payload(String status) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("status", status);
-        body.put("release", release);
-        body.put("runtime", System.getProperty("java.version"));
         return body;
     }
 }
