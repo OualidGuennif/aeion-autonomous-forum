@@ -45,6 +45,9 @@ the committed Quarkus/Java API under `demo/forum-app/` and its required `Product
 The framework authority, review, context and source-analysis contracts below remain unchanged.
 The baseline uses SQLite; PostgreSQL migration/restore and React/browser acceptance are separate
 gates. Conditional React CI does not certify a missing web package, a cutover or a deployment.
+The product application boots database-less by default on the typed, allowlisted environment
+(feature 001): `/healthz` is liveness only, and the database-backed plane keeps the committed
+deployment until the PostgreSQL cutover.
 
 
 Claude Code retains its native hooks. Codex, OpenCode, Pi, dsh (DeepSeek Harness), Devin, Droid
