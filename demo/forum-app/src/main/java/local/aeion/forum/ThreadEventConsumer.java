@@ -40,6 +40,9 @@ public class ThreadEventConsumer {
     KafkaTopics topics;
 
     @Inject
+    ForumSettings settings;
+
+    @Inject
     Logger log;
 
     @ConfigProperty(name = "agora.kafka.enabled", defaultValue = "false")
@@ -90,6 +93,12 @@ public class ThreadEventConsumer {
     void onStart(@Observes StartupEvent event) {
         if (!enabled) {
             log.info("kafka consumer disabled: no thread-events are read");
+            return;
+        }
+        if (!settings.databaseWorkRequested()) {
+            // An event the application cannot record is an event it must not acknowledge: without a
+            // stated database there is no ledger, so committing offsets would quietly lose threads.
+            log.info("no database configured for this deployment: no thread-events are read");
             return;
         }
         loop = new java.lang.Thread(this::consume, "agora-thread-consumer");

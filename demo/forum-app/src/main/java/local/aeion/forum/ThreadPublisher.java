@@ -28,6 +28,9 @@ public class ThreadPublisher {
     KafkaEventSender sender;
 
     @Inject
+    ForumSettings settings;
+
+    @Inject
     Logger log;
 
     private volatile boolean announcedDisabled;
@@ -48,6 +51,11 @@ public class ThreadPublisher {
 
     /** Returns how many events were published now; a test calls this directly. */
     public int drain() {
+        if (!settings.databaseWorkRequested()) {
+            // Feature 001: with no database to read, there is no outbox, and reading one is a query.
+            // Nothing here may open a connection the deployment never stated.
+            return 0;
+        }
         if (!sender.enabled()) {
             if (!announcedDisabled) {
                 log.infof("kafka disabled: %d event(s) stay in the outbox", threads.pendingCount());
