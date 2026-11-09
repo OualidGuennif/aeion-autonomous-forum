@@ -23,7 +23,6 @@ import java.util.TreeSet;
 @Provider
 @Priority(Priorities.AUTHENTICATION - 1)
 public class RequestValidationFilter implements ContainerRequestFilter {
-    static final int MAX_BODY_BYTES = 16384;
     private static final Map<String, Set<String>> FIELDS = Map.of(
             "api/auth/register", Set.of("username", "password"),
             "api/auth/login", Set.of("username", "password"),
@@ -32,11 +31,17 @@ public class RequestValidationFilter implements ContainerRequestFilter {
             .enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
 
+    @jakarta.inject.Inject
+    ForumSettings settings;
+
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
+        // The ceiling is a setting, not a constant: AGORA_REQUEST_MAX_BYTES may lower it, never
+        // raise it above the documented 16 KiB.
+        int maxBodyBytes = settings.requestMaxBytes();
         boolean hasBody = request.hasEntity();
-        byte[] body = hasBody ? request.getEntityStream().readNBytes(MAX_BODY_BYTES + 1) : new byte[0];
-        if (body.length > MAX_BODY_BYTES) {
+        byte[] body = hasBody ? request.getEntityStream().readNBytes(maxBodyBytes + 1) : new byte[0];
+        if (body.length > maxBodyBytes) {
             request.abortWith(Response.status(413).type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(Map.of("error", "request_too_large")).build());
             return;

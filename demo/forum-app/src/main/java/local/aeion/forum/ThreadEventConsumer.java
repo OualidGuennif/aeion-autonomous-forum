@@ -40,6 +40,9 @@ public class ThreadEventConsumer {
     KafkaTopics topics;
 
     @Inject
+    ForumSettings settings;
+
+    @Inject
     Logger log;
 
     @ConfigProperty(name = "agora.kafka.enabled", defaultValue = "false")
@@ -88,6 +91,12 @@ public class ThreadEventConsumer {
     }
 
     void onStart(@Observes StartupEvent event) {
+        if (!settings.databaseEnabled()) {
+            // Events are applied to the forum's tables; without a database there is nothing to
+            // apply them to, and a consumer would only fail on every record it received.
+            log.info("database-backed features disabled: no thread event is consumed");
+            return;
+        }
         if (!enabled) {
             log.info("kafka consumer disabled: no thread-events are read");
             return;

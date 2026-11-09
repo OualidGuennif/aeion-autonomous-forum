@@ -27,7 +27,6 @@ import java.util.UUID;
 public class ThreadService {
 
     static final int MAX_TITLE = 200;
-    static final int MAX_BODY = 4000;
     static final int MIN_TITLE = 3;
 
     @Inject
@@ -38,6 +37,9 @@ public class ThreadService {
 
     @Inject
     ObjectMapper json;
+
+    @Inject
+    ForumSettings settings;
 
     public record ThreadView(String id, String title, String body, String authorId, long createdNs) {
     }
@@ -53,7 +55,14 @@ public class ThreadService {
         if (cleanTitle.length() < MIN_TITLE || cleanTitle.length() > MAX_TITLE) {
             throw new ThreadException("invalid_title");
         }
-        if (body.isEmpty() || body.length() > MAX_BODY) {
+        // The text cap counts code points: an emoji is one character to a reader, four bytes to a
+        // disk and two units to a UTF-16 string.
+        if (body.isEmpty() || body.codePointCount(0, body.length()) > settings.textMaxCodepoints()) {
+            throw new ThreadException("invalid_body");
+        }
+        // The rendered cap counts the bytes a reader receives, so a thread cannot become a blob
+        // that every client has to download.
+        if (renderedBytes(cleanTitle, body) > settings.renderedMaxBytes()) {
             throw new ThreadException("invalid_body");
         }
         long now = clock.nowNs();
@@ -174,6 +183,12 @@ public class ThreadService {
 
     private static ThreadView view(ForumThread thread) {
         return new ThreadView(thread.id, thread.title, thread.body, thread.authorId, thread.createdNs);
+    }
+
+    /** The bytes a rendered thread costs its readers: the title and the body, in UTF-8. */
+    private static int renderedBytes(String title, String body) {
+        return title.getBytes(java.nio.charset.StandardCharsets.UTF_8).length
+                + body.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
     }
 
     /** A refusal the API can turn into a 400 without leaking anything. */

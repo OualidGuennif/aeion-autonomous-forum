@@ -120,8 +120,10 @@ public class SessionSecret {
         }
         byte[] bytes = trimmed.getBytes(StandardCharsets.UTF_8);
         if (bytes.length < MIN_BYTES) {
+            // The length of the refused value is not written down: a refusal names the key and the
+            // requirement, never a part of what the operator supplied.
             throw new IllegalStateException("session_secret_too_short: " + KEY + " must be at least "
-                    + MIN_BYTES + " bytes, got " + bytes.length);
+                    + MIN_BYTES + " bytes");
         }
         return bytes;
     }

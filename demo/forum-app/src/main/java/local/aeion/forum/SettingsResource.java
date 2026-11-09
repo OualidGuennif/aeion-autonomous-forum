@@ -28,13 +28,15 @@ import java.util.Map;
 public class SettingsResource {
 
     private static final int MAX_NAME = 120;
-    private static final int MAX_VALUE = 4000;
 
     @Inject
     EntityManager entityManager;
 
     @Inject
     ForumClock clock;
+
+    @Inject
+    ForumSettings settings;
 
     @GET
     public List<Map<String, Object>> list() {
@@ -63,7 +65,8 @@ public class SettingsResource {
         if (name == null || name.isBlank() || name.length() > MAX_NAME) {
             return Response.status(400).entity(Map.of("error", "invalid_name")).build();
         }
-        if (value == null || value.isBlank() || value.length() > MAX_VALUE) {
+        if (value == null || value.isBlank()
+                || value.codePointCount(0, value.length()) > settings.textMaxCodepoints()) {
             return Response.status(400).entity(Map.of("error", "invalid_value")).build();
         }
         long now = clock.nowNs();

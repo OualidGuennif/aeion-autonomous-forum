@@ -33,6 +33,9 @@ public class MigrationRunner {
     @Inject
     ForumClock clock;
 
+    @Inject
+    ForumSettings settings;
+
     @ConfigProperty(name = "aeion.migrations.location", defaultValue = "db/migration")
     String location;
 
@@ -40,6 +43,11 @@ public class MigrationRunner {
     Logger log;
 
     void onStart(@Observes StartupEvent event) {
+        if (!settings.databaseEnabled()) {
+            // A deployment without a database does not touch one: no migration, no connection.
+            log.info("database-backed features disabled: no migration was applied");
+            return;
+        }
         List<String> appliedNow = migrate();
         if (!appliedNow.isEmpty()) {
             log.infof("applied migrations %s", appliedNow);

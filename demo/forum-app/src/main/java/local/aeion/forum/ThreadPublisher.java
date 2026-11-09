@@ -28,6 +28,9 @@ public class ThreadPublisher {
     KafkaEventSender sender;
 
     @Inject
+    ForumSettings settings;
+
+    @Inject
     Logger log;
 
     private volatile boolean announcedDisabled;
@@ -35,10 +38,19 @@ public class ThreadPublisher {
     /** Run every two seconds; a paused application does nothing rather than piling up work. */
     @Scheduled(every = "2s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     void drainOnSchedule() {
+        if (!settings.databaseEnabled()) {
+            return;
+        }
         drain();
     }
 
     void onStart(@Observes StartupEvent event) {
+        if (!settings.databaseEnabled()) {
+            // Without a database there is no outbox to drain, and asking for one would only open a
+            // connection the deployment does not have.
+            log.info("database-backed features disabled: no outbox drain");
+            return;
+        }
         drain();
     }
 
@@ -48,6 +60,9 @@ public class ThreadPublisher {
 
     /** Returns how many events were published now; a test calls this directly. */
     public int drain() {
+        if (!settings.databaseEnabled()) {
+            return 0;
+        }
         if (!sender.enabled()) {
             if (!announcedDisabled) {
                 log.infof("kafka disabled: %d event(s) stay in the outbox", threads.pendingCount());
