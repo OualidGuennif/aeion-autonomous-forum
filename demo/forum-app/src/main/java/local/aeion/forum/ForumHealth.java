@@ -1,3 +1,4 @@
+// Spec: knowledge/components/agora-product.md
 package local.aeion.forum;
 
 import jakarta.ws.rs.GET;
@@ -8,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-/** Feature 001: the service answers, and it says which release is answering. */
+/** Feature 001: the service answers, and it says only that it answers. */
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public class ForumHealth {
@@ -16,10 +17,17 @@ public class ForumHealth {
     @ConfigProperty(name = "aeion.release", defaultValue = "unreleased")
     String release;
 
+    /**
+     * Liveness and nothing else: {@code {"status":"ok"}} is the whole body.
+     *
+     * A probe compares one thing — is the process serving — and a body that carries a release name,
+     * a runtime version or any setting turns the health endpoint into a page an operator has to
+     * trust instead of read. Which release is serving is answered at {@code /__release}.
+     */
     @GET
     @Path("healthz")
     public Map<String, Object> health() {
-        return payload("ok");
+        return Map.of("status", "ok");
     }
 
     @GET
