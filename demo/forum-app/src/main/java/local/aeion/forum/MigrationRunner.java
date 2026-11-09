@@ -1,7 +1,9 @@
+// Spec: knowledge/components/agora-product.md
 package local.aeion.forum;
 
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -21,6 +23,11 @@ import org.jboss.logging.Logger;
  * The engine lives in {@link Migrations} so a test can apply the same files to an ephemeral
  * database without CDI. This class only schedules it and exposes the ledger at {@code /api/schema}:
  * a deployment can ask the running application what it applied, and {@code pending} must be zero.
+ *
+ * Feature 001 decides *whether* any of this runs: a deployment that did not turn database-backed
+ * features on never asks for the datasource, so booting without a database opens no connection and
+ * cannot be stopped by a datasource that is not reachable. The datasource is therefore looked up
+ * when it is needed ({@code Instance}) rather than injected as a ready-made object.
  */
 @ApplicationScoped
 @Path("/api/schema")
@@ -28,10 +35,13 @@ import org.jboss.logging.Logger;
 public class MigrationRunner {
 
     @Inject
-    DataSource dataSource;
+    Instance<DataSource> dataSource;
 
     @Inject
     ForumClock clock;
+
+    @Inject
+    ForumSettings settings;
 
     @ConfigProperty(name = "aeion.migrations.location", defaultValue = "db/migration")
     String location;
@@ -40,6 +50,12 @@ public class MigrationRunner {
     Logger log;
 
     void onStart(@Observes StartupEvent event) {
+        if (!settings.databaseWorkRequested()) {
+            // Feature 001: no database-backed features, no migration. A deployment that turned the
+            // features on without saying where its database is gets refused by StartupChecks, and
+            // nothing here opens the shipped development file before that refusal happens.
+            return;
+        }
         List<String> appliedNow = migrate();
         if (!appliedNow.isEmpty()) {
             log.infof("applied migrations %s", appliedNow);
@@ -48,12 +64,12 @@ public class MigrationRunner {
 
     /** Apply every pending migration; returns the versions applied now. */
     public synchronized List<String> migrate() {
-        return Migrations.apply(dataSource, location, clock);
+        return Migrations.apply(dataSource.get(), location, clock);
     }
 
     @GET
     public Map<String, Object> status() {
-        List<Map<String, Object>> rows = Migrations.applied(dataSource);
+        List<Map<String, Object>> rows = Migrations.applied(dataSource.get());
         int expected = Migrations.index(location).size();
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("applied", rows);
