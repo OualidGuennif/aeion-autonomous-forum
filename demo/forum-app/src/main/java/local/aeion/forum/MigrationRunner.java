@@ -31,9 +31,6 @@ public class MigrationRunner {
     DataSource dataSource;
 
     @Inject
-    ForumSettings settings;
-
-    @Inject
     ForumClock clock;
 
     @ConfigProperty(name = "aeion.migrations.location", defaultValue = "db/migration")
@@ -43,11 +40,6 @@ public class MigrationRunner {
     Logger log;
 
     void onStart(@Observes StartupEvent event) {
-        // Database-less boot runs on the session secret alone: no migration, no connection.
-        if (!settings.databaseEnabled()) {
-            log.info("database-less boot: migrations are not run and no connection is opened");
-            return;
-        }
         List<String> appliedNow = migrate();
         if (!appliedNow.isEmpty()) {
             log.infof("applied migrations %s", appliedNow);

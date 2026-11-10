@@ -1,7 +1,7 @@
 ---
 type: Component
 title: "Agora product baseline"
-description: "Retained Quarkus backend: typed settings allowlist, database-less liveness and required CI checks, before PostgreSQL/React cutover."
+description: "Existing Quarkus backend and its required CI checks, before PostgreSQL/React cutover."
 status: draft
 sources:
   - resource: ../../demo/forum-app/
@@ -27,26 +27,14 @@ Supervisor-owned isolated checks and two independent real model reviews gate the
 Java25, Gradle9.8.2, Quarkus3.40.1 and a session secret from private runtime configuration.
 The transition baseline uses SQLite; disposable JUnit resources own test databases.
 
-The settings allowlist is typed (`demo/forum-app/src/main/java/local/aeion/forum/ForumSettings.java`):
-`AGORA_SESSION_SECRET` (required, at least 32 bytes, placeholder refused), `AGORA_DATABASE_ENABLED`
-(default false), `AGORA_REQUEST_MAX_BYTES` (1..16384, default 16384), `AGORA_TEXT_MAX_CODEPOINTS`
-(1..4000, default 4000), `AGORA_RENDERED_MAX_BYTES` (1..32768, default 32768) and the
-`agora.business.timezone` property (Europe/Paris). Each is validated once at startup; a refusal
-names only the key and the rule, never the value, and unknown environment keys are ignored, never
-logged. Database-less boot is the default: no migration, no outbox drain and no connection is
-opened, so liveness answers with an unreachable datasource behind it.
-
 ## Outputs
 
 The existing health, settings, accounts, session/CSRF and thread API, and packaged Quarkus app.
-`GET /healthz` is liveness only: exactly `{"status":"ok"}`, no build, host or configuration values;
-the release tag stays on `GET /__release`. Missing/invalid required secret refuses startup, as does
-a bound outside its range. Product artifacts CI runs tests and packaging.
+Missing/invalid required secret refuses startup. Product artifacts CI runs tests and packaging.
 
 ## Invariants
 
-Product runtime credentials never enter browser code or the repository, and settings are never
-logged or rendered. `/healthz` exposes liveness, not build or host details. Tests use disposable
+Product runtime credentials never enter browser code or the repository. Tests use disposable
 databases. CI has read-only repository access; source checkout does not persist credentials.
 Existing product tests cover refusal paths. Old SQLite receipts never certify PostgreSQL.
 
