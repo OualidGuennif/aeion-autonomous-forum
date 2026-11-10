@@ -25,9 +25,6 @@ public class ThreadPublisher {
     ThreadService threads;
 
     @Inject
-    ForumSettings settings;
-
-    @Inject
     KafkaEventSender sender;
 
     @Inject
@@ -42,11 +39,6 @@ public class ThreadPublisher {
     }
 
     void onStart(@Observes StartupEvent event) {
-        // Database-less boot never opens a connection, so there is no outbox to drain either.
-        if (!settings.databaseEnabled()) {
-            log.info("database-less boot: the outbox drain is paused until a database is enabled");
-            return;
-        }
         drain();
     }
 
@@ -56,9 +48,6 @@ public class ThreadPublisher {
 
     /** Returns how many events were published now; a test calls this directly. */
     public int drain() {
-        if (!settings.databaseEnabled()) {
-            return 0;
-        }
         if (!sender.enabled()) {
             if (!announcedDisabled) {
                 log.infof("kafka disabled: %d event(s) stay in the outbox", threads.pendingCount());
