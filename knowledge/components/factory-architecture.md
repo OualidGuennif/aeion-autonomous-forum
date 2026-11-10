@@ -43,8 +43,10 @@ Adopting projects keep their existing instructions and architecture.
 This adopting repository also owns the separate [Agora product baseline](agora-product.md):
 the committed Quarkus/Java API under `demo/forum-app/` and its required `Product artifacts` CI.
 The framework authority, review, context and source-analysis contracts below remain unchanged.
-The baseline uses SQLite; PostgreSQL migration/restore and React/browser acceptance are separate
-gates. Conditional React CI does not certify a missing web package, a cutover or a deployment.
+The transition baseline boots database-less by default and keeps SQLite when database-backed
+features are enabled (`AGORA_DATABASE_ENABLED=true`); PostgreSQL migration/restore and
+React/browser acceptance are separate gates. Conditional React CI does not certify a missing web
+package, a cutover or a deployment.
 
 
 Claude Code retains its native hooks. Codex, OpenCode, Pi, dsh (DeepSeek Harness), Devin, Droid

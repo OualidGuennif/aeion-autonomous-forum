@@ -2,6 +2,7 @@ package local.aeion.forum;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -31,13 +32,24 @@ public class ThreadService {
     static final int MIN_TITLE = 3;
 
     @Inject
-    EntityManager entityManager;
+    Instance<EntityManager> entities;
+
+    @Inject
+    AgoraSettings settings;
 
     @Inject
     ForumClock clock;
 
     @Inject
     ObjectMapper json;
+
+    /** The resolved persistence context, or a clean refusal on a database-less boot (001). */
+    private EntityManager em() {
+        if (!settings.databaseEnabled() || entities.isUnsatisfied()) {
+            throw new IllegalStateException("database_disabled");
+        }
+        return entities.get();
+    }
 
     public record ThreadView(String id, String title, String body, String authorId, long createdNs) {
     }
@@ -58,11 +70,11 @@ public class ThreadService {
         }
         long now = clock.nowNs();
         ForumThread thread = new ForumThread(UUID.randomUUID().toString(), cleanTitle, body, author.id(), now);
-        entityManager.persist(thread);
-        entityManager.flush();
+        em().persist(thread);
+        em().flush();
         String eventId = UUID.randomUUID().toString();
         String payload = event(eventId, thread);
-        entityManager.createNativeQuery(
+        em().createNativeQuery(
                         "INSERT INTO thread_outbox(event_id, topic, payload, created_ns, attempts) "
                                 + "VALUES (?, ?, ?, ?, 0)")
                 .setParameter(1, eventId)
@@ -92,7 +104,7 @@ public class ThreadService {
     @Transactional
     public List<ThreadView> recent(int limit) {
         int cap = Math.clamp(limit, 1, 100);
-        return entityManager.createQuery("select t from ForumThread t order by t.createdNs desc", ForumThread.class)
+        return em().createQuery("select t from ForumThread t order by t.createdNs desc", ForumThread.class)
                 .setMaxResults(cap)
                 .getResultList()
                 .stream()
@@ -102,14 +114,14 @@ public class ThreadService {
 
     @Transactional
     public Optional<ThreadView> find(String id) {
-        return Optional.ofNullable(entityManager.find(ForumThread.class, id)).map(ThreadService::view);
+        return Optional.ofNullable(em().find(ForumThread.class, id)).map(ThreadService::view);
     }
 
     /** The oldest unpublished events, in insertion order. */
     @Transactional
     public List<OutboxRow> pending(int limit) {
         int cap = Math.clamp(limit, 1, 500);
-        List<?> rows = entityManager.createNativeQuery(
+        List<?> rows = em().createNativeQuery(
                         "SELECT event_id, topic, payload, attempts FROM thread_outbox "
                                 + "WHERE published_ns IS NULL ORDER BY created_ns LIMIT ?")
                 .setParameter(1, cap)
@@ -125,7 +137,7 @@ public class ThreadService {
 
     @Transactional
     public boolean markPublished(String eventId) {
-        return entityManager.createNativeQuery(
+        return em().createNativeQuery(
                         "UPDATE thread_outbox SET published_ns = ?, last_error = NULL "
                                 + "WHERE event_id = ? AND published_ns IS NULL")
                 .setParameter(1, clock.nowNs())
@@ -135,7 +147,7 @@ public class ThreadService {
 
     @Transactional
     public void markFailed(String eventId, String error) {
-        entityManager.createNativeQuery(
+        em().createNativeQuery(
                         "UPDATE thread_outbox SET attempts = attempts + 1, last_error = ? "
                                 + "WHERE event_id = ? AND published_ns IS NULL")
                 .setParameter(1, error == null ? "unknown" : error.substring(0, Math.min(200, error.length())))
@@ -149,7 +161,7 @@ public class ThreadService {
      */
     @Transactional
     public boolean recordEvent(String eventId, String topic, String payload) {
-        int inserted = entityManager.createNativeQuery(
+        int inserted = em().createNativeQuery(
                         "INSERT INTO thread_event_log(event_id, topic, received_ns, payload) "
                                 + "VALUES (?, ?, ?, ?) ON CONFLICT(event_id) DO NOTHING")
                 .setParameter(1, eventId)
@@ -162,13 +174,13 @@ public class ThreadService {
 
     @Transactional
     public long eventCount() {
-        return ((Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM thread_event_log")
+        return ((Number) em().createNativeQuery("SELECT COUNT(*) FROM thread_event_log")
                 .getSingleResult()).longValue();
     }
 
     @Transactional
     public long pendingCount() {
-        return ((Number) entityManager.createNativeQuery(
+        return ((Number) em().createNativeQuery(
                 "SELECT COUNT(*) FROM thread_outbox WHERE published_ns IS NULL").getSingleResult()).longValue();
     }
 

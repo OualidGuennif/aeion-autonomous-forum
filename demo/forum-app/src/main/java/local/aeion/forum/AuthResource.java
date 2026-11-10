@@ -15,7 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/** Forum user endpoints: register, login, logout, and "who am I". Username and password only. */
+/** Forum user endpoints: register, login, logout, and "who am I". Username and password only.
+ * A database-less boot (feature 001) answers 503 on all of them instead of a database error. */
 @Path("/api/auth")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,6 +31,8 @@ public class AuthResource {
         try {
             AuthService.Account account = auth.register(value(body, "username"), value(body, "password"));
             return Response.status(201).entity(view(account)).build();
+        } catch (AuthService.UnavailableException offline) {
+            return databaseless();
         } catch (AuthService.AuthException refusal) {
             return Response.status(400).entity(Map.of("error", refusal.code())).build();
         }
@@ -52,6 +55,8 @@ public class AuthResource {
             // The double-submit half: the client must send this back on every mutation.
             payload.put("csrf", issued.csrf());
             return Response.ok(payload).cookie(cookie).build();
+        } catch (AuthService.UnavailableException offline) {
+            return databaseless();
         } catch (AuthService.AuthException refusal) {
             int status = "account_locked".equals(refusal.code()) ? 423 : 401;
             return Response.status(status).entity(Map.of("error", refusal.code())).build();
@@ -62,7 +67,12 @@ public class AuthResource {
     @Path("logout")
     @Consumes(MediaType.WILDCARD)
     public Response logout(@CookieParam(AuthService.COOKIE) Cookie cookie) {
-        boolean revoked = cookie != null && auth.logout(cookie.getValue());
+        boolean revoked;
+        try {
+            revoked = cookie != null && auth.logout(cookie.getValue());
+        } catch (AuthService.UnavailableException offline) {
+            return databaseless();
+        }
         NewCookie cleared = new NewCookie.Builder(AuthService.COOKIE).value("").path("/").maxAge(0).build();
         return Response.ok(Map.of("revoked", revoked)).cookie(cleared).build();
     }
@@ -70,12 +80,21 @@ public class AuthResource {
     @GET
     @Path("me")
     public Response me(@CookieParam(AuthService.COOKIE) Cookie cookie) {
-        Optional<AuthService.Account> account =
-                cookie == null ? Optional.empty() : auth.authenticate(cookie.getValue());
+        Optional<AuthService.Account> account;
+        try {
+            account = cookie == null ? Optional.empty() : auth.authenticate(cookie.getValue());
+        } catch (AuthService.UnavailableException offline) {
+            return databaseless();
+        }
         if (account.isEmpty()) {
             return Response.status(401).entity(Map.of("error", "unauthorized")).build();
         }
         return Response.ok(view(account.get())).build();
+    }
+
+    /** The database-less refusal: a 503 that names the state and exposes no value. */
+    private static Response databaseless() {
+        return Response.status(503).entity(Map.of("error", "database_disabled")).build();
     }
 
     private static Map<String, Object> view(AuthService.Account account) {

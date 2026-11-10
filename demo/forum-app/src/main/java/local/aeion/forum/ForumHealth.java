@@ -8,7 +8,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-/** Feature 001: the service answers, and it says which release is answering. */
+/**
+ * Feature 001: the service answers, and liveness says nothing else.
+ *
+ * {@code GET /healthz} is the liveness endpoint: exactly a status, never a release, a server
+ * version, a host name or a setting, and it never opens a database connection. The release label
+ * keeps its own route, where an operator wanted it.
+ */
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public class ForumHealth {
@@ -19,7 +25,7 @@ public class ForumHealth {
     @GET
     @Path("healthz")
     public Map<String, Object> health() {
-        return payload("ok");
+        return Map.of("status", "ok");
     }
 
     @GET

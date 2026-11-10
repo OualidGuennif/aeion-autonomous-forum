@@ -3,6 +3,7 @@ package local.aeion.forum;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -42,6 +43,9 @@ public class AuthService {
     static final int MAX_PASSWORD = 256;
 
     @Inject
+    Instance<DataSource> dataSources;
+
+    /** A direct datasource, used only by plain unit tests; CDI resolves {@link #dataSources} otherwise. */
     DataSource dataSource;
 
     @Inject
@@ -49,6 +53,9 @@ public class AuthService {
 
     @Inject
     SessionSecret secret;
+
+    @Inject
+    AgoraSettings settings;
 
     private final Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
     private final SecureRandom random = new SecureRandom();
@@ -60,12 +67,23 @@ public class AuthService {
     public record Issued(Account account, String token, long expiresNs, String csrf) {
     }
 
+    /** The resolved datasource, or a clean refusal on a database-less boot (feature 001). */
+    private DataSource source() {
+        if (dataSource != null) {
+            return dataSource;
+        }
+        if (!settings.databaseEnabled() || dataSources.isUnsatisfied()) {
+            throw new UnavailableException();
+        }
+        return dataSources.get();
+    }
+
     /** Register a member account; the first account of an empty forum is the owner. */
     public Account register(String username, String password) {
         String name = normalise(username);
         checkPassword(password);
         String role = "member";
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = source().getConnection()) {
             connection.setAutoCommit(false);
             try {
                 if (count(connection) == 0) {
@@ -102,7 +120,7 @@ public class AuthService {
     /** Verify a password and mint a session; a wrong password is one failure, never a hint. */
     public Issued login(String username, String password) {
         String name = normalise(username);
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = source().getConnection()) {
             Account account;
             String hash;
             int failures;
@@ -140,7 +158,7 @@ public class AuthService {
         if (token.isEmpty()) {
             return Optional.empty();
         }
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = source().getConnection();
              PreparedStatement read = connection.prepareStatement(
                      "SELECT a.id, a.username, a.role, s.expires_ns, s.revoked_ns "
                              + "FROM sessions s JOIN accounts a ON a.id = s.account_id WHERE s.id = ?")) {
@@ -164,7 +182,7 @@ public class AuthService {
         if (token.isEmpty()) {
             return false;
         }
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = source().getConnection();
              PreparedStatement revoke = connection.prepareStatement(
                      "UPDATE sessions SET revoked_ns = ? WHERE id = ? AND revoked_ns IS NULL")) {
             revoke.setLong(1, clock.nowNs());
@@ -261,6 +279,13 @@ public class AuthService {
 
         public String code() {
             return code;
+        }
+    }
+
+    /** A refusal thrown when a database-backed auth feature runs on a database-less boot (001). */
+    public static class UnavailableException extends IllegalStateException {
+        public UnavailableException() {
+            super("database_disabled");
         }
     }
 }
