@@ -40,6 +40,9 @@ public class ThreadEventConsumer {
     KafkaTopics topics;
 
     @Inject
+    AgoraSettings settings;
+
+    @Inject
     Logger log;
 
     @ConfigProperty(name = "agora.kafka.enabled", defaultValue = "false")
@@ -90,6 +93,10 @@ public class ThreadEventConsumer {
     void onStart(@Observes StartupEvent event) {
         if (!enabled) {
             log.info("kafka consumer disabled: no thread-events are read");
+            return;
+        }
+        if (!settings.databaseEnabled()) {
+            log.info("database-less boot: the kafka consumer is not started");
             return;
         }
         loop = new java.lang.Thread(this::consume, "agora-thread-consumer");

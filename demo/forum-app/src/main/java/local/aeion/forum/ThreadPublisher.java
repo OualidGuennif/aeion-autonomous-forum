@@ -15,6 +15,7 @@ import org.jboss.logging.Logger;
  * Each tick takes the oldest unpublished events and hands them to the broker one at a time. A
  * confirmed send marks the row published; a failure records why, leaves the row pending, and ends
  * the tick, so a broker that is down produces backpressure instead of a growing in-memory queue.
+ * A database-less boot (feature 001) drains nothing: the outbox is a database-backed feature.
  */
 @ApplicationScoped
 public class ThreadPublisher {
@@ -28,9 +29,13 @@ public class ThreadPublisher {
     KafkaEventSender sender;
 
     @Inject
+    AgoraSettings settings;
+
+    @Inject
     Logger log;
 
     private volatile boolean announcedDisabled;
+    private volatile boolean databaseDisabledAnnounced;
 
     /** Run every two seconds; a paused application does nothing rather than piling up work. */
     @Scheduled(every = "2s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
@@ -48,6 +53,13 @@ public class ThreadPublisher {
 
     /** Returns how many events were published now; a test calls this directly. */
     public int drain() {
+        if (!settings.databaseEnabled()) {
+            if (!databaseDisabledAnnounced) {
+                log.info("database-less boot: the outbox is not drained");
+                databaseDisabledAnnounced = true;
+            }
+            return 0;
+        }
         if (!sender.enabled()) {
             if (!announcedDisabled) {
                 log.infof("kafka disabled: %d event(s) stay in the outbox", threads.pendingCount());

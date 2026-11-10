@@ -24,6 +24,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * A thread is created with the cookie of an authenticated account, never with a worker's
  * `aeion_...` session: that one describes a build, not a person. The event that leaves the request
  * path is written in the same transaction, so a client that got a 201 can rely on the event existing.
+ * A database-less boot (feature 001) answers 503 here: threads are database-backed features.
  */
 @Path("/api/threads")
 @Produces(MediaType.APPLICATION_JSON)
@@ -35,11 +36,18 @@ public class ThreadsResource {
     @Inject
     ThreadService threads;
 
+    @Inject
+    AgoraSettings settings;
+
     @ConfigProperty(name = "agora.kafka.topic", defaultValue = "agora.threads")
     String topic;
 
     @GET
-    public Map<String, Object> list(@QueryParam("limit") Integer limit) {
+    public Object list(@QueryParam("limit") Integer limit) {
+        Response offline = offlineGuard();
+        if (offline != null) {
+            return offline;
+        }
         List<Map<String, Object>> items = threads.recent(limit == null ? 20 : limit).stream()
                 .map(ThreadsResource::view)
                 .toList();
@@ -52,6 +60,10 @@ public class ThreadsResource {
     @GET
     @Path("{id}")
     public Response read(@PathParam("id") String id) {
+        Response offline = offlineGuard();
+        if (offline != null) {
+            return offline;
+        }
         Optional<ThreadService.ThreadView> thread = threads.find(id);
         if (thread.isEmpty()) {
             return Response.status(404).entity(Map.of("error", "unknown_thread")).build();
@@ -62,8 +74,16 @@ public class ThreadsResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(@CookieParam(AuthService.COOKIE) Cookie cookie, Map<String, String> body) {
-        Optional<AuthService.Account> account =
-                cookie == null ? Optional.empty() : auth.authenticate(cookie.getValue());
+        Response offline = offlineGuard();
+        if (offline != null) {
+            return offline;
+        }
+        Optional<AuthService.Account> account;
+        try {
+            account = cookie == null ? Optional.empty() : auth.authenticate(cookie.getValue());
+        } catch (AuthService.UnavailableException unavailable) {
+            return Response.status(503).entity(Map.of("error", "database_disabled")).build();
+        }
         if (account.isEmpty()) {
             return Response.status(401).entity(Map.of("error", "unauthorized")).build();
         }
@@ -75,6 +95,12 @@ public class ThreadsResource {
         } catch (ThreadService.ThreadException refusal) {
             return Response.status(400).entity(Map.of("error", refusal.code())).build();
         }
+    }
+
+    /** A 503 when the deployment boots database-less, otherwise null: the request may proceed. */
+    private Response offlineGuard() {
+        return settings.databaseEnabled() ? null
+                : Response.status(503).entity(Map.of("error", "database_disabled")).build();
     }
 
     private static Map<String, Object> view(ThreadService.ThreadView thread) {
