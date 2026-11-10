@@ -8,7 +8,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-/** Feature 001: the service answers, and it says which release is answering. */
+/**
+ * Feature 001: the service answers, and it says which release is answering.
+ *
+ * {@code /healthz} is liveness only: it opens no database connection and exposes no build, host
+ * or configuration values, so a deployment reads it with an unreachable datasource behind it.
+ * The release tag stays on {@code /__release}, which is a status page, not a probe.
+ */
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public class ForumHealth {
@@ -19,7 +25,7 @@ public class ForumHealth {
     @GET
     @Path("healthz")
     public Map<String, Object> health() {
-        return payload("ok");
+        return Map.of("status", "ok");
     }
 
     @GET

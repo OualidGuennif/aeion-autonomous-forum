@@ -21,10 +21,14 @@ public class StartupChecks {
     SessionSecret secret;
 
     @Inject
+    ForumSettings settings;
+
+    @Inject
     Logger log;
 
     void onStart(@Observes StartupEvent event) {
         secret.selfCheck();
-        log.info("settings validated: session secret present and usable");
+        settings.selfCheck();
+        log.info("settings validated: session secret, bounded caps and the business time zone are usable");
     }
 }
