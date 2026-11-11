@@ -459,10 +459,10 @@ public final class DatabaseOperator {
     /** The columns the snapshot carries for one table; the names come from SQLite's own schema. */
     private static List<String> snapshotColumns(Connection legacy, String table) throws SQLException {
         List<String> columns = new ArrayList<>();
-        try (Statement statement = legacy.createStatement();
-             ResultSet rows = statement.executeQuery("PRAGMA table_info(\"" + table + "\")")) {
+        java.sql.DatabaseMetaData meta = legacy.getMetaData();
+        try (ResultSet rows = meta.getColumns(null, null, table, null)) {
             while (rows.next()) {
-                columns.add(rows.getString("name"));
+                columns.add(rows.getString("COLUMN_NAME"));
             }
         }
         return columns;
@@ -766,12 +766,13 @@ public final class DatabaseOperator {
     /** True when the named role can create objects in schema public after the grants. */
     private static boolean hasSchemaPrivilege(Connection connection, String role)
             throws SQLException {
-        String literal = "'" + role.replace("'", "''") + "'";
         try (PreparedStatement read = connection.prepareStatement(
-                "SELECT has_schema_privilege(" + literal + ", 'public', 'CREATE')");
-             ResultSet rows = read.executeQuery()) {
-            rows.next();
-            return rows.getBoolean(1);
+                "SELECT has_schema_privilege(?, 'public', 'CREATE')")) {
+            read.setString(1, role);
+            try (ResultSet rows = read.executeQuery()) {
+                rows.next();
+                return rows.getBoolean(1);
+            }
         }
     }
 
@@ -857,8 +858,18 @@ public final class DatabaseOperator {
     }
 
     private static long countRows(Connection connection, String table) throws SQLException {
+        String query = switch (table) {
+            case "settings" -> "SELECT COUNT(*) FROM settings";
+            case "accounts" -> "SELECT COUNT(*) FROM accounts";
+            case "sessions" -> "SELECT COUNT(*) FROM sessions";
+            case "threads" -> "SELECT COUNT(*) FROM threads";
+            case "schema_events" -> "SELECT COUNT(*) FROM schema_events";
+            case "thread_outbox" -> "SELECT COUNT(*) FROM thread_outbox";
+            case "thread_event_log" -> "SELECT COUNT(*) FROM thread_event_log";
+            default -> throw new IllegalArgumentException("unknown_table: " + table);
+        };
         try (Statement statement = connection.createStatement();
-             ResultSet rows = statement.executeQuery("SELECT COUNT(*) FROM " + table)) {
+             ResultSet rows = statement.executeQuery(query)) {
             return rows.next() ? rows.getLong(1) : 0;
         }
     }

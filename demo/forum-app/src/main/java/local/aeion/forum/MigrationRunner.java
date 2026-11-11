@@ -30,15 +30,16 @@ public class MigrationRunner {
     @Inject
     Logger log;
 
-    @ConfigProperty(name = "quarkus.datasource.jdbc.url", defaultValue = "")
-    String datasourceUrl;
+    @Inject
+    @ConfigProperty(name = "quarkus.datasource.jdbc.url")
+    java.util.Optional<String> datasourceUrl;
 
     void onStart(@Observes StartupEvent event) {
         if (!settings.databaseEnabled() || dataSources.isUnsatisfied()) {
             log.info("database-less boot: the schema is not validated");
             return;
         }
-        DatabaseTls.requireVerifiedTransport(datasourceUrl);
+        DatabaseTls.requireVerifiedTransport(datasourceUrl.orElse(""));
         Migrations.validate(dataSources.get());
         AppRoleGuard.requireLeastPrivilege(dataSources.get());
         log.info("schema validated: history matches the shipped migrations, none pending");
