@@ -1,2 +1,6 @@
+# Feature 002: since the PostgreSQL cutover, Flyway is the single migration authority and applies
+# every V*.sql file in version order by itself. This manifest is kept as a human-readable record
+# of the expected versions; the custom runner that consumed it is gone.
 V1__initial.sql
 V2__threads_and_events.sql
+V3__import_manifest.sql

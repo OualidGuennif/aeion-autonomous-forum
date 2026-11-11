@@ -1,80 +1,89 @@
 package local.aeion.forum;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationInfo;
 
 /**
- * Feature 002: the migration engine, with no CDI in it so a test can drive it directly.
+ * Feature 002: the one migration engine, with no CDI in it so a test can drive it directly.
  *
- * Every migration is a file listed in {@code <location>/index.txt}, applied in that order, each in
- * its own transaction and recorded in {@code schema_migrations}. Re-running is a no-op because
- * applied versions are read first, and a migration that fails rolls back alone: the database is
- * never left half-migrated, and never records a version it did not apply.
- *
- * The application ({@link MigrationRunner}) and the test harness ({@code EphemeralDatabase}) call
- * this same code, so a test proves the schema a deployment actually gets.
+ * Since the PostgreSQL cutover the engine is Flyway: every migration is a versioned SQL file under
+ * {@code classpath:db/migration}, applied in order, recorded in {@code flyway_schema_history}, and
+ * checksummed. The custom SQLite runner this class once held is gone - keeping two authorities
+ * would let a database drift between them. The application, the test harness and the operator job
+ * all call this same code, so a test proves the schema a deployment actually gets.
  */
 public final class Migrations {
 
-    static final String LEDGER = """
-            CREATE TABLE IF NOT EXISTS schema_migrations (
-                version    TEXT PRIMARY KEY,
-                name       TEXT NOT NULL,
-                applied_ns INTEGER NOT NULL
-            )
-            """;
+    static final String LOCATION = "classpath:db/migration";
 
     private Migrations() {
     }
 
-    /** Apply every pending migration in index order; returns the versions applied now. */
-    public static List<String> apply(DataSource dataSource, String location, ForumClock clock) {
-        List<String> appliedNow = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            try (Statement statement = connection.createStatement()) {
-                statement.executeUpdate(LEDGER);
-            }
-            List<String> alreadyApplied = appliedVersions(connection);
-            for (String file : index(location)) {
-                String version = version(file);
-                if (alreadyApplied.contains(version)) {
-                    continue;
-                }
-                applyOne(connection, location, version, file, clock.nowNs());
-                appliedNow.add(version);
-            }
-        } catch (SQLException error) {
-            throw new IllegalStateException("migration_failed: " + error.getMessage(), error);
-        }
-        return appliedNow;
+    /** The engine for a datasource, the way every caller reaches Flyway. */
+    public static Flyway engine(DataSource source) {
+        return Flyway.configure().dataSource(source).locations(LOCATION).load();
     }
 
-    /** The applied rows, oldest version first. */
-    public static List<Map<String, Object>> applied(DataSource dataSource) {
+    /** The engine for explicit credentials, the way the isolated operator job reaches Flyway. */
+    public static Flyway engine(String url, String username, String password) {
+        return Flyway.configure().dataSource(url, username, password).locations(LOCATION).load();
+    }
+
+    /** Apply every pending migration; returns how many were applied now. */
+    public static long apply(DataSource source) {
+        long before = appliedCount(source);
+        engine(source).migrate();
+        return appliedCount(source) - before;
+    }
+
+    /**
+     * Refuse anything the running code does not recognise: an altered checksum, a schema newer
+     * than the code, a failed migration, or a pending one. The application never migrates; a
+     * database behind the code is an operator's repair.
+     */
+    public static void validate(DataSource source) {
+        validate(engine(source));
+    }
+
+    public static void validate(Flyway flyway) {
+        flyway.validate();
+        // Flyway's default validation ignores a database that is ahead of the code; the cutover
+        // gate and the application boot must refuse it instead. Any event this code never shipped,
+        // a future version or one whose resolution is gone, stops here before the pending check.
+        for (MigrationInfo info : flyway.info().all()) {
+            String state = String.valueOf(info.getState());
+            if (state.startsWith("FUTURE_") || state.startsWith("MISSING_")) {
+                throw new IllegalStateException("schema_ahead: applied migration " + info.getVersion()
+                        + " is not in the shipped migrations");
+            }
+        }
+        MigrationInfo[] pending = flyway.info().pending();
+        if (pending.length > 0) {
+            throw new IllegalStateException("schema_behind: the schema is pending migration; run the operator");
+        }
+    }
+
+    /** The applied history rows, oldest first, in the shape {@code /api/schema} reports. */
+    public static List<Map<String, Object>> history(DataSource source) {
         List<Map<String, Object>> rows = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet result = statement.executeQuery(
-                     "SELECT version, name, applied_ns FROM schema_migrations ORDER BY version")) {
+        String query = "SELECT version, script, installed_on FROM flyway_schema_history ORDER BY installed_rank";
+        try (Connection connection = source.getConnection();
+             PreparedStatement read = connection.prepareStatement(query);
+             ResultSet result = read.executeQuery()) {
             while (result.next()) {
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("version", result.getString(1));
                 row.put("name", result.getString(2));
-                row.put("applied_ns", result.getLong(3));
+                row.put("applied_ns", result.getTimestamp(3).getTime() * 1_000_000L);
                 rows.add(row);
             }
         } catch (SQLException error) {
@@ -83,114 +92,14 @@ public final class Migrations {
         return rows;
     }
 
-    /** The migration files the index lists, in order. */
-    public static List<String> index(String location) {
-        List<String> files = new ArrayList<>();
-        for (String line : read(location, "index.txt").split("\n")) {
-            String name = line.strip();
-            if (!name.isEmpty() && !name.startsWith("#")) {
-                files.add(name);
-            }
+    private static long appliedCount(DataSource source) {
+        try (Connection connection = source.getConnection();
+             PreparedStatement read = connection.prepareStatement(
+                     "SELECT COUNT(*) FROM flyway_schema_history");
+             ResultSet rows = read.executeQuery()) {
+            return rows.next() ? rows.getLong(1) : 0;
+        } catch (SQLException missing) {
+            return 0;
         }
-        if (files.isEmpty()) {
-            throw new IllegalStateException("migration_index_empty: " + location);
-        }
-        return files;
-    }
-
-    /** The version a file declares, the part before {@code __}. */
-    public static String version(String file) {
-        int marker = file.indexOf("__");
-        if (marker <= 0) {
-            throw new IllegalStateException("migration_name_invalid: " + file);
-        }
-        return file.substring(0, marker);
-    }
-
-    private static void applyOne(Connection connection, String location, String version, String file, long nowNs)
-            throws SQLException {
-        List<String> statements = statements(read(location, file));
-        if (statements.isEmpty()) {
-            // A listed file that yields nothing is a broken migration, never a silent no-op.
-            throw new IllegalStateException("migration_empty: " + file);
-        }
-        connection.setAutoCommit(false);
-        try {
-            for (String statement : statements) {
-                try (Statement executor = connection.createStatement()) {
-                    executor.executeUpdate(statement);
-                }
-            }
-            try (PreparedStatement record = connection.prepareStatement(
-                    "INSERT INTO schema_migrations(version, name, applied_ns) VALUES (?, ?, ?)")) {
-                record.setString(1, version);
-                record.setString(2, file);
-                record.setLong(3, nowNs);
-                record.executeUpdate();
-            }
-            connection.commit();
-        } catch (SQLException | RuntimeException failure) {
-            connection.rollback();
-            throw failure;
-        } finally {
-            connection.setAutoCommit(true);
-        }
-    }
-
-    private static List<String> appliedVersions(Connection connection) throws SQLException {
-        List<String> versions = new ArrayList<>();
-        try (Statement statement = connection.createStatement();
-             ResultSet rows = statement.executeQuery("SELECT version FROM schema_migrations")) {
-            while (rows.next()) {
-                versions.add(rows.getString(1));
-            }
-        }
-        return versions;
-    }
-
-    static String read(String location, String name) {
-        String resource = "/" + location + "/" + name;
-        try (InputStream stream = Migrations.class.getResourceAsStream(resource)) {
-            if (stream == null) {
-                throw new IllegalStateException("migration_missing: " + resource);
-            }
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-                StringBuilder text = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    text.append(line).append('\n');
-                }
-                return text.toString();
-            }
-        } catch (IOException error) {
-            throw new IllegalStateException("migration_unreadable: " + resource, error);
-        }
-    }
-
-    /**
-     * Split a migration file into executable statements.
-     *
-     * Whole-line comments are removed before splitting: a file that opens with a {@code --} header
-     * used to lose its first statement, which silently left a table uncreated while the ledger
-     * recorded the version as applied. Trailing comments on a statement line are kept, SQLite
-     * accepts them.
-     */
-    static List<String> statements(String sql) {
-        StringBuilder body = new StringBuilder();
-        for (String line : sql.split("\n")) {
-            if (line.stripLeading().startsWith("--")) {
-                continue;
-            }
-            body.append(line).append('\n');
-        }
-        List<String> statements = new ArrayList<>();
-        for (String chunk : body.toString().split(";\\s*(?:\\r?\\n|$)")) {
-            String statement = chunk.strip();
-            if (!statement.isEmpty()) {
-                statements.add(statement);
-            }
-        }
-        return statements;
     }
 }

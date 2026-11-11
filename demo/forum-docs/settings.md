@@ -16,6 +16,8 @@ never logged and never rendered by any endpoint, and it cannot become a configur
 | `AGORA_REQUEST_MAX_BYTES` | Request cap, integer 1..16384. | `16384` |
 | `AGORA_TEXT_MAX_CODEPOINTS` | Normalized-text cap, integer 1..4000. | `4000` |
 | `AGORA_RENDERED_MAX_BYTES` | Rendered-page cap, integer 1..32768. | `32768` |
+| `QUARKUS_DATASOURCE_JDBC_URL` | PostgreSQL URL, required when the database is enabled. | none |
+| `QUARKUS_DATASOURCE_USERNAME` / `_PASSWORD` | The application role's least-privilege login. | none |
 
 A non-numeric or out-of-range cap, or a database flag that is neither `true` nor `false`, refuses
 startup. Every refusal names only its key: `setting_out_of_bounds: AGORA_REQUEST_MAX_BYTES must be
@@ -54,11 +56,15 @@ With `AGORA_DATABASE_ENABLED` absent or `false`, starting with only `AGORA_SESSI
 * liveness (`/healthz`) is unaffected: it never touches the database.
 
 With `AGORA_DATABASE_ENABLED=true`, the database-backed behaviour is unchanged: the datasource and
-Hibernate start, the migration runner applies the versioned SQL folder, and the outbox drains as
-documented. A database-enabled deployment must then carry its datasource URL; a boot without one
-refuses, naming `AGORA_DATABASE_ENABLED` and the URL key and no values. PostgreSQL connection
-settings arrive with the cutover feature; until then the transition baseline keeps its SQLite URL
-as that required connection setting.
+Hibernate start, and the outbox drains as documented. Since the feature-002 cutover the only
+product database is PostgreSQL. The datasource URL, username and password arrive through the
+`QUARKUS_DATASOURCE_*` environment keys and are never written to a file, a log or a page; a boot
+without a URL refuses, naming `AGORA_DATABASE_ENABLED` and the URL key and no values. The
+application role holds DML grants only: it validates the Flyway history at startup (checksums,
+pending and ahead-of-code versions all refuse) and can never migrate, never touch DDL and never
+write the audit chain — and a boot whose configured role could do any of those refuses with
+`app_role_not_least_privilege` instead of serving. Migration is the operator job's task; see the
+[cutover runbook](cutover.md).
 
 ## Boundaries of this page
 

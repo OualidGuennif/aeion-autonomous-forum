@@ -10,13 +10,20 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    operatorRuntime
+}
+
 dependencies {
     implementation enforcedPlatform('io.quarkus.platform:quarkus-bom:3.40.1')
     implementation 'io.quarkus:quarkus-rest-jackson'
     implementation 'io.quarkus:quarkus-hibernate-orm'
-    implementation 'org.hibernate.orm:hibernate-community-dialects'
-    // No Quarkus SQLite extension exists; the driver is wired directly and the dialect is explicit.
-    implementation 'org.xerial:sqlite-jdbc:3.54.1.0'
+    implementation 'io.quarkus:quarkus-jdbc-postgresql'
+    implementation 'io.quarkus:quarkus-flyway'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    // SQLite is restricted to the isolated import job and immutable legacy test fixtures.
+    testImplementation 'org.xerial:sqlite-jdbc:3.54.1.0'
+    operatorRuntime 'org.xerial:sqlite-jdbc:3.54.1.0'
     implementation 'io.quarkus:quarkus-messaging-kafka'
     implementation 'io.quarkus:quarkus-scheduler'
     implementation 'de.mkammerer:argon2-jvm:2.11'
@@ -39,4 +46,17 @@ tasks.withType(JavaCompile).configureEach {
 test {
     systemProperty 'java.util.logging.manager', 'org.jboss.logmanager.LogManager'
     useJUnitPlatform()
+}
+
+// The operator JVM is separate from the production application and receives its own role.
+tasks.register('operatorClasspath') {
+    dependsOn 'classes'
+    doLast {
+        println sourceSets.main.runtimeClasspath.plus(configurations.operatorRuntime).asPath
+    }
+}
+
+tasks.register('stageOperatorLibraries', Copy) {
+    from configurations.operatorRuntime
+    into layout.buildDirectory.dir('operator-libs')
 }
