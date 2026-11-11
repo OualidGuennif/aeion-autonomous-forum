@@ -1,52 +1,64 @@
 package local.aeion.forum;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
-import org.sqlite.SQLiteDataSource;
+import org.postgresql.ds.PGSimpleDataSource;
 
 /**
- * Feature 003: a database that exists for one test and is thrown away afterwards.
+ * Feature 003, on PostgreSQL since the 002 cutover: a database that exists for one test and is
+ * dropped afterwards, together with its private application role.
  *
  * Three properties, all enforced here:
- *  * <b>Isolated.</b> Every instance is a new file under {@code build/test-db/}, so two suites can
- *    run at once, and a row one test leaves cannot change the next test's result.
- *  * <b>Marked disposable.</b> The file is created together with a {@code .disposable} marker, and
- *    {@link #open} refuses a path that is not inside a build directory or that names a production
- *    file, before any DDL runs.
- *  * <b>Same schema as a deployment.</b> Migrations come from the application's own resources
- *    through {@link Migrations}, never from a hand-written test schema.
+ *  * <b>Isolated.</b> Every instance is a new database named {@code agora_test_<hex>}, so two
+ *    suites can run at once and a row one test leaves cannot change the next test's result.
+ *  * <b>Marked disposable.</b> Only names the harness itself generates are ever managed; any other
+ *    name, or a missing fixture environment, is refused before a single statement runs.
+ *  * <b>Same schema as a deployment.</b> Migrations come from the application's own Flyway files,
+ *    applied by the operator code a deployment uses, with the app role on DML-only grants.
  *
- * It can be used two ways: directly ({@code EphemeralDatabase.create()}) in a plain unit test, or
- * through {@code QuarkusTestDatabase} which binds it to a running application.
+ * The admin settings (AEION_TEST_POSTGRES_JDBC_URL/USERNAME/PASSWORD) are fixture-only and exist
+ * only in the test environment.
  */
 public final class EphemeralDatabase implements AutoCloseable {
 
-    private static final String MARKER = ".disposable";
-    private static final String SCHEMA = "db/migration";
+    static final String PREFIX = "agora_test_";
 
-    private final Path file;
-    private final Path marker;
-    private final SQLiteDataSource dataSource;
+    /** The fixture-only admin credentials; overridable so a test can prove the refusal path. */
+    interface AdminCredentials {
+        String[] get();
+    }
+
+    static AdminCredentials adminCredentials = EphemeralDatabase::readEnvironmentCredentials;
+
+    private final String database;
+    private final String appRole;
+    private final PGSimpleDataSource ownerSource;
+    private final PGSimpleDataSource appSource;
+    private final String adminUrl;
+    private final String adminUsername;
+    private final String adminPassword;
     private final ForumClock clock;
 
-    private EphemeralDatabase(Path file, Path marker, SQLiteDataSource dataSource, ForumClock clock) {
-        this.file = file;
-        this.marker = marker;
-        this.dataSource = dataSource;
+    private EphemeralDatabase(String database, String appRole, PGSimpleDataSource ownerSource,
+                              PGSimpleDataSource appSource, String adminUrl, String adminUsername,
+                              String adminPassword, ForumClock clock) {
+        this.database = database;
+        this.appRole = appRole;
+        this.ownerSource = ownerSource;
+        this.appSource = appSource;
+        this.adminUrl = adminUrl;
+        this.adminUsername = adminUsername;
+        this.adminPassword = adminPassword;
         this.clock = clock;
     }
 
-    /** Create a marked, isolated, migrated database; the caller closes it. */
+    /** Create a marked, isolated, migrated database with its application role; the caller closes it. */
     public static EphemeralDatabase create() {
-        Path root = Path.of("build", "test-db").toAbsolutePath().normalize();
-        return createAt(root.resolve(UUID.randomUUID() + ".db"));
+        return open(randomName(), true);
     }
 
     /**
@@ -54,125 +66,186 @@ public final class EphemeralDatabase implements AutoCloseable {
      * where the migrations under test are the first thing the database ever sees.
      */
     public static EphemeralDatabase createEmpty() {
-        return open(Path.of("build", "test-db").toAbsolutePath().normalize()
-                .resolve(UUID.randomUUID() + ".db"), false);
+        return open(randomName(), false);
     }
 
-    /** Create a marked, isolated, migrated database at an explicit path, refusing an unsafe one. */
-    public static EphemeralDatabase createAt(Path target) {
-        return open(target, true);
+    /** Create a marked, isolated, migrated database under an explicit, prefix-checked name. */
+    static EphemeralDatabase createAt(String name) {
+        return open(name, true);
     }
 
-    private static EphemeralDatabase open(Path target, boolean migrate) {
-        Path file = target.toAbsolutePath().normalize();
-        requireDisposableTarget(file);
-        Path marker = file.resolveSibling(file.getFileName() + MARKER);
-        try {
-            Files.createDirectories(file.getParent());
-            Files.writeString(marker, "disposable: created by EphemeralDatabase, delete at will\n");
-        } catch (IOException error) {
-            throw new IllegalStateException("test_db_unprepared: " + file, error);
+    private static EphemeralDatabase open(String name, boolean migrate) {
+        requireDisposableName(name);
+        String[] admin = adminCredentials.get();
+        if (admin == null) {
+            throw new IllegalStateException("test_postgres_missing: AEION_TEST_POSTGRES_JDBC_URL "
+                    + "and its credentials are required for the ephemeral test database");
         }
-        SQLiteDataSource dataSource = new SQLiteDataSource();
-        dataSource.setUrl("jdbc:sqlite:" + file);
+        String database = name;
+        String appRole = database.replaceFirst("agora_test_", "agora_app_");
+        String adminUrl = admin[0];
+        String adminUsername = admin[1];
+        String adminPassword = admin[2];
+        createDatabase(adminUrl, adminUsername, adminPassword, database);
+        String ownerUrl = withDatabase(adminUrl, database);
         ForumClock clock = new ForumClock();
         clock.freeze(1_790_000_000_000_000_000L);
-        EphemeralDatabase database = new EphemeralDatabase(file, marker, dataSource, clock);
+        EphemeralDatabase instance = new EphemeralDatabase(database, appRole,
+                source(ownerUrl, adminUsername, adminPassword), source(ownerUrl, appRole, appRole + "-pass"),
+                adminUrl, adminUsername, adminPassword, clock);
         try {
-            database.pragma("journal_mode=WAL");
-            database.pragma("busy_timeout=5000");
             if (migrate) {
-                Migrations.apply(dataSource, SCHEMA, clock);
+                try (Connection connection = instance.ownerSource.getConnection();
+                     Statement statement = connection.createStatement()) {
+                    statement.execute("CREATE ROLE " + appRole + " LOGIN PASSWORD '"
+                            + appRole + "-pass'");
+                }
+                DatabaseOperator.migrate(new DatabaseOperator.Target(
+                        ownerUrl, adminUsername, adminPassword, appRole));
             }
-        } catch (RuntimeException failure) {
-            database.close();
-            throw failure;
+        } catch (RuntimeException | SQLException failure) {
+            instance.close();
+            throw failure instanceof RuntimeException runtime ? runtime
+                    : new IllegalStateException("test_db_unprepared: " + database, failure);
         }
-        return database;
+        return instance;
     }
 
-    /**
-     * Refuse anything that could be someone's data: a path that is not under a build directory, or
-     * one that names a production file. The check runs before the marker exists, so an existing
-     * unmarked file is never opened.
-     */
-    static void requireDisposableTarget(Path file) {
-        String text = file.toString();
-        if (!text.contains("build")) {
-            throw new IllegalStateException("test_db_not_disposable: " + file);
-        }
-        String name = file.getFileName().toString().toLowerCase(java.util.Locale.ROOT);
-        for (String forbidden : List.of("prod", "production", "live", "agora.db")) {
-            if (name.equals(forbidden) || name.startsWith(forbidden + ".")) {
-                throw new IllegalStateException("test_db_production_name: " + file);
-            }
-        }
-        if (Files.exists(file) && !Files.exists(file.resolveSibling(file.getFileName() + MARKER))) {
-            throw new IllegalStateException("test_db_existing_unmarked: " + file);
+    static String randomTestName() {
+        return PREFIX + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+    }
+
+    private static String randomName() {
+        return randomTestName();
+    }
+
+    /** Refuse any name the harness did not generate: the prefix plus exactly twelve hex digits. */
+    static void requireDisposableName(String name) {
+        if (name == null || !name.matches(PREFIX + "[0-9a-f]{12}")) {
+            throw new IllegalStateException("test_database_not_disposable: " + name);
         }
     }
 
+    private static String[] readEnvironmentCredentials() {
+        String url = System.getenv("AEION_TEST_POSTGRES_JDBC_URL");
+        if (url == null || url.isBlank()) {
+            return null;
+        }
+        return new String[] {
+                url,
+                System.getenv().getOrDefault("AEION_TEST_POSTGRES_USERNAME", ""),
+                System.getenv().getOrDefault("AEION_TEST_POSTGRES_PASSWORD", "")};
+    }
+
+    private static void createDatabase(String adminUrl, String username, String password, String name) {
+        try (Connection connection = java.sql.DriverManager.getConnection(adminUrl, username, password);
+             Statement statement = connection.createStatement()) {
+            statement.execute("CREATE DATABASE " + name);
+        } catch (SQLException error) {
+            throw new IllegalStateException("test_db_unprepared: " + name, error);
+        }
+    }
+
+    /** Rewrite the database name of a {@code jdbc:postgresql://host:port/db?params} URL. */
+    static String withDatabase(String url, String database) {
+        int scheme = url.indexOf("://");
+        if (scheme < 0) {
+            throw new IllegalStateException("test_postgres_url_invalid");
+        }
+        String rest = url.substring(scheme + 3);
+        int slash = rest.indexOf('/');
+        if (slash < 0) {
+            return url + "/" + database;
+        }
+        String hostPort = rest.substring(0, slash);
+        String tail = rest.substring(slash);
+        int query = tail.indexOf('?');
+        String parameters = query >= 0 ? tail.substring(query) : "";
+        return url.substring(0, scheme + 3) + hostPort + "/" + database + parameters;
+    }
+
+    private static PGSimpleDataSource source(String url, String username, String password) {
+        PGSimpleDataSource source = new PGSimpleDataSource();
+        source.setURL(url);
+        source.setUser(username);
+        source.setPassword(password);
+        return source;
+    }
+
+    /** The application's own view of the database: least-privilege, DML only, never an owner. */
     public DataSource dataSource() {
-        return dataSource;
+        return appSource;
+    }
+
+    /** The migration-owner view, for fixture setup and assertions an operator would run. */
+    public DataSource ownerDataSource() {
+        return ownerSource;
+    }
+
+    /** The application role's login, for fixtures that drive the operator or the app as that role. */
+    String appRoleName() {
+        return appRole;
+    }
+
+    /** The application role's fixture password, paired with {@link #appRoleName()}. */
+    String appRolePassword() {
+        return appRole + "-pass";
     }
 
     public ForumClock clock() {
         return clock;
     }
 
-    public Path file() {
-        return file;
+    public String database() {
+        return database;
     }
 
-    /** The marker text, or empty when the marker was removed. */
-    public String marker() {
-        try {
-            return Files.exists(marker) ? Files.readString(marker).strip() : "";
-        } catch (IOException error) {
-            throw new IllegalStateException("test_db_marker_unreadable", error);
-        }
-    }
-
-    /** Run one statement; the harness is for DDL probes and assertions, not for application writes. */
+    /** Run one statement as the owner; the harness is for probes, not for application writes. */
     public void execute(String sql) {
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = ownerSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute(sql);
         } catch (SQLException error) {
-            throw new IllegalStateException("test_db_statement_failed: " + sql, error);
+            throw new IllegalStateException("test_db_statement_failed", error);
         }
     }
 
-    /** True when the database carries a table with that name. */
+    /** Run one statement on the cluster's admin connection, outside any disposable database. */
+    public void executeAsAdmin(String sql) {
+        try (Connection connection = java.sql.DriverManager.getConnection(
+                adminUrl, adminUsername, adminPassword);
+             Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        } catch (SQLException error) {
+            throw new IllegalStateException("test_db_admin_statement_failed", error);
+        }
+    }
+
+    /** True when the database carries a table with that name, as the migration owner sees it. */
     public boolean hasTable(String table) {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             var rows = statement.executeQuery(
-                     "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = '" + table + "'")) {
-            return rows.next() && rows.getLong(1) == 1;
+        try (Connection connection = ownerSource.getConnection();
+             var read = connection.prepareStatement(
+                     "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' "
+                             + "AND table_name = ?")) {
+            read.setString(1, table);
+            try (ResultSet rows = read.executeQuery()) {
+                return rows.next() && rows.getLong(1) == 1;
+            }
         } catch (SQLException error) {
             throw new IllegalStateException("test_db_inspect_failed", error);
         }
     }
 
-    private void pragma(String pragma) {
-        execute("PRAGMA " + pragma);
-    }
-
-    /** Delete the database and its marker: a test must not leave a file behind. */
+    /** Drop the database and its role: a test must not leave a database behind. */
     @Override
     public void close() {
-        for (String suffix : List.of("", "-wal", "-shm")) {
-            try {
-                Files.deleteIfExists(Path.of(file + suffix));
-            } catch (IOException ignored) {
-                // a leftover file in a build directory must not fail the test
-            }
-        }
-        try {
-            Files.deleteIfExists(marker);
-        } catch (IOException ignored) {
-            // same
+        try (Connection connection = java.sql.DriverManager.getConnection(
+                adminUrl, adminUsername, adminPassword);
+             Statement statement = connection.createStatement()) {
+            statement.execute("DROP DATABASE IF EXISTS " + database + " WITH (FORCE)");
+            statement.execute("DROP ROLE IF EXISTS " + appRole);
+        } catch (SQLException error) {
+            throw new IllegalStateException("test_db_release_failed: " + database, error);
         }
     }
 }

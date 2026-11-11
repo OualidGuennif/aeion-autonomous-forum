@@ -105,7 +105,7 @@ public class AuthService {
                 return new Account(id, name, role);
             } catch (SQLException failure) {
                 connection.rollback();
-                if (String.valueOf(failure.getMessage()).contains("UNIQUE")) {
+                if (isUniqueViolation(failure)) {
                     throw new AuthException("username_taken");
                 }
                 throw failure;
@@ -234,6 +234,15 @@ public class AuthService {
              ResultSet row = count.executeQuery()) {
             return row.next() ? row.getLong(1) : 0;
         }
+    }
+
+    /** Unique violations carry SQLState 23505 on PostgreSQL; the message is never relied on. */
+    private static boolean isUniqueViolation(SQLException failure) {
+        if ("23505".equals(failure.getSQLState())) {
+            return true;
+        }
+        String message = String.valueOf(failure.getMessage());
+        return message.contains("UNIQUE") || message.contains("duplicate key");
     }
 
     private boolean verify(String hash, String password) {

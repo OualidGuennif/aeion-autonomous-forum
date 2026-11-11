@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
  */
 class AgoraSettingsTest {
 
-    private static final String DATABASE_URL = "jdbc:sqlite:build/test-db/settings-test.db";
+    private static final String DATABASE_URL = "jdbc:postgresql://127.0.0.1:5432/agora-settings-test";
 
     @Test
     void absentKeysTakeTheDocumentedDefaults() {

@@ -54,6 +54,10 @@ class ThreadServiceTest {
     private static final AuthService.Account AUTHOR =
             new AuthService.Account("author-1", "writer", "member");
 
+    /** An Argon2id-shaped placeholder: the schema stores hashes and nothing here logs them. */
+    private static final String FIXTURE_PASSWORD_HASH =
+            "$argon2id$v=19$m=65536,t=3,p=1$fixturesalt$fixturehash";
+
     @BeforeEach
     void clean() throws Exception {
         try (Connection connection = dataSource.getConnection();
@@ -61,6 +65,11 @@ class ThreadServiceTest {
             for (String table : List.of("threads", "thread_outbox", "thread_event_log")) {
                 statement.executeUpdate("DELETE FROM " + table);
             }
+            // The schema declares threads.author_id -> accounts, and PostgreSQL enforces it; the
+            // fixture seeds the one account these tests act as, idempotently across scenarios.
+            statement.executeUpdate("INSERT INTO accounts(id, username, password, role, created_ns, "
+                    + "failures) VALUES ('author-1', 'writer', '" + FIXTURE_PASSWORD_HASH
+                    + "', 'member', 0, 0) ON CONFLICT (id) DO NOTHING");
         }
         clock.freeze(1_790_000_000_000_000_000L);
         when(sender.enabled()).thenReturn(true);

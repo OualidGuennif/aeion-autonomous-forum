@@ -5,85 +5,42 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
- * Feature 002: runs the migrations at boot and reports what the database carries.
+ * Feature 002: the application validates the schema at boot and never migrates it.
  *
- * The engine lives in {@link Migrations} so a test can apply the same files to an ephemeral
- * database without CDI. This class only schedules it and exposes the ledger at {@code /api/schema}:
- * a deployment can ask the running application what it applied, and {@code pending} must be zero.
- * A database-less boot (feature 001) runs nothing and reports 503 instead of a database error.
+ * Migration is the operator job's task, run as the migration owner in a separate JVM; the
+ * application holds a least-privilege role that cannot write schema or audit history. What it can
+ * do is refuse to serve a database it does not recognise - a checksum drift, a schema newer than
+ * the code, a failed migration or a pending one all stop the boot, naming only the reason. The
+ * same boot refuses a configured role that is not least-privileged, so a deployment pointed at a
+ * migration authority never serves through it.
  */
 @ApplicationScoped
-@Path("/api/schema")
-@Produces(MediaType.APPLICATION_JSON)
 public class MigrationRunner {
 
     @Inject
-    Instance<DataSource> dataSources;
+    Instance<javax.sql.DataSource> dataSources;
 
     @Inject
     AgoraSettings settings;
 
     @Inject
-    ForumClock clock;
-
-    @ConfigProperty(name = "aeion.migrations.location", defaultValue = "db/migration")
-    String location;
-
-    @Inject
     Logger log;
 
+    @ConfigProperty(name = "quarkus.datasource.jdbc.url", defaultValue = "")
+    String datasourceUrl;
+
     void onStart(@Observes StartupEvent event) {
-        if (!databaseAvailable()) {
-            log.info("database-less boot: migrations are not run");
+        if (!settings.databaseEnabled() || dataSources.isUnsatisfied()) {
+            log.info("database-less boot: the schema is not validated");
             return;
         }
-        List<String> appliedNow = migrate();
-        if (!appliedNow.isEmpty()) {
-            log.infof("applied migrations %s", appliedNow);
-        }
-    }
-
-    /** Apply every pending migration; returns the versions applied now. */
-    public synchronized List<String> migrate() {
-        return Migrations.apply(source(), location, clock);
-    }
-
-    @GET
-    public Object status() {
-        if (!databaseAvailable()) {
-            return Response.status(503).entity(Map.of("error", "database_disabled")).build();
-        }
-        List<Map<String, Object>> rows = Migrations.applied(source());
-        int expected = Migrations.index(location).size();
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("applied", rows);
-        body.put("expected", expected);
-        body.put("pending", Math.max(0, expected - rows.size()));
-        return body;
-    }
-
-    /** The setting is the authority; an absent datasource bean is only a secondary refusal. */
-    private boolean databaseAvailable() {
-        return settings.databaseEnabled() && !dataSources.isUnsatisfied();
-    }
-
-    private DataSource source() {
-        if (!databaseAvailable()) {
-            throw new IllegalStateException("database_disabled");
-        }
-        return dataSources.get();
+        DatabaseTls.requireVerifiedTransport(datasourceUrl);
+        Migrations.validate(dataSources.get());
+        AppRoleGuard.requireLeastPrivilege(dataSources.get());
+        log.info("schema validated: history matches the shipped migrations, none pending");
     }
 }

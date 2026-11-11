@@ -5,8 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -16,8 +17,9 @@ import java.util.concurrent.Future;
 import org.junit.jupiter.api.Test;
 
 /**
- * Feature 003: the harness earns its place only if it meets the three acceptance checks in its
- * brief. Each check is one test here, and none of them touch a developer's database.
+ * Feature 003: the harness earns its place only if it meets the acceptance checks in its brief,
+ * on PostgreSQL since the 002 cutover. Each check is one test here, and none of them touch a
+ * developer's database.
  */
 class TestHarnessTest {
 
@@ -51,47 +53,46 @@ class TestHarnessTest {
     }
 
     @Test
-    void refusesAPathThatIsNotMarkedDisposable() {
-        Path outsideBuild = Path.of(System.getProperty("java.io.tmpdir"), "agora-harness-probe.db");
-        IllegalStateException refusal = assertThrows(IllegalStateException.class,
-                () -> EphemeralDatabase.createAt(outsideBuild));
-        assertTrue(refusal.getMessage().startsWith("test_db_not_disposable"), refusal.getMessage());
-        assertFalse(Files.exists(outsideBuild), "the refusal must happen before any file is created");
+    void refusesANameTheHarnessDidNotGenerate() {
+        IllegalStateException unmarked = assertThrows(IllegalStateException.class,
+                () -> EphemeralDatabase.createAt("someone-elses-database"));
+        assertTrue(unmarked.getMessage().startsWith("test_database_not_disposable"), unmarked.getMessage());
+        IllegalStateException lookalike = assertThrows(IllegalStateException.class,
+                () -> EphemeralDatabase.createAt("agora_test_prod"));
+        assertTrue(lookalike.getMessage().startsWith("test_database_not_disposable"), lookalike.getMessage());
     }
 
     @Test
-    void refusesAProductionLookingNameInsideTheBuildDirectory() {
-        Path production = Path.of("build", "test-db", "prod.db").toAbsolutePath();
-        IllegalStateException refusal = assertThrows(IllegalStateException.class,
-                () -> EphemeralDatabase.createAt(production));
-        assertTrue(refusal.getMessage().startsWith("test_db_production_name"), refusal.getMessage());
-        assertFalse(Files.exists(production), "the refusal must happen before any DDL");
-    }
-
-    @Test
-    void refusesAnExistingFileItDidNotMark() throws Exception {
-        Path unmarked = Path.of("build", "test-db", "unmarked-" + System.nanoTime() + ".db");
-        Files.createDirectories(unmarked.getParent());
-        Files.writeString(unmarked, "someone's data\n");
+    void refusesToRunWithoutTheFixtureEnvironment() {
+        EphemeralDatabase.AdminCredentials absent = () -> null;
+        EphemeralDatabase.AdminCredentials original = EphemeralDatabase.adminCredentials;
+        EphemeralDatabase.adminCredentials = absent;
         try {
             IllegalStateException refusal = assertThrows(IllegalStateException.class,
-                    () -> EphemeralDatabase.createAt(unmarked));
-            assertTrue(refusal.getMessage().startsWith("test_db_existing_unmarked"), refusal.getMessage());
+                    EphemeralDatabase::create);
+            assertTrue(refusal.getMessage().startsWith("test_postgres_missing"), refusal.getMessage());
         } finally {
-            Files.deleteIfExists(unmarked);
+            EphemeralDatabase.adminCredentials = original;
         }
     }
 
     @Test
-    void marksTheDatabaseAndRemovesEverythingOnClose() {
-        Path file;
+    void closingDropsTheDatabaseAndItsRole() throws Exception {
+        String name;
         try (EphemeralDatabase database = EphemeralDatabase.create()) {
-            file = database.file();
-            assertEquals("disposable: created by EphemeralDatabase, delete at will", database.marker());
-            assertTrue(Files.exists(file));
+            name = database.database();
+            assertTrue(database.hasTable("accounts"));
         }
-        assertFalse(Files.exists(file), "closing must delete the database file");
-        assertFalse(Files.exists(Path.of(file + ".disposable")), "closing must delete the marker");
+        try (Connection connection = java.sql.DriverManager.getConnection(
+                EphemeralDatabase.adminCredentials.get()[0],
+                EphemeralDatabase.adminCredentials.get()[1],
+                EphemeralDatabase.adminCredentials.get()[2]);
+             Statement statement = connection.createStatement();
+             ResultSet rows = statement.executeQuery(
+                     "SELECT COUNT(*) FROM pg_database WHERE datname = '" + name + "'")) {
+            rows.next();
+            assertEquals(0, rows.getLong(1), "closing must drop the disposable database");
+        }
     }
 
     private static String writeAndRead(String name, String value) {
@@ -99,7 +100,7 @@ class TestHarnessTest {
             database.execute("INSERT INTO settings(name, value, updated_ns) VALUES ('" + name + "', '" + value + "', 1)");
             try (var connection = database.dataSource().getConnection();
                  var statement = connection.createStatement();
-                 var rows = statement.executeQuery("SELECT value FROM settings")) {
+                 var rows = statement.executeQuery("SELECT value FROM settings WHERE name = '" + name + "'")) {
                 return rows.next() ? rows.getString(1) : "no row";
             } catch (Exception error) {
                 throw new IllegalStateException(error);
