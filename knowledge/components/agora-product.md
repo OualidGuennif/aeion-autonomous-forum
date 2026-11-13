@@ -1,15 +1,19 @@
 ---
 type: Component
 title: "Agora product baseline"
-description: "Quarkus backend on PostgreSQL with Flyway, its typed settings, operator cutover job and required CI checks."
+description: "Quarkus backend on PostgreSQL with Flyway, its typed settings, operator cutover job, disposable test database harness and required CI checks."
 status: draft
 sources:
   - resource: ../../demo/forum-app/
     title: "Committed Quarkus application"
   - resource: ../../demo/forum-app/src/main/java/local/aeion/forum/AgoraSettings.java
     title: "Typed bounded settings (feature 001)"
+  - resource: ../../demo/forum-app/src/test/java/local/aeion/forum/EphemeralDatabase.java
+    title: "Disposable test database harness (feature 003)"
   - resource: ../../demo/forum-docs/settings.md
     title: "Settings and boot documentation"
+  - resource: ../../demo/forum-docs/test-harness.md
+    title: "Disposable test database documentation"
   - resource: ../../.github/workflows/ci.yml
     title: "Required product checks"
 ---
@@ -43,12 +47,23 @@ application role) and refuses without one. Flyway owns the single versioned hist
 never migrates; migrations and the SQLite import run only in the isolated operator JVM
 (`local.aeion.forum.DatabaseOperator`, classpath from the pinned `operatorClasspath` task).
 Disposable JUnit resources own test databases through the fixture-only
-`AEION_TEST_POSTGRES_JDBC_URL/USERNAME/PASSWORD` settings.
+`AEION_TEST_POSTGRES_JDBC_URL/USERNAME/PASSWORD` settings, which exist only in the test environment:
+the harness generates the database name (`agora_test_` plus twelve hex digits), refuses any name it
+did not generate (`test_database_not_disposable`) and refuses any fixture host that is not loopback
+(`test_postgres_host_not_allowed`) before opening a connection, so no statement can reach a host it
+was not given for testing. The URL authority must name exactly one allowlisted host, so a fixture URL
+that embeds `user@host` credentials, lists several hosts for the driver to fail over between, or
+carries a parameter that names the server is refused the same way instead of being re-read. Its
+Quarkus lifecycle resource implements the official injection hook `inject(TestInjector)`, tracks the
+roles it created and releases only those, and freezes the clock and seeds the random source the
+suite's determinism rests on.
 
 ## Outputs
 
 The existing health, settings, accounts, session/CSRF and thread API, and packaged Quarkus app,
-plus the typed bounded settings bean and its documented boot contract in `demo/forum-docs/`.
+plus the typed bounded settings bean and its documented boot contract in `demo/forum-docs/`. The
+disposable test harness (`EphemeralDatabase`, `QuarkusTestDatabase`) lives on the test classpath
+only, is unreachable from the shipped jar, and is documented in `demo/forum-docs/test-harness.md`.
 `GET /healthz` is liveness only: exactly `{"status":"ok"}`, no database connection, no build or
 host detail. Missing/invalid required secret or invalid numeric caps refuse startup, each refusal
 naming only its key. The PostgreSQL schema is versioned Flyway SQL; the operator job migrates,
@@ -61,12 +76,18 @@ least-privilege grant at startup: a configured role that can write the audit cha
 history or the manifest, or create schema objects, refuses the boot (`app_role_not_least_privilege`).
 After every migrate the operator also sweeps write privileges on the history tables from every role
 except the running migration owner, so the separation holds whatever grants a deployment arrived
-with. Product artifacts CI runs tests and packaging against a disposable PostgreSQL fixture.
+with. Product artifacts CI runs tests and packaging against a disposable PostgreSQL fixture, each
+`@QuarkusTest` class on its own generated database.
 
 ## Invariants
 
-Product runtime credentials never enter browser code or the repository. Tests use disposable
-databases. CI has read-only repository access; source checkout does not persist credentials.
+Product runtime credentials never enter browser code or the repository. Tests use dedicated
+disposable PostgreSQL credentials, a generated allowlisted database name and no production
+connection settings; the fixture transport is loopback-only, checked before any connection or DDL.
+Teardown releases only the database and the roles the instance created and never drops a
+pre-existing role, not even when setup fails. Harness logs and refusals carry fixed failure codes
+and the opaque generated database name only. CI has read-only repository access; source checkout
+does not persist credentials.
 Existing product tests cover refusal paths. Old SQLite receipts never certify PostgreSQL.
 Settings are never logged or rendered: refusals name the key, never the value. A database-less
 boot initializes no datasource, no ORM and no migrations; its database-backed endpoints answer
@@ -79,7 +100,9 @@ verification; only an isolated local transport may omit TLS.
 
 The import preserves committed source bytes. Required CI runs on the exact PR head; publication
 confirms the resulting main SHA. Model output cannot change the imported bundle or policy.
-The settings bounds, defaults and refusals are fixed code, not environment-shaped.
+The settings bounds, defaults and refusals are fixed code, not environment-shaped. The harness
+freezes its clock at a documented instant and seeds its random source from that same fixed value,
+so a suite result is a function of the draw's position and never of when the suite happened to run.
 
 ## Acceptance checks
 
@@ -94,6 +117,10 @@ altered checksums and ahead-of-code schemas are refused, a failing transactional
 no partial schema, the application role can neither perform DDL nor modify audit history, the
 SQLite import reproduces counts/identifiers/timestamps/content and the audit chain, a replay
 duplicates nothing, a restored copy re-validates, and one altered imported row blocks the cutover.
+The test-harness gate: two Quarkus/JUnit suites run at once against separate disposable databases
+without interfering, a row one test leaves behind does not change the next test's result, and
+pointing the harness at a database without the disposable marker or at a host outside the loopback
+allowlist aborts before any DDL; interrupted tests still release only what they created.
 Run the knowledge/link/health and factory tool checks in the repository instructions.
 React/browser acceptance remains a separate gate.
 
