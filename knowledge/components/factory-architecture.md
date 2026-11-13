@@ -217,6 +217,14 @@ the invocation; no background service/retry queue continues it. CI reruns retry 
 Each requested comparison has a separate receipt bound to the baseline receipt hash; reusing
 the graph never substitutes an earlier base or changed-path set for the current comparison.
 
+The protected factory supplies its own acceptance harness, frozen before implementation and outside
+any worker's write scope: a builder may add product tests but cannot change, widen or weaken the
+acceptance runner or its fixtures, and a builder report never certifies completion. Product-side
+test resources that the builder does own are still bounded: a disposable PostgreSQL fixture harness
+manages only the database and roles it created, refuses an unmarked database name or a non-loopback
+fixture host before any DDL, and releases only its own state, so a suite can neither damage a shared
+server nor certify its own cleanup.
+
 ### Delivery and rollback
 
 Pre-commit/CI retain Knowledge, doc-link, health and security gates; CI also fails when the
