@@ -6,6 +6,7 @@ import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
@@ -15,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/** Forum user endpoints: register, login, logout, and "who am I". Username and password only.
+/** Forum user endpoints: register, login, logout, "who am I" and the owner-only account disable.
  * A database-less boot (feature 001) answers 503 on all of them instead of a database error. */
 @Path("/api/auth")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -58,7 +59,35 @@ public class AuthResource {
         } catch (AuthService.UnavailableException offline) {
             return databaseless();
         } catch (AuthService.AuthException refusal) {
-            int status = "account_locked".equals(refusal.code()) ? 423 : 401;
+            boolean blocked = "account_locked".equals(refusal.code())
+                    || "account_disabled".equals(refusal.code());
+            int status = blocked ? 423 : 401;
+            return Response.status(status).entity(Map.of("error", refusal.code())).build();
+        }
+    }
+
+    /** Feature 004: only the owner may disable an account; the CSRF guard runs before this method. */
+    @POST
+    @Path("accounts/{username}/disable")
+    @Consumes(MediaType.WILDCARD)
+    public Response disable(@CookieParam(AuthService.COOKIE) Cookie cookie,
+                            @PathParam("username") String username) {
+        try {
+            Optional<AuthService.Account> actor = cookie == null
+                    ? Optional.empty() : auth.authenticate(cookie.getValue());
+            if (actor.isEmpty()) {
+                return Response.status(401).entity(Map.of("error", "unauthorized")).build();
+            }
+            return Response.ok(disabledView(auth.disable(actor.get(), username))).build();
+        } catch (AuthService.UnavailableException offline) {
+            return databaseless();
+        } catch (AuthService.AuthException refusal) {
+            int status = switch (refusal.code()) {
+                case "forbidden" -> 403;
+                case "account_not_found" -> 404;
+                case "owner_protected" -> 409;
+                default -> 400;
+            };
             return Response.status(status).entity(Map.of("error", refusal.code())).build();
         }
     }
@@ -102,6 +131,14 @@ public class AuthResource {
         payload.put("id", account.id());
         payload.put("username", account.username());
         payload.put("role", account.role());
+        return payload;
+    }
+
+    /** The disable acknowledgement: the target handle and its new state, nothing else. */
+    private static Map<String, Object> disabledView(AuthService.Account account) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("username", account.username());
+        payload.put("disabled", true);
         return payload;
     }
 

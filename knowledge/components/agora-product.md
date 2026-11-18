@@ -25,7 +25,10 @@ sources:
 Retain the existing Quarkus/Java API in the product repository, and keep its skeleton current
 (feature 001) with the feature-002 PostgreSQL cutover: the committed backend is reused, not
 replaced by a second framework. The database is PostgreSQL with one versioned Flyway history; the
-React DOM/TypeScript web client remains a separate, later gate.
+React DOM/TypeScript web client remains a separate, later gate. Feature 004 adds normalized
+account handles, pinned Argon2id password hashing and an explicit owner-controlled disabled state;
+human accounts carry the existing `owner`/`member` role placeholder, with no separate discussion
+writer role.
 
 ## Data sources
 
@@ -46,6 +49,10 @@ application role) and refuses without one. Flyway owns the single versioned hist
 `demo/forum-app/src/main/resources/db/migration/`; the application role validates it at startup and
 never migrates; migrations and the SQLite import run only in the isolated operator JVM
 (`local.aeion.forum.DatabaseOperator`, classpath from the pinned `operatorClasspath` task).
+The operator job also owns the feature-004 first-administrator bootstrap: `create-admin
+<username>` reads the password only from `AGORA_ADMIN_PASSWORD`. A password argument is refused
+unread and never echoed, because argv shows in the process table and shell history. The command
+applies the migrations and creates the single `owner` with the product's pinned hash.
 Disposable JUnit resources own test databases through the fixture-only
 `AEION_TEST_POSTGRES_JDBC_URL/USERNAME/PASSWORD` settings, which exist only in the test environment:
 the harness generates the database name (`agora_test_` plus twelve hex digits), refuses any name it
@@ -62,6 +69,13 @@ suite's determinism rests on.
 
 The existing health, settings, accounts, session/CSRF and thread API, and packaged Quarkus app,
 plus the typed bounded settings bean and its documented boot contract in `demo/forum-docs/`. The
+feature-004 account surface is: `POST /api/auth/register` (enabled account, first on an empty
+forum is `owner`), `POST /api/auth/login`, `GET /api/auth/me`, and the owner-authenticated,
+CSRF-protected `POST /api/auth/accounts/{username}/disable`. The account view carries a stable
+opaque string `id`, the account UUID that threads store as `author_id`. The disable endpoint answers
+`{"username": <handle>, "disabled": true}`. Handles are stored lowercased; the
+`accounts` table carries a generated unique `handle`, the pinned `password` hash, a `role`, a
+`disabled` flag defaulting to false, and `created_ns`/`updated_ns`/`disabled_ns` timestamps. The
 disposable test harness (`EphemeralDatabase`, `QuarkusTestDatabase`) lives on the test classpath
 only, is unreachable from the shipped jar, and is documented in `demo/forum-docs/test-harness.md`.
 `GET /healthz` is liveness only: exactly `{"status":"ok"}`, no database connection, no build or
@@ -69,8 +83,10 @@ host detail. Missing/invalid required secret or invalid numeric caps refuse star
 naming only its key. The PostgreSQL schema is versioned Flyway SQL; the operator job migrates,
 imports a quiesced SQLite backup with recorded counts, digests and a recorded cutover boundary,
 and validates the result (`migrate`, `validate`, `import-sqlite`), refusing nonzero with stable
-codes and never printing data or credentials. The import lands exactly the legacy rows and records
-the boundary, counts and content digests in the manifest. The operator refuses a migration run by a role that cannot
+codes and never printing data or credentials. The same operator JVM exposes `create-admin`, which
+creates the first `owner` and refuses once one exists. The import lands exactly the legacy rows and
+records the boundary, counts and content digests in the manifest. The operator refuses a migration
+run by a role that cannot
 create the schema (`operator_not_schema_owner`), and the application itself enforces the
 least-privilege grant at startup: a configured role that can write the audit chain, the migration
 history or the manifest, or create schema objects, refuses the boot (`app_role_not_least_privilege`).
@@ -91,7 +107,18 @@ does not persist credentials.
 Existing product tests cover refusal paths. Old SQLite receipts never certify PostgreSQL.
 Settings are never logged or rendered: refusals name the key, never the value. A database-less
 boot initializes no datasource, no ORM and no migrations; its database-backed endpoints answer
-503 and liveness stays independent of the datasource. Migration credentials exist only in the
+503 and liveness stays independent of the datasource. Account handles are unique in their
+normalized lowercase form, including concurrent case variants. Password hashing is pinned to
+`de.mkammerer:argon2-jvm:2.11` with Argon2id, 3 iterations, 64 MiB and parallelism 1; changes
+require owner review. Unknown handles and wrong passwords each execute exactly one verification
+with those same parameters, and no password hash, salt or clear text is logged or exported. A
+stored encoding reaches the verifier only in the exact pinned shape (the pinned prefix, then a base64
+salt and tag of bounded length), so no stored value chooses the cost; an imported hash outside that
+shape cannot authenticate.
+Disabling is owner-only and immediately refuses login and live sessions for that account; the
+`owner` account itself stays enabled, because the forum has one owner, no re-enable path and the
+operator command only bootstraps a first owner, so administration can never be locked out.
+Migration credentials exist only in the
 operator job; the application role has least-privilege grants and can neither perform DDL nor
 modify the audit chain. Remote database connections require certificate and hostname
 verification; only an isolated local transport may omit TLS.
@@ -121,6 +148,14 @@ The test-harness gate: two Quarkus/JUnit suites run at once against separate dis
 without interfering, a row one test leaves behind does not change the next test's result, and
 pointing the harness at a database without the disposable marker or at a host outside the loopback
 allowlist aborts before any DDL; interrupted tests still release only what they created.
+The accounts gate: registering `alice` then `Alice` leaves one account; concurrent case variants
+produce exactly one winner; the first account on an empty forum is the enabled `owner`; the owner
+can disable an account at `POST /api/auth/accounts/{username}/disable` while a non-owner gets 403
+and a missing/invalid CSRF token or session is refused; the owner cannot disable itself and stays
+able to administer; a disabled account gets 403/423 at login
+and loses its live session; unknown and wrong-password logins return the same refusal and each
+run exactly one verification with the pinned Argon2id parameters; `create-admin` creates the first
+owner and refuses a second; no response or operator output carries a hash, salt or password.
 Run the knowledge/link/health and factory tool checks in the repository instructions.
 React/browser acceptance remains a separate gate.
 

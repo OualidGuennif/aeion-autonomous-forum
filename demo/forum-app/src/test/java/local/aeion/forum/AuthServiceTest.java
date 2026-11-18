@@ -49,7 +49,7 @@ class AuthServiceTest {
              var rows = statement.executeQuery("SELECT password FROM accounts")) {
             assertTrue(rows.next());
             String stored = rows.getString(1);
-            assertTrue(stored.startsWith("$argon2id$"), stored.substring(0, 10));
+            assertTrue(stored.startsWith("$argon2id$"), "the stored credential must be an Argon2id encoding");
             assertFalse(stored.contains("a-long-enough-password"), "the clear text must never be stored");
         }
     }
@@ -91,6 +91,10 @@ class AuthServiceTest {
         }
         assertEquals("account_locked", assertThrows(AuthService.AuthException.class,
                 () -> auth.login("lockable", "a-long-enough-password")).code());
+        assertEquals("account_locked", assertThrows(AuthService.AuthException.class,
+                () -> auth.login("lockable", "wrong-password-here")).code(),
+                "a locked account refuses before the password check, so the status never reveals "
+                        + "whether the supplied password was correct");
         assertEquals("invalid_credentials", assertThrows(AuthService.AuthException.class,
                 () -> auth.login("ghost", "a-long-enough-password")).code());
     }
