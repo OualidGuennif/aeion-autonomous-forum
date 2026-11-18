@@ -24,7 +24,9 @@ import java.util.Set;
  * {@code migrate} applies the versioned Flyway SQL and grants the application role its
  * least-privilege DML; {@code validate} refuses a schema that drifted, is behind, is ahead, or
  * whose imported rows no longer match the cutover manifest; {@code import-sqlite <readonly path>}
- * imports an immutable SQLite backup into a fresh database, once, and records the boundary.
+ * imports an immutable SQLite backup into a fresh database, once, and records the boundary;
+ * {@code create-admin <username>} creates the forum's first owner with the pinned Argon2id hash;
+ * its password is read only from {@code AGORA_ADMIN_PASSWORD}, never from an argument.
  *
  * Every refusal exits nonzero with a stable code. Nothing here prints data, connection settings
  * or credentials; only counts and table names.
@@ -90,6 +92,18 @@ public final class DatabaseOperator {
                 out.println("import ok tables=" + result.tables() + " inserted=" + result.inserted()
                         + " skipped=" + result.skipped() + " boundary_ns=" + result.boundaryNs());
             }
+            case "create-admin" -> {
+                if (args.length < 2) {
+                    throw new Refusal("username_missing");
+                }
+                if (args.length > 2) {
+                    // A password argument would sit in the process table and in shell history, so it
+                    // is refused without being read or echoed. The password arrives only via environment.
+                    throw new Refusal("password_argument_refused");
+                }
+                createAdmin(target, args[1], env.get("AGORA_ADMIN_PASSWORD"));
+                out.println("create-admin ok role=owner");
+            }
             default -> throw new Refusal("command_unknown");
         }
     }
@@ -123,6 +137,79 @@ public final class DatabaseOperator {
             throw new Refusal("grant_failed");
         }
         return historyCount(target) - before;
+    }
+
+    /**
+     * Feature 004: create the forum's first owner with the same normalization and pinned hash the
+     * application uses. The command is operator-only (migration-owner credentials) and refuses when
+     * an owner already exists; it never prints the username, password or hash.
+     */
+    static void createAdmin(Target target, String rawUsername, String password) {
+        String username;
+        try {
+            username = AuthService.normalise(rawUsername);
+        } catch (AuthService.AuthException refusal) {
+            throw new Refusal(refusal.code());
+        }
+        if (password == null) {
+            throw new Refusal("admin_password_missing");
+        }
+        try {
+            AuthService.checkPassword(password);
+        } catch (AuthService.AuthException refusal) {
+            throw new Refusal(refusal.code());
+        }
+        migrate(target);
+        String hash = new PasswordHasher().hash(password);
+        try (Connection connection = connect(target)) {
+            connection.setAutoCommit(false);
+            try {
+                if (ownerCount(connection) > 0) {
+                    throw new Refusal("owner_exists");
+                }
+                long now = System.currentTimeMillis() * 1_000_000L;
+                try (PreparedStatement insert = connection.prepareStatement(
+                        "INSERT INTO accounts(id, username, password, role, created_ns, updated_ns, "
+                                + "failures, disabled) VALUES (?, ?, ?, 'owner', ?, ?, 0, FALSE)")) {
+                    insert.setString(1, java.util.UUID.randomUUID().toString());
+                    insert.setString(2, username);
+                    insert.setString(3, hash);
+                    insert.setLong(4, now);
+                    insert.setLong(5, now);
+                    insert.executeUpdate();
+                }
+                connection.commit();
+            } catch (SQLException failure) {
+                connection.rollback();
+                if ("23505".equals(failure.getSQLState())) {
+                    throw new Refusal(ownerCountQuietly(target) > 0 ? "owner_exists" : "username_taken");
+                }
+                throw new Refusal("create_admin_failed");
+            } catch (RuntimeException failure) {
+                connection.rollback();
+                throw failure;
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        } catch (SQLException failure) {
+            throw new Refusal("create_admin_failed");
+        }
+    }
+
+    private static long ownerCount(Connection connection) throws SQLException {
+        try (PreparedStatement read = connection.prepareStatement(
+                "SELECT COUNT(*) FROM accounts WHERE role = 'owner'");
+             ResultSet rows = read.executeQuery()) {
+            return rows.next() ? rows.getLong(1) : 0;
+        }
+    }
+
+    private static long ownerCountQuietly(Target target) {
+        try (Connection connection = connect(target)) {
+            return ownerCount(connection);
+        } catch (SQLException unavailable) {
+            return 0;
+        }
     }
 
     /** The cutover gate: schema validity first, then the recorded import state, byte for byte. */

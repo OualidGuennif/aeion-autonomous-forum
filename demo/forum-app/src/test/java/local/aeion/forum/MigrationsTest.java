@@ -44,7 +44,7 @@ class MigrationsTest {
         try (EphemeralDatabase database = EphemeralDatabase.create()) {
             long again = DatabaseOperator.migrate(target(database));
             assertEquals(0, again);
-            assertEquals(3, historyRows(database));
+            assertEquals(4, historyRows(database));
         }
     }
 
@@ -62,7 +62,7 @@ class MigrationsTest {
             } finally {
                 pool.shutdownNow();
             }
-            assertEquals(3, historyRows(database), "the history must record every version exactly once");
+            assertEquals(4, historyRows(database), "the history must record every version exactly once");
             for (String table : List.of("settings", "accounts", "threads")) {
                 assertTrue(database.hasTable(table));
             }
@@ -190,7 +190,7 @@ class MigrationsTest {
             database.execute("REVOKE CREATE ON SCHEMA public FROM PUBLIC");
             assertEquals("operator_not_schema_owner",
                     refusal(() -> DatabaseOperator.migrate(applicationTarget(database))));
-            assertEquals(3, historyRows(database), "the refused run must not have touched the history");
+            assertEquals(4, historyRows(database), "the refused run must not have touched the history");
         }
     }
 
