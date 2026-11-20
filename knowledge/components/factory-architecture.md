@@ -45,7 +45,10 @@ the committed Quarkus/Java API under `demo/forum-app/` and its required `Product
 The framework authority, review, context and source-analysis contracts below remain unchanged.
 Since the feature-002 cutover the product runs on PostgreSQL with one versioned Flyway history, a
 separate migration-owner role and an operator-only import/validate job (`DatabaseOperator`); the
-default boot stays database-less. React/browser acceptance is a separate gate. Conditional React
+default boot stays database-less. Feature 005 keeps the session plane on that same baseline:
+opaque server-side session rows behind the signed `agora_session` cookie, rotated by any login
+that presents it, revocable per session or per account, and bounded by typed idle and absolute
+lifetimes. React/browser acceptance is a separate gate. Conditional React
 CI does not certify a missing web package, a cutover or a deployment.
 
 

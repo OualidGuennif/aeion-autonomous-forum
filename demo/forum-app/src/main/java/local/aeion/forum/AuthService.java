@@ -29,7 +29,9 @@ import javax.sql.DataSource;
  *    one account, and first-owner bootstrap is serialized so two starts cannot both win;
  *  * a disabled account is refused at login and its live sessions stop authenticating;
  *  * the session cookie value is random and stored only as its SHA-256, so a database dump does
- *    not hand out live sessions; a session expires after 15 minutes and is revoked on logout;
+ *    not hand out live sessions; a session expires after its absolute lifetime or its idle
+ *    timeout, whichever comes first, and is revoked on logout, on logout-everywhere and by any
+ *    login that presents the cookie again (feature 005), which rotates the identifier;
  *  * five failed attempts lock the account until an operator clears it, and a locked account is
  *    checked before the password hash is even computed.
  */
@@ -63,6 +65,10 @@ public class AuthService {
 
     @Inject
     AgoraSettings settings;
+
+    /** The idle and absolute lifetimes; the initializer only serves plain unit tests. */
+    @Inject
+    SessionLifetimes lifetimes = SessionLifetimes.defaults();
 
     private final SecureRandom random = new SecureRandom();
 
@@ -132,6 +138,16 @@ public class AuthService {
      * whether the supplied password was right.
      */
     public Issued login(String username, String password) {
+        return login(username, password, null);
+    }
+
+    /**
+     * Verify a password and mint a session, rotating the one the request presented: feature 005
+     * revokes exactly the session the signed cookie named and issues a fresh identifier, so a
+     * replayed cookie no longer authenticates after the login that carried it. Only a successful
+     * login revokes anything; a failed credential exchange leaves every session alone.
+     */
+    public Issued login(String username, String password, String presentedSigned) {
         String name;
         try {
             name = normalise(username);
@@ -173,13 +189,33 @@ public class AuthService {
                 throw new AuthException("invalid_credentials");
             }
             clearFailures(connection, account.id());
+            revokePresented(connection, presentedSigned);
             return issue(connection, account);
         } catch (SQLException failure) {
             throw new IllegalStateException("login_failed", failure);
         }
     }
 
-    /** Resolve a cookie value to an enabled account, or empty: expired, revoked and unknown look alike. */
+    /** Revoke exactly the session the presented cookie names, and nothing else. */
+    private void revokePresented(Connection connection, String presentedSigned) throws SQLException {
+        Optional<String> token = secret.verify(presentedSigned);
+        if (token.isEmpty()) {
+            return; // an unusable cookie was never a live session, so there is nothing to rotate
+        }
+        try (PreparedStatement revoke = connection.prepareStatement(
+                "UPDATE sessions SET revoked_ns = ? WHERE id = ? AND revoked_ns IS NULL")) {
+            revoke.setLong(1, clock.nowNs());
+            revoke.setString(2, digest(token.get()));
+            revoke.executeUpdate();
+        }
+    }
+
+    /**
+     * Resolve a cookie value to an enabled account, or empty: expired, revoked and unknown look
+     * alike. A live session's idle timeout is measured from its last authenticated request (or from
+     * its issuance for a row that never recorded one, such as an imported session), and it slides
+     * forward only when the whole check passes, so a dead row can never keep itself alive.
+     */
     public Optional<Account> authenticate(String signed) {
         Optional<String> token = secret.verify(signed);
         if (token.isEmpty()) {
@@ -187,19 +223,35 @@ public class AuthService {
         }
         try (Connection connection = source().getConnection();
              PreparedStatement read = connection.prepareStatement(
-                     "SELECT a.id, a.username, a.role, s.expires_ns, s.revoked_ns "
+                     "SELECT a.id, a.username, a.role, s.expires_ns, s.revoked_ns, "
+                             + "COALESCE(s.last_seen_ns, s.issued_ns) "
                              + "FROM sessions s JOIN accounts a ON a.id = s.account_id "
                              + "WHERE s.id = ? AND a.disabled = FALSE")) {
             read.setString(1, digest(token.get()));
+            long absolute = 0;
+            long revoked = 0;
+            long lastSeen = 0;
+            Optional<Account> account = Optional.empty();
             try (ResultSet row = read.executeQuery()) {
-                if (!row.next()) {
-                    return Optional.empty();
+                if (row.next()) {
+                    account = Optional.of(new Account(row.getString(1), row.getString(2), row.getString(3)));
+                    absolute = row.getLong(4);
+                    revoked = row.getLong(5);
+                    lastSeen = row.getLong(6);
                 }
-                if (row.getLong(5) > 0 || row.getLong(4) <= clock.nowNs()) {
-                    return Optional.empty();
-                }
-                return Optional.of(new Account(row.getString(1), row.getString(2), row.getString(3)));
             }
+            long now = clock.nowNs();
+            if (account.isEmpty() || revoked > 0 || absolute <= now
+                    || lastSeen + lifetimes.idleSeconds() * 1_000_000_000L <= now) {
+                return Optional.empty();
+            }
+            try (PreparedStatement touch = connection.prepareStatement(
+                    "UPDATE sessions SET last_seen_ns = ? WHERE id = ? AND revoked_ns IS NULL")) {
+                touch.setLong(1, now);
+                touch.setString(2, digest(token.get()));
+                touch.executeUpdate();
+            }
+            return account;
         } catch (SQLException failure) {
             throw new IllegalStateException("auth_failed", failure);
         }
@@ -287,18 +339,50 @@ public class AuthService {
         }
     }
 
+    /**
+     * Sign out everywhere: revoke every live session of one account and nothing else. Expired rows
+     * are marked too, so they can never revive, and a second call finds nothing left to revoke.
+     * Returns the number of rows revoked now.
+     */
+    public int logoutAll(Account account) {
+        if (account == null) {
+            return 0;
+        }
+        try (Connection connection = source().getConnection();
+             PreparedStatement revoke = connection.prepareStatement(
+                     "UPDATE sessions SET revoked_ns = ? WHERE account_id = ? AND revoked_ns IS NULL")) {
+            revoke.setLong(1, clock.nowNs());
+            revoke.setString(2, account.id());
+            return revoke.executeUpdate();
+        } catch (SQLException failure) {
+            throw new IllegalStateException("logout_all_failed", failure);
+        }
+    }
+
+    /**
+     * The seconds a browser may keep an issued session cookie: exactly the configured absolute
+     * lifetime, so a deployment that names a longer session gets a cookie that can carry it, and no
+     * cookie ever outlives the row it names (there is no remember-me beyond the absolute lifetime).
+     * The idle timeout stays a server-side deadline that activity renews, never a cookie attribute.
+     */
+    public int cookieLifetimeSeconds() {
+        return lifetimes.absoluteSeconds();
+    }
+
     private Issued issue(Connection connection, Account account) throws SQLException {
         byte[] material = new byte[32];
         random.nextBytes(material);
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(material);
         long issued = clock.nowNs();
-        long expires = issued + SESSION_SECONDS * 1_000_000_000L;
+        long expires = issued + lifetimes.absoluteSeconds() * 1_000_000_000L;
         try (PreparedStatement insert = connection.prepareStatement(
-                "INSERT INTO sessions(id, account_id, issued_ns, expires_ns) VALUES (?, ?, ?, ?)")) {
+                "INSERT INTO sessions(id, account_id, issued_ns, expires_ns, last_seen_ns) "
+                        + "VALUES (?, ?, ?, ?, ?)")) {
             insert.setString(1, digest(token));
             insert.setString(2, account.id());
             insert.setLong(3, issued);
             insert.setLong(4, expires);
+            insert.setLong(5, issued);
             insert.executeUpdate();
         }
         return new Issued(account, secret.sign(token), expires, secret.csrfFor(token));

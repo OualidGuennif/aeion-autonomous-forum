@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -73,5 +74,76 @@ class SessionSecretTest {
         SessionSecret secret = SessionSecret.of(GOOD);
         assertEquals(secret.sign("token-value"), secret.sign("token-value"));
         assertNotEquals(secret.sign("token-value"), secret.sign("other-value"));
+    }
+
+    // ---- Feature 005: verification keys let a rotated signing key keep old cookies alive ----
+
+    private static final String OLD = "the-previous-secret-that-was-rotated-out";
+    private static final String NEW = "the-current-secret-after-the-rotation";
+
+    @Test
+    void aRotatedKeyStillAuthenticatesCookiesThePreviousKeySigned() {
+        String signedByOld = SessionSecret.of(OLD).sign("token-value");
+
+        SessionSecret rotated = SessionSecret.of(NEW, List.of(OLD));
+        assertEquals(Optional.of("token-value"), rotated.verify(signedByOld),
+                "a verification key keeps the sessions the previous key issued");
+        assertEquals(Optional.of("token-value"), rotated.verify(rotated.sign("token-value")),
+                "the primary still signs and verifies new cookies");
+
+        assertTrue(SessionSecret.of("a-third-secret-of-32-bytes-at-least").verify(signedByOld).isEmpty(),
+                "a key that never signed the value and was never configured must not accept it");
+    }
+
+    @Test
+    void severalVerificationKeysAreAcceptedInTheConfiguredOrder() {
+        String signedByOldest = SessionSecret.of(OLD).sign("token-value");
+        String signedByMiddle = SessionSecret.of("the-middle-verification-key-000000").sign("token-value");
+
+        SessionSecret rotated = SessionSecret.of(NEW, List.of("the-middle-verification-key-000000", OLD));
+        assertEquals(Optional.of("token-value"), rotated.verify(signedByOldest));
+        assertEquals(Optional.of("token-value"), rotated.verify(signedByMiddle));
+    }
+
+    @Test
+    void blankVerificationEntriesAreNoKeysAtAll() {
+        String signedByOld = SessionSecret.of(OLD).sign("token-value");
+        SessionSecret rotated = SessionSecret.of(NEW, List.of("", "   ", OLD));
+        assertEquals(Optional.of("token-value"), rotated.verify(signedByOld));
+        assertTrue(rotated.verify(SessionSecret.of(NEW).sign("token-value")).isPresent());
+    }
+
+    @Test
+    void aBadVerificationKeyRefusesNamingTheVerificationSetting() {
+        IllegalStateException refusal = assertThrows(IllegalStateException.class,
+                () -> SessionSecret.of(NEW, List.of("short")));
+        assertTrue(refusal.getMessage().startsWith("session_secret_too_short"), refusal.getMessage());
+        assertTrue(refusal.getMessage().contains(SessionSecret.VERIFICATION_KEY), refusal.getMessage());
+        assertFalse(refusal.getMessage().contains("short,"), "a refusal never repeats the value");
+    }
+
+    @Test
+    void tooManyVerificationKeysAreRefused() {
+        List<String> keys = List.of(
+                "the-verification-key-number-one-0001", "the-verification-key-number-two-0002",
+                "the-verification-key-number-three-03", "the-verification-key-number-four-04",
+                "the-verification-key-number-five-05");
+        IllegalStateException refusal = assertThrows(IllegalStateException.class,
+                () -> SessionSecret.of(NEW, keys));
+        assertTrue(refusal.getMessage().startsWith("session_secret_too_many"), refusal.getMessage());
+        assertTrue(refusal.getMessage().contains(SessionSecret.VERIFICATION_KEY), refusal.getMessage());
+    }
+
+    @Test
+    void aVerificationKeyKeepsTheCsrfTokenAliveAcrossTheRotation() {
+        String oldCsrf = SessionSecret.of(OLD).csrfFor("token-value");
+        SessionSecret rotated = SessionSecret.of(NEW, List.of(OLD));
+        assertTrue(rotated.csrfMatches("token-value", oldCsrf),
+                "a session the old key still authenticates keeps mutating with its own token");
+        assertTrue(rotated.csrfMatches("token-value", rotated.csrfFor("token-value")));
+        assertFalse(rotated.csrfMatches("token-value", "not-a-token-from-any-key"),
+                "a token nobody derived from a verified key is refused");
+        assertFalse(rotated.csrfMatches("other-value", oldCsrf));
+        assertFalse(rotated.csrfMatches("token-value", null));
     }
 }

@@ -13,6 +13,8 @@ import org.jboss.logging.Logger;
  * is the wrong moment: a half-configured deployment would be reachable, and a probe would call it
  * alive. This observer builds the validated beans during startup, so a missing or short secret, or
  * a bounded value outside its range, stops the process — and every refusal names only the key.
+ * The session lifetimes are forced here too: their bean is normal-scoped, so without this the
+ * keys would first be parsed at a login, after the deployment was already reachable.
  */
 @ApplicationScoped
 public class StartupChecks {
@@ -24,6 +26,9 @@ public class StartupChecks {
     SessionSecret secret;
 
     @Inject
+    SessionLifetimes lifetimes;
+
+    @Inject
     Logger log;
 
     void onStart(@Observes StartupEvent event) {
@@ -32,6 +37,7 @@ public class StartupChecks {
         // The business timezone is then pinned, so the deployment never inherits the host clock zone.
         java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone(settings.businessTimeZone()));
         secret.selfCheck();
-        log.info("settings validated: session secret and bounded settings present and usable");
+        lifetimes.selfCheck();
+        log.info("settings validated: session secret, lifetimes and bounded settings usable");
     }
 }
