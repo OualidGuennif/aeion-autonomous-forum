@@ -48,7 +48,11 @@ separate migration-owner role and an operator-only import/validate job (`Databas
 default boot stays database-less. Feature 005 keeps the session plane on that same baseline:
 opaque server-side session rows behind the signed `agora_session` cookie, rotated by any login
 that presents it, revocable per session or per account, and bounded by typed idle and absolute
-lifetimes. React/browser acceptance is a separate gate. Conditional React
+lifetimes. Feature 006 closes the mutation plane on that baseline: the authenticated
+`GET /api/auth/csrf` bootstrap re-derives a live session's token from its cookie, and the
+constant-time, header-only `CsrfGuard` refuses every cookie-authenticated `POST`/`PUT`/`DELETE`
+with `403 {"error":"csrf_invalid"}` before routing, while reads and cookie-less credential
+exchanges stay callable. React/browser acceptance is a separate gate. Conditional React
 CI does not certify a missing web package, a cutover or a deployment.
 
 

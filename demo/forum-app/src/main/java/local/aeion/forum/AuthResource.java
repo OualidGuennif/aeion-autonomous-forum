@@ -18,9 +18,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/** Forum user endpoints: register, login, logout, sign out everywhere, "who am I" and the
- * owner-only account disable. A database-less boot (feature 001) answers 503 on all of them
- * instead of a database error. */
+/** Forum user endpoints: register, login, logout, sign out everywhere, "who am I", the CSRF
+ * bootstrap and the owner-only account disable. A database-less boot (feature 001) answers 503 on
+ * all of them instead of a database error. */
 @Path("/api/auth")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,6 +28,9 @@ public class AuthResource {
 
     @Inject
     AuthService auth;
+
+    @Inject
+    SessionSecret secret;
 
     @POST
     @Path("register")
@@ -163,6 +166,34 @@ public class AuthResource {
             return Response.status(401).entity(Map.of("error", "unauthorized")).build();
         }
         return Response.ok(view(account.get())).build();
+    }
+
+    /**
+     * Feature 006: the CSRF bootstrap. The client that kept its cookie but not its token re-fetches
+     * it here before any mutation, and {@code CsrfGuard} demands it back on that mutation, so a
+     * stolen cookie alone still cannot act for the user. The answer is the exact token the login
+     * payload carried — re-derived from the cookie value with the signing key, never re-minted —
+     * and it leaves only for a session that is live right now: without a cookie or with an
+     * unusable one, or for an expired, revoked or disabled session, the answer is the same 401 the
+     * other authenticated endpoints give, and a database-less boot answers 503.
+     */
+    @GET
+    @Path("csrf")
+    public Response csrf(@CookieParam(AuthService.COOKIE) Cookie cookie) {
+        Optional<String> token = cookie == null ? Optional.empty() : secret.verify(cookie.getValue());
+        if (token.isEmpty()) {
+            return Response.status(401).entity(Map.of("error", "unauthorized")).build();
+        }
+        Optional<AuthService.Account> account;
+        try {
+            account = auth.authenticate(cookie.getValue());
+        } catch (AuthService.UnavailableException offline) {
+            return databaseless();
+        }
+        if (account.isEmpty()) {
+            return Response.status(401).entity(Map.of("error", "unauthorized")).build();
+        }
+        return Response.ok(Map.of("csrf", secret.csrfFor(token.get()))).build();
     }
 
     /** The database-less refusal: a 503 that names the state and exposes no value. */

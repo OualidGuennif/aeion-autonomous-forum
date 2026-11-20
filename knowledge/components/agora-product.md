@@ -100,7 +100,19 @@ and a cleared cookie. The CSRF-protected
 `{"revoked": <count>}`, with `401 {"error":"unauthorized"}` without a session and the guard's
 `403 {"error":"csrf_invalid"}` for a missing or wrong `X-CSRF-Token`. A
 session stops authenticating once its absolute lifetime or its idle timeout passes (whichever is
-first) or its row is revoked; expired, revoked and unknown cookies are indistinguishable 401s. The
+first) or its row is revoked; expired, revoked and unknown cookies are indistinguishable 401s.
+Feature 006 completes the CSRF plane: the authenticated `GET /api/auth/csrf` bootstrap re-derives
+the presented session's token from its cookie and answers `200 {"csrf": "<token>"}` with exactly
+the token the login payload carried for a live session, `401 {"error":"unauthorized"}` without a
+cookie, with an unusable one or for an expired, revoked or disabled session, and
+`503 {"error":"database_disabled"}` on a database-less boot. The constant-time, header-only
+`CsrfGuard` refuses every cookie-authenticated mutation (`POST`/`PUT`/`DELETE` under `/api/*`,
+including `POST /api/auth/logout`, `POST /api/auth/logout-all`, the owner-only account disable,
+thread creation, settings writes and a cookie-bearing login) with
+`403 {"error":"csrf_invalid"}` before routing, while requests without a session cookie —
+`POST /api/auth/register` and a cookie-less `POST /api/auth/login` — and `GET`/`HEAD`/`OPTIONS`
+calls stay callable without the header, and a token in a URL query string authorizes nothing.
+The
 disposable test harness (`EphemeralDatabase`, `QuarkusTestDatabase`) lives on the test classpath
 only, is unreachable from the shipped jar, and is documented in `demo/forum-docs/test-harness.md`.
 `GET /healthz` is liveness only: exactly `{"status":"ok"}`, no database connection, no build or
@@ -153,6 +165,11 @@ revoke only the presented session, `logout-all` only the account's own sessions,
 account or session is never collateral. The idle timeout and the absolute lifetime are bounded
 settings whose defaults keep the 900-second behaviour, and the frozen harness clock proves them in
 JUnit rather than by sleeping.
+CSRF tokens are session-bound and stateless: each is derived from the session token with the
+signing key (`SessionSecret.csrfFor`), compared in constant time (`SessionSecret.csrfMatches`) on
+the way in, and read from the `X-CSRF-Token` header only — a token in a URL query parameter never
+authorizes a mutation — so a cookie a cross-site form can send is still not enough to act for the
+user, and the bootstrap hands its token back only to a session that is live right now.
 Migration credentials exist only in the
 operator job; the application role has least-privilege grants and can neither perform DDL nor
 modify the audit chain. Remote database connections require certificate and hostname
@@ -205,6 +222,13 @@ that presented cookie, whose replay then answers 401; the frozen harness clock e
 idle and absolute deadlines while activity renews the idle deadline up to the absolute limit; and a
 rotated signing key with a configured verification key keeps authenticating the sessions and CSRF
 tokens a previous key issued, without breaking the secret's refusal codes.
+The CSRF gate (feature 006): `GET /api/auth/csrf` answers 401 without a cookie, with a forged one
+or after a logout or logout-all, and 200 with the token the login payload carried for an active
+session; every cookie-authenticated `POST` or `PUT` mutation under `/api/*` answers
+`403 {"error":"csrf_invalid"}` without the `X-CSRF-Token` header, with another session's token or
+with the token in the URL query string alone, and changes nothing, while the valid header lets the
+mutation through and the bootstrap's token authorizes it; `GET` requests and cookie-less
+`register`/`login` stay callable without the header.
 Run the knowledge/link/health and factory tool checks in the repository instructions.
 React/browser acceptance remains a separate gate.
 
