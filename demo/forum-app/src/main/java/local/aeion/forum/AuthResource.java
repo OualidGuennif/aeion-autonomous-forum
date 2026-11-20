@@ -8,16 +8,19 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/** Forum user endpoints: register, login, logout, "who am I" and the owner-only account disable.
- * A database-less boot (feature 001) answers 503 on all of them instead of a database error. */
+/** Forum user endpoints: register, login, logout, sign out everywhere, "who am I" and the
+ * owner-only account disable. A database-less boot (feature 001) answers 503 on all of them
+ * instead of a database error. */
 @Path("/api/auth")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -39,18 +42,22 @@ public class AuthResource {
         }
     }
 
+    /**
+     * Feature 005: a login that carries a live session cookie rotates it. The stateless CSRF guard
+     * has already demanded that cookie's token (403 otherwise, no database change), so the resource
+     * only ever sees a request whose presented cookie belongs to its own session.
+     */
     @POST
     @Path("login")
-    public Response login(Map<String, String> body) {
+    public Response login(@CookieParam(AuthService.COOKIE) Cookie presentedCookie,
+                          @Context UriInfo uriInfo,
+                          Map<String, String> body) {
         try {
-            AuthService.Issued issued = auth.login(value(body, "username"), value(body, "password"));
-            NewCookie cookie = new NewCookie.Builder(AuthService.COOKIE)
-                    .value(issued.token())
-                    .path("/")
-                    .httpOnly(true)
-                    .sameSite(NewCookie.SameSite.STRICT)
-                    .maxAge(AuthService.SESSION_SECONDS)
-                    .build();
+            AuthService.Issued issued = auth.login(value(body, "username"), value(body, "password"),
+                    presentedCookie == null ? null : presentedCookie.getValue());
+            NewCookie cookie = SessionCookie.issued(issued.token(),
+                    SessionCookie.secure(uriInfo.getRequestUri().getScheme()),
+                    auth.cookieLifetimeSeconds());
             Map<String, Object> payload = new LinkedHashMap<>(view(issued.account()));
             payload.put("expires_ns", issued.expiresNs());
             // The double-submit half: the client must send this back on every mutation.
@@ -92,6 +99,11 @@ public class AuthResource {
         }
     }
 
+    /**
+     * Feature 005: logout revokes the presented live session. A request that names no live session
+     * to revoke — no cookie, an unusable value or an already revoked row — keeps the contract it
+     * had before this feature: {@code 200 {"revoked": false}} and a cleared cookie.
+     */
     @POST
     @Path("logout")
     @Consumes(MediaType.WILDCARD)
@@ -102,8 +114,40 @@ public class AuthResource {
         } catch (AuthService.UnavailableException offline) {
             return databaseless();
         }
-        NewCookie cleared = new NewCookie.Builder(AuthService.COOKIE).value("").path("/").maxAge(0).build();
-        return Response.ok(Map.of("revoked", revoked)).cookie(cleared).build();
+        return Response.ok(Map.of("revoked", revoked)).cookie(clearedCookie()).build();
+    }
+
+    /**
+     * Feature 005: sign out everywhere. The CSRF guard has refused a presented session without its
+     * token (403) before this method runs; an unauthenticated caller answers 401 and revokes
+     * nothing. The response names how many sessions of this account were revoked now, and the
+     * presented cookie is cleared like any logout.
+     */
+    @POST
+    @Path("logout-all")
+    @Consumes(MediaType.WILDCARD)
+    public Response logoutAll(@CookieParam(AuthService.COOKIE) Cookie cookie) {
+        Optional<AuthService.Account> account;
+        try {
+            account = cookie == null ? Optional.empty() : auth.authenticate(cookie.getValue());
+        } catch (AuthService.UnavailableException offline) {
+            return databaseless();
+        }
+        if (account.isEmpty()) {
+            return Response.status(401).entity(Map.of("error", "unauthorized")).build();
+        }
+        int revoked;
+        try {
+            revoked = auth.logoutAll(account.get());
+        } catch (AuthService.UnavailableException offline) {
+            return databaseless();
+        }
+        return Response.ok(Map.of("revoked", revoked)).cookie(clearedCookie()).build();
+    }
+
+    /** The emptied cookie a logout answers with: nothing left for the browser to keep. */
+    private static NewCookie clearedCookie() {
+        return new NewCookie.Builder(AuthService.COOKIE).value("").path("/").maxAge(0).build();
     }
 
     @GET

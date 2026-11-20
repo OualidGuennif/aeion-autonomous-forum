@@ -42,7 +42,11 @@ Java25, Gradle9.8.2 and Quarkus3.40.1. The environment is an allowlist of typed 
 `AGORA_SESSION_SECRET` (required, at least 32 bytes, never a placeholder), `AGORA_DATABASE_ENABLED`
 (false or absent boots database-less; true restores the database-backed baseline), and the bounded
 caps `AGORA_REQUEST_MAX_BYTES` 1..16384, `AGORA_TEXT_MAX_CODEPOINTS` 1..4000 and
-`AGORA_RENDERED_MAX_BYTES` 1..32768. The business timezone is Europe/Paris. Unknown environment
+`AGORA_RENDERED_MAX_BYTES` 1..32768. Feature 005 adds the bounded session-lifetime keys
+`AGORA_SESSION_IDLE_SECONDS` and `AGORA_SESSION_ABSOLUTE_SECONDS` (integer 1..2592000, each
+defaulting to the 900 seconds `SESSION_SECONDS` keeps) and the optional
+`AGORA_SESSION_VERIFICATION_SECRETS`, a comma-separated list of at most four previous signing keys
+that still verify cookies. The business timezone is Europe/Paris. Unknown environment
 keys are ignored. Since the cutover, a database-enabled boot requires the PostgreSQL datasource
 URL through `QUARKUS_DATASOURCE_JDBC_URL` (with `QUARKUS_DATASOURCE_USERNAME`/`_PASSWORD` for the
 application role) and refuses without one. Flyway owns the single versioned history under
@@ -75,12 +79,34 @@ CSRF-protected `POST /api/auth/accounts/{username}/disable`. The account view ca
 opaque string `id`, the account UUID that threads store as `author_id`. The disable endpoint answers
 `{"username": <handle>, "disabled": true}`. Handles are stored lowercased; the
 `accounts` table carries a generated unique `handle`, the pinned `password` hash, a `role`, a
-`disabled` flag defaulting to false, and `created_ns`/`updated_ns`/`disabled_ns` timestamps. The
+`disabled` flag defaulting to false, and `created_ns`/`updated_ns`/`disabled_ns` timestamps.
+Feature 005 completes the session plane: `POST /api/auth/login` issues a server-side session and
+sets the signed `agora_session` cookie (`<token>.<hmac>`) with `HttpOnly`, `Path=/`,
+`SameSite=Strict` and a `Max-Age` equal to the session's absolute lifetime (900 seconds until a
+deployment configures another, so a configured lifetime is never capped by the cookie), plus
+`Secure` exactly when the request was served over HTTPS —
+the flag follows the request scheme Quarkus reports, so the plain-HTTP loopback deployment omits it
+and a TLS-terminating proxy turns it on by having Quarkus forward the original scheme. The session
+lives in the `sessions` table, keyed by the token's SHA-256, with `issued_ns`, the absolute
+`expires_ns`, `revoked_ns` and the `last_seen_ns` (migration V5)
+that slides on every authenticated request. `POST /api/auth/login` that presents a live cookie with
+its `X-CSRF-Token` rotates: it revokes exactly the presented row, issues a fresh identifier and a
+fresh CSRF token, and leaves unpresented sessions valid; a failed credential exchange revokes
+nothing. `POST /api/auth/logout` (CSRF-protected) revokes the presented session and clears the
+cookie; when the request names no live session to revoke — no cookie, an unusable value or an
+already revoked row — it keeps the contract it had before feature 005: `200 {"revoked": false}`
+and a cleared cookie. The CSRF-protected
+`POST /api/auth/logout-all` revokes every unrevoked session of the caller's account and answers
+`{"revoked": <count>}`, with `401 {"error":"unauthorized"}` without a session and the guard's
+`403 {"error":"csrf_invalid"}` for a missing or wrong `X-CSRF-Token`. A
+session stops authenticating once its absolute lifetime or its idle timeout passes (whichever is
+first) or its row is revoked; expired, revoked and unknown cookies are indistinguishable 401s. The
 disposable test harness (`EphemeralDatabase`, `QuarkusTestDatabase`) lives on the test classpath
 only, is unreachable from the shipped jar, and is documented in `demo/forum-docs/test-harness.md`.
 `GET /healthz` is liveness only: exactly `{"status":"ok"}`, no database connection, no build or
-host detail. Missing/invalid required secret or invalid numeric caps refuse startup, each refusal
-naming only its key. The PostgreSQL schema is versioned Flyway SQL; the operator job migrates,
+host detail. Missing/invalid required secret, invalid numeric caps or an invalid session-lifetime
+key refuse startup, each refusal naming only its key; the lifetime bean is forced during the boot
+check, so a bad value never waits for the first login. The PostgreSQL schema is versioned Flyway SQL; the operator job migrates,
 imports a quiesced SQLite backup with recorded counts, digests and a recorded cutover boundary,
 and validates the result (`migrate`, `validate`, `import-sqlite`), refusing nonzero with stable
 codes and never printing data or credentials. The same operator JVM exposes `create-admin`, which
@@ -118,6 +144,15 @@ shape cannot authenticate.
 Disabling is owner-only and immediately refuses login and live sessions for that account; the
 `owner` account itself stays enabled, because the forum has one owner, no re-enable path and the
 operator command only bootstraps a first owner, so administration can never be locked out.
+Sessions are opaque and server-side: the cookie's signing keys come only from the environment and
+are never logged, rendered or echoed, the stored row keeps the token's SHA-256 instead of the
+value, and a rotated signing key keeps authenticating the sessions it issued through the configured
+verification keys instead of logging every live session out at once. The identifier is rotated by
+any login that presents the cookie again, and every revocation is exact: logout and rotation
+revoke only the presented session, `logout-all` only the account's own sessions, and an untouched
+account or session is never collateral. The idle timeout and the absolute lifetime are bounded
+settings whose defaults keep the 900-second behaviour, and the frozen harness clock proves them in
+JUnit rather than by sleeping.
 Migration credentials exist only in the
 operator job; the application role has least-privilege grants and can neither perform DDL nor
 modify the audit chain. Remote database connections require certificate and hostname
@@ -156,6 +191,20 @@ able to administer; a disabled account gets 403/423 at login
 and loses its live session; unknown and wrong-password logins return the same refusal and each
 run exactly one verification with the pinned Argon2id parameters; `create-admin` creates the first
 owner and refuses a second; no response or operator output carries a hash, salt or password.
+The session gate (feature 005): a login sets the `HttpOnly`, `Path=/`, `SameSite=Strict`
+`agora_session` cookie whose `Max-Age` is the session's absolute lifetime — 900 seconds by default
+and the configured value once a deployment names one — with `Secure` on an HTTPS request only, the
+flag omitted over the plain-HTTP loopback; an absent, forged or edited value answers 401 without
+disturbing the live session; logout with its CSRF token revokes the presented session and clears
+the cookie, while a logout that names no live session keeps its `200 {"revoked": false}` answer;
+`logout-all` answers 401
+without a session, 403 without or with a wrong `X-CSRF-Token` and revokes nothing then, and revokes
+every session of the account and none of another account's when authorized; a login that presents a
+live cookie and its CSRF token issues a rotated identifier with a new CSRF token and revokes only
+that presented cookie, whose replay then answers 401; the frozen harness clock ends a session at its
+idle and absolute deadlines while activity renews the idle deadline up to the absolute limit; and a
+rotated signing key with a configured verification key keeps authenticating the sessions and CSRF
+tokens a previous key issued, without breaking the secret's refusal codes.
 Run the knowledge/link/health and factory tool checks in the repository instructions.
 React/browser acceptance remains a separate gate.
 

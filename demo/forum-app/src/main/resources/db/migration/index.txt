@@ -5,3 +5,4 @@ V1__initial.sql
 V2__threads_and_events.sql
 V3__import_manifest.sql
 V4__accounts_identity_and_disabled.sql
+V5__session_expiry.sql
