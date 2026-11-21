@@ -52,7 +52,9 @@ lifetimes. Feature 006 closes the mutation plane on that baseline: the authentic
 `GET /api/auth/csrf` bootstrap re-derives a live session's token from its cookie, and the
 constant-time, header-only `CsrfGuard` refuses every cookie-authenticated `POST`/`PUT`/`DELETE`
 with `403 {"error":"csrf_invalid"}` before routing, while reads and cookie-less credential
-exchanges stay callable. React/browser acceptance is a separate gate. Conditional React
+exchanges stay callable. Feature 007 adds the text plane on the same baseline: user text is normalized to
+plain Markdown and rendered by `ContentSanitizer` to an attribute-free HTML subset under fixed
+4000-codepoint and 32768-byte caps. React/browser acceptance is a separate gate. Conditional React
 CI does not certify a missing web package, a cutover or a deployment.
 
 
