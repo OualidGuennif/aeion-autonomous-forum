@@ -28,7 +28,6 @@ import java.util.UUID;
 public class ThreadService {
 
     static final int MAX_TITLE = 200;
-    static final int MAX_BODY = 4000;
     static final int MIN_TITLE = 3;
 
     @Inject
@@ -61,11 +60,13 @@ public class ThreadService {
     @Transactional
     public ThreadView create(AuthService.Account author, String topic, String title, String rawBody) {
         String cleanTitle = title == null ? "" : title.strip();
-        String body = rawBody == null ? "" : rawBody.strip();
         if (cleanTitle.length() < MIN_TITLE || cleanTitle.length() > MAX_TITLE) {
             throw new ThreadException("invalid_title");
         }
-        if (body.isEmpty() || body.length() > MAX_BODY) {
+        // Feature 007: the stored body is the normalized Markdown. An oversized body throws
+        // ContentTooLargeException here, before the thread or its outbox row is written.
+        String body = ContentSanitizer.sanitize(rawBody).markdown();
+        if (body.isEmpty()) {
             throw new ThreadException("invalid_body");
         }
         long now = clock.nowNs();

@@ -48,13 +48,17 @@ public class ThreadsResource {
         if (offline != null) {
             return offline;
         }
-        List<Map<String, Object>> items = threads.recent(limit == null ? 20 : limit).stream()
-                .map(ThreadsResource::view)
-                .toList();
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("threads", items);
-        body.put("count", items.size());
-        return body;
+        try {
+            List<Map<String, Object>> items = threads.recent(limit == null ? 20 : limit).stream()
+                    .map(ThreadsResource::view)
+                    .toList();
+            Map<String, Object> body = new LinkedHashMap<>();
+            body.put("threads", items);
+            body.put("count", items.size());
+            return body;
+        } catch (ContentSanitizer.ContentTooLargeException tooLarge) {
+            return contentTooLarge();
+        }
     }
 
     @GET
@@ -68,7 +72,11 @@ public class ThreadsResource {
         if (thread.isEmpty()) {
             return Response.status(404).entity(Map.of("error", "unknown_thread")).build();
         }
-        return Response.ok(view(thread.get())).build();
+        try {
+            return Response.ok(view(thread.get())).build();
+        } catch (ContentSanitizer.ContentTooLargeException tooLarge) {
+            return contentTooLarge();
+        }
     }
 
     @POST
@@ -94,6 +102,8 @@ public class ThreadsResource {
             return Response.status(201).entity(view(thread)).build();
         } catch (ThreadService.ThreadException refusal) {
             return Response.status(400).entity(Map.of("error", refusal.code())).build();
+        } catch (ContentSanitizer.ContentTooLargeException tooLarge) {
+            return contentTooLarge();
         }
     }
 
@@ -103,11 +113,22 @@ public class ThreadsResource {
                 : Response.status(503).entity(Map.of("error", "database_disabled")).build();
     }
 
+    /** The 413 that every refused thread text answers, whether it was sent or already stored. */
+    private static Response contentTooLarge() {
+        return Response.status(413).entity(Map.of("error", "content_too_large")).build();
+    }
+
+    /**
+     * Feature 007: the normalized Markdown and the HTML the sanitizer derives from it, never raw bytes.
+     * A stored row a cap refuses throws ContentTooLargeException here, and each caller answers 413.
+     */
     private static Map<String, Object> view(ThreadService.ThreadView thread) {
+        ContentSanitizer.Sanitized content = ContentSanitizer.sanitize(thread.body());
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("id", thread.id());
         payload.put("title", thread.title());
-        payload.put("body", thread.body());
+        payload.put("body", content.markdown());
+        payload.put("body_html", content.html());
         payload.put("author_id", thread.authorId());
         payload.put("created_ns", thread.createdNs());
         return payload;

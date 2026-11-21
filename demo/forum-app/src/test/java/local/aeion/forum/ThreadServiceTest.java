@@ -58,6 +58,9 @@ class ThreadServiceTest {
     private static final String FIXTURE_PASSWORD_HASH =
             "$argon2id$v=19$m=65536,t=3,p=1$fixturesalt$fixturehash";
 
+    /** U+1F600, one supplementary codepoint: the cap counts it once, not as two UTF-16 units. */
+    private static final String EMOJI = new String(Character.toChars(0x1F600));
+
     @BeforeEach
     void clean() throws Exception {
         try (Connection connection = dataSource.getConnection();
@@ -160,5 +163,23 @@ class ThreadServiceTest {
         assertEquals(newer.id(), recent.get(0).id());
         assertTrue(threads.find(newer.id()).isPresent());
         assertTrue(threads.find("absent").isEmpty());
+    }
+
+    @Test
+    void anOversizedBodyIsRefusedBeforeAnyThreadOrEventIsWritten() {
+        assertThrows(ContentSanitizer.ContentTooLargeException.class,
+                () -> threads.create(AUTHOR, "agora.threads", "Too long", "a".repeat(4001)));
+        assertThrows(ContentSanitizer.ContentTooLargeException.class,
+                () -> threads.create(AUTHOR, "agora.threads", "Too long", EMOJI.repeat(4001)));
+        assertEquals(0, threads.pendingCount(), "a refused body must not queue an event");
+        assertTrue(threads.recent(10).isEmpty(), "a refused body must not store a thread");
+    }
+
+    @Test
+    void theStoredBodyIsTheNormalizedMarkdownNotTheTransportText() {
+        ThreadService.ThreadView created = threads.create(AUTHOR, "agora.threads", "Normal form",
+                "cafe\u0301\u200B\r\n\r\n\r\n**bold**");
+        assertEquals("caf\u00e9\n\n**bold**", created.body());
+        assertEquals("caf\u00e9\n\n**bold**", threads.find(created.id()).orElseThrow().body());
     }
 }

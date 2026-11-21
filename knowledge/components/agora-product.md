@@ -10,6 +10,10 @@ sources:
     title: "Typed bounded settings (feature 001)"
   - resource: ../../demo/forum-app/src/test/java/local/aeion/forum/EphemeralDatabase.java
     title: "Disposable test database harness (feature 003)"
+  - resource: ../../demo/forum-app/src/main/java/local/aeion/forum/ContentSanitizer.java
+    title: "Thread text normalization and safe HTML (feature 007)"
+  - resource: ../../demo/forum-app/src/main/java/local/aeion/forum/TransportCapGuard.java
+    title: "Transport-cap refusal in the API's JSON shape (feature 007)"
   - resource: ../../demo/forum-docs/settings.md
     title: "Settings and boot documentation"
   - resource: ../../demo/forum-docs/test-harness.md
@@ -28,7 +32,8 @@ replaced by a second framework. The database is PostgreSQL with one versioned Fl
 React DOM/TypeScript web client remains a separate, later gate. Feature 004 adds normalized
 account handles, pinned Argon2id password hashing and an explicit owner-controlled disabled state;
 human accounts carry the existing `owner`/`member` role placeholder, with no separate discussion
-writer role.
+writer role. Feature 007 adds the text plane: a thread body is stored as normalized plain Markdown and
+shown through an attribute-free HTML subset under fixed codepoint and byte caps.
 
 ## Data sources
 
@@ -112,6 +117,30 @@ thread creation, settings writes and a cookie-bearing login) with
 `403 {"error":"csrf_invalid"}` before routing, while requests without a session cookie —
 `POST /api/auth/register` and a cookie-less `POST /api/auth/login` — and `GET`/`HEAD`/`OPTIONS`
 calls stay callable without the header, and a token in a URL query string authorizes nothing.
+
+Feature 007 completes the text plane. `POST /api/threads` normalizes the submitted `body` to Unicode
+NFC, converts CRLF and CR to LF, removes control, format, zero-width and unpaired-surrogate codepoints
+except LF and TAB, collapses horizontal whitespace outside fenced code, strips line edges and reduces
+blank-line runs to one, then stores that normalized plain Markdown in `threads.body`, never the
+transport bytes. A body
+above 4000 Unicode codepoints, raw or normalized, or whose rendered HTML exceeds 32768 UTF-8 bytes is
+refused with `413 {"error":"content_too_large"}` before any thread or outbox row is written; nothing is
+truncated. `POST /api/threads`, `GET /api/threads` and `GET /api/threads/{id}` answer `body` (the
+normalized Markdown) and `body_html`, which `ContentSanitizer` derives on each call from only
+attribute-free `p`, `strong`, `em`, `ul`, `ol`, `li`, `blockquote`, `pre` and `code` elements. The
+Markdown subset is `**strong**`, `*em*`, `- ` and `1. ` items, `> ` quotes and triple-backtick fences
+with an ignored language label. A stored row that a cap refuses (only a row written before this feature
+can be one, since the earlier cap counted UTF-16 units) answers `413 {"error":"content_too_large"}` on
+its single read and in the list for as long as it is stored: nothing is truncated, substituted or
+rewritten, and the row is not changed. The two caps are
+fixed by this feature; the typed `AGORA_TEXT_MAX_CODEPOINTS` and `AGORA_RENDERED_MAX_BYTES` keys are not
+applied to thread text yet. The feature adds no schema migration. Because the HTTP layer's own 16 KiB
+body cap (`quarkus.http.limits.max-body-size`) stops an oversized body before any RESTEasy filter
+runs, `TransportCapGuard` answers that refusal at the earliest routing point with the same threshold,
+status and JSON body the request validation filter applies, so a body over the transport cap refuses
+as `413 {"error":"request_too_large"}` at every layer and never as the framework's bare error body;
+bodies inside the cap, and bodies without a declared length, reach the filters unchanged.
+
 The
 disposable test harness (`EphemeralDatabase`, `QuarkusTestDatabase`) lives on the test classpath
 only, is unreachable from the shipped jar, and is documented in `demo/forum-docs/test-harness.md`.
@@ -175,6 +204,13 @@ operator job; the application role has least-privilege grants and can neither pe
 modify the audit chain. Remote database connections require certificate and hostname
 verification; only an isolated local transport may omit TLS.
 
+Thread text is stored as normalized plain Markdown, never as transport bytes, and `ContentSanitizer`
+derives every `body_html` on each write and read. Its renderer escapes `&`, `<`, `>`, quotes and
+apostrophes before it emits any text and writes no HTML attribute, so script, event handlers, links,
+images and `javascript:` or `data:` URLs stay inert escaped text. Both caps refuse and never truncate,
+a stored row over a cap answers 413 on read and in the list rather than being served, and
+normalization is idempotent: a stored body submitted again renders the same bytes.
+
 ## Determinism
 
 The import preserves committed source bytes. Required CI runs on the exact PR head; publication
@@ -229,6 +265,16 @@ session; every cookie-authenticated `POST` or `PUT` mutation under `/api/*` answ
 with the token in the URL query string alone, and changes nothing, while the valid header lets the
 mutation through and the bootstrap's token authorizes it; `GET` requests and cookie-less
 `register`/`login` stay callable without the header.
+The content gate (feature 007): an authenticated `POST /api/threads` with the session cookie and
+`X-CSRF-Token` answers `body` and `body_html`, and `GET /api/threads/{id}` and `GET /api/threads` return
+the same pair; 30 hostile payloads (script tags, event-handler attributes, `javascript:` and `data:`
+URLs in links, frames, forms, objects and tables, SVG, style, link and meta tags, and bare URLs) render
+as inert escaped text; the Markdown subset, NFC, control and zero-width fixtures match byte for byte
+across create, read and list, and re-submitting a stored body changes nothing; exactly 4000 supplementary codepoints
+(`"😀".repeat(4000)`) are accepted whole, while 4001 codepoints answer `413 {"error":"content_too_large"}`
+and insert no thread or outbox row; JUnit proves the 4000-codepoint and 32768-byte HTML caps and their
+refusals without truncation, and that a legacy row over a cap answers 413 on read and in the
+list.
 Run the knowledge/link/health and factory tool checks in the repository instructions.
 React/browser acceptance remains a separate gate.
 
@@ -236,7 +282,8 @@ React/browser acceptance remains a separate gate.
 
 Changing/deleting existing operator data, deployment, a mobile client and claiming that the
 rewritten 100-feature catalog has already been implemented. The factory's own SQLite queue and
-observability databases are not migrated by this component.
+observability databases are not migrated by this component. Thread text has no images, tables, links, autolinks, iframes, HTML
+attributes or remote resources, and client-side sanitization is not the control (feature 007).
 
 PostgreSQL/React CI uses a disposable PostgreSQL17 fixture and fixed programs under
 `tools/product-web/`, outside the feature worker write scopes. React dependencies install
